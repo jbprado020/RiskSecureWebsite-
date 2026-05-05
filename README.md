@@ -333,22 +333,6 @@ RiskSecureWebsite/
 
 ---
 
-## Documentation Files
-
-Additional documentation available in the `SOFTWARE ENGINEERING/` directory:
-- **PSIAM_Data_Flow_Diagrams.drawio** - DFD (Context, Level 0, and Level 1 decompositions)
-- **PSIAM_Entity_Relationship_Diagram.puml** - ERD with crow's foot notation
-- **PSIAM_Entity_Relationship_Diagram.drawio** - ERD in draw.io format
-- **PSIAM_Data_Dictionary** - Detailed column definitions and constraints
-
----
-
-## Support & Contribution
-
-For issues, questions, or feature requests, please refer to your project documentation or contact the development team.
-
----
-
 ## License
 
 This project is proprietary and confidential. All rights reserved.
