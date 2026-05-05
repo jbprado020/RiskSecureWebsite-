@@ -92,6 +92,12 @@ function renderHeader(string $title): void
         navLink('renewals.php', 'Renewals', $currentPage, 'cycle');
         navLink('meetings.php', 'Meetings', $currentPage, 'event');
         navLink('reports.php', 'Reports', $currentPage, 'monitoring');
+        
+        if (staffRole() === 'admin') {
+            navLink('staff_management.php', 'Staff Mgmt', $currentPage, 'manage_accounts');
+            navLink('insurance_partners.php', 'Partners', $currentPage, 'business');
+        }
+        
         navLink('staff_logout.php', 'Staff Logout (' . statusLabel(staffRole()) . ')', $currentPage, 'logout');
     } else {
         navLink('staff_login.php', 'Staff Login', $currentPage, 'admin_panel_settings');

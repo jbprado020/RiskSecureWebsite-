@@ -60,6 +60,21 @@ renderHeader('Dashboard');
     </article>
 </section>
 
+<?php if (staffRole() === 'admin'): ?>
+<section class="grid cols-2">
+    <article class="card admin-action">
+        <h3>👥 Staff Management</h3>
+        <p>Manage staff accounts, roles, and permissions</p>
+        <a href="staff_management.php" class="btn-action">Go to Staff Management →</a>
+    </article>
+    <article class="card admin-action">
+        <h3>🏢 Insurance Partners</h3>
+        <p>Manage insurance company partnerships</p>
+        <a href="insurance_partners.php" class="btn-action">Go to Partners →</a>
+    </article>
+</section>
+<?php endif; ?>
+
 <section class="grid cols-2">
     <article class="card">
         <h2>Recent Quotes</h2>

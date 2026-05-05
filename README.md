@@ -161,16 +161,47 @@
 - ✅ Meeting notes and purpose documentation
 
 ### 9. Insurance Partner Management
-- ✅ Partner company registration and maintenance
+- ✅ Partner company registration and maintenance (Admin/Manager-only interface)
 - ✅ Insurance type categorization (Life, Non-Life, Both)
 - ✅ Contact person and email management
 - ✅ Support for multiple insurance partners
+- ✅ Policy count tracking per partner
+- ✅ Partner deletion with active policy protection
+- **Access**: Navigate to **Insurance Partners** in staff dashboard
 
 ### 10. Staff Management
-- ✅ Staff account creation with role assignment
+- ✅ Staff account creation with role assignment (Admin-only interface)
+- ✅ All 5 staff roles: Admin, Manager, Underwriter, Claims Officer, Billing Officer
 - ✅ Staff status tracking (Active/Inactive)
 - ✅ Contact number management
-- ✅ Role-based dashboards and permissions
+- ✅ Inline edit forms for updating staff details
+- ✅ Password reset functionality
+- ✅ Delete staff with self-deletion prevention
+- **Access**: Navigate to **Staff Mgmt** in staff dashboard
+
+---
+
+## Staff Management Pages (Admin-Only)
+
+### Staff Management (`staff_management.php`)
+- **Purpose**: Complete CRUD operations for staff accounts
+- **Access Control**: Administrators only
+- **Features**:
+  - Create new staff with email uniqueness validation
+  - Edit staff details (name, email, role, contact, status)
+  - Reset staff passwords securely
+  - Delete staff accounts with confirmation
+  - View complete staff directory
+
+### Insurance Partner Management (`insurance_partners.php`)
+- **Purpose**: Manage partnerships with insurance companies
+- **Access Control**: Administrators and Managers
+- **Features**:
+  - Add new insurance partners with validation
+  - Edit partner information
+  - View active policy counts per partner
+  - Delete partners (prevented if active policies exist)
+  - Partner listing with contact details
 
 ---
 
