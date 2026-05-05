@@ -55,6 +55,15 @@ function navLink(string $href, string $label, string $currentPage, string $icon 
     echo '</a>';
 }
 
+function canAccess(array $allowedRoles): bool
+{
+    if (!isStaffLoggedIn()) {
+        return false;
+    }
+
+    return in_array(staffRole(), $allowedRoles, true);
+}
+
 function renderHeader(string $title): void
 {
     ensureSessionStarted();
@@ -83,30 +92,42 @@ function renderHeader(string $title): void
 
     if (isStaffLoggedIn()) {
         navLink('index.php', 'Dashboard', $currentPage, 'dashboard');
-        navLink('clients.php', 'Clients', $currentPage, 'group');
-        navLink('quotes.php', 'Quotes', $currentPage, 'request_quote');
-        navLink('policies.php', 'Policies', $currentPage, 'policy');
-        navLink('claims.php', 'Claims', $currentPage, 'gavel');
-        navLink('documents.php', 'Documents', $currentPage, 'folder_open');
-        navLink('payments.php', 'Payments', $currentPage, 'payments');
-        navLink('renewals.php', 'Renewals', $currentPage, 'cycle');
-        navLink('meetings.php', 'Meetings', $currentPage, 'event');
-        navLink('reports.php', 'Reports', $currentPage, 'monitoring');
-        
-        if (staffRole() === 'admin') {
-            navLink('staff_management.php', 'Staff Mgmt', $currentPage, 'manage_accounts');
+
+        if (canAccess(['admin', 'manager', 'underwriter'])) {
+            navLink('clients.php', 'Clients', $currentPage, 'group');
+            navLink('quotes.php', 'Quotes', $currentPage, 'request_quote');
+            navLink('policies.php', 'Policies', $currentPage, 'policy');
+            navLink('renewals.php', 'Renewals', $currentPage, 'cycle');
+        }
+
+        if (canAccess(['admin', 'manager', 'underwriter', 'claims_officer'])) {
+            navLink('claims.php', 'Claims', $currentPage, 'gavel');
+            navLink('documents.php', 'Documents', $currentPage, 'folder_open');
+            navLink('meetings.php', 'Meetings', $currentPage, 'event');
+        }
+
+        if (canAccess(['admin', 'manager', 'billing_officer'])) {
+            navLink('payments.php', 'Payments', $currentPage, 'payments');
+        }
+
+        if (canAccess(['admin', 'manager', 'underwriter', 'claims_officer', 'billing_officer'])) {
+            navLink('reports.php', 'Reports', $currentPage, 'monitoring');
+        }
+
+        if (canAccess(['admin', 'manager'])) {
             navLink('insurance_partners.php', 'Partners', $currentPage, 'business');
         }
-        
-        navLink('staff_logout.php', 'Staff Logout (' . statusLabel(staffRole()) . ')', $currentPage, 'logout');
-    } else {
-        navLink('staff_login.php', 'Staff Login', $currentPage, 'admin_panel_settings');
-    }
 
-    if (isCustomerLoggedIn()) {
+        if (canAccess(['admin'])) {
+            navLink('staff_management.php', 'Staff Mgmt', $currentPage, 'manage_accounts');
+        }
+
+        navLink('staff_logout.php', 'Staff Logout (' . statusLabel(staffRole()) . ')', $currentPage, 'logout');
+    } elseif (isCustomerLoggedIn()) {
         navLink('customer_portal.php', 'Customer Portal', $currentPage, 'person');
         navLink('customer_logout.php', 'Customer Logout', $currentPage, 'logout');
     } else {
+        navLink('staff_login.php', 'Staff Login', $currentPage, 'admin_panel_settings');
         navLink('customer_login.php', 'Customer Login', $currentPage, 'login');
         navLink('customer_register.php', 'Customer Register', $currentPage, 'person_add');
     }

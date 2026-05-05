@@ -376,11 +376,13 @@ Default sample password for all seeded staff accounts: `password`
 
 Role permissions:
 
-- Admin: full access
-- Manager: dashboard, reports, policy and renewal monitoring
-- Underwriter: clients, quotes, policies, renewals, meetings
-- Claims Officer: claims, documents, meetings
-- Billing Officer: payments
+- Admin: full access (including Staff Management and Partner Management)
+- Manager: dashboard, clients, quotes, policies, claims, documents, renewals, meetings, payments, reports, partner management
+- Underwriter: dashboard, clients, quotes, policies, claims, documents, renewals, meetings, reports
+- Claims Officer: dashboard, claims, documents, meetings, reports
+- Billing Officer: dashboard, payments, reports
+
+Navigation and dashboard quick action cards are role-aware and automatically hidden when not permitted for the signed-in role.
 
 ## Suggested Demo Flow (for your report/presentation)
 
