@@ -10,11 +10,11 @@ function db(): PDO
         return $pdo;
     }
 
-    $host = '127.0.0.1';
-    $port = '3306';
-    $dbName = 'risk_secure_db';
-    $user = 'root';
-    $pass = '';
+    $host = getenv('DB_HOST') ?: '127.0.0.1';
+    $port = getenv('DB_PORT') ?: '3306';
+    $dbName = getenv('DB_NAME') ?: 'risk_secure_db';
+    $user = getenv('DB_USER') ?: 'root';
+    $pass = getenv('DB_PASS') ?: '';
 
     $dsn = "mysql:host={$host};port={$port};dbname={$dbName};charset=utf8mb4";
 
