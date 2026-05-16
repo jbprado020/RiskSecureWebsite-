@@ -3,6 +3,28 @@
 declare(strict_types=1);
 
 /**
+ * Validate uploaded file MIME type by checking actual file content (magic bytes).
+ * Prevents uploading executable files renamed with document extensions.
+ * 
+ * @param string $filePath Path to the uploaded file
+ * @param array $allowedMimeTypes Allowed MIME types
+ * @return bool True if MIME type is allowed, false otherwise
+ */
+function validateUploadMimeType(string $filePath, array $allowedMimeTypes): bool
+{
+    if (!is_file($filePath)) {
+        return false;
+    }
+
+    // Use finfo to detect actual MIME type (checks magic bytes, not just extension)
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $filePath);
+    finfo_close($finfo);
+
+    return in_array($mimeType, $allowedMimeTypes, true);
+}
+
+/**
  * Prepare upload paths and move incoming upload to a temporary location.
  * Returns array with keys: tempPath, finalPath, relativePath
  * Throws RuntimeException on failure.

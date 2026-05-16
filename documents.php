@@ -51,6 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_document'])) {
         if ($error === '') {
             $file = $_FILES['document_file'];
             $allowedExt = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+            $allowedMimeTypes = [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ];
 
             if ((int) $file['error'] !== UPLOAD_ERR_OK) {
                 $error = 'File upload failed.';
@@ -58,6 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_document'])) {
                 $ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
                 if (!in_array($ext, $allowedExt, true)) {
                     $error = 'Unsupported file type. Allowed: pdf, jpg, jpeg, png, doc, docx.';
+                } elseif (!validateUploadMimeType($file['tmp_name'], $allowedMimeTypes)) {
+                    $error = 'Invalid file content. File does not match declared type.';
                 } else {
                         try {
                             $uploadInfo = prepareUploadTemp($file, $uploadDir, 'doc');

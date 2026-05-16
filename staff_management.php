@@ -24,6 +24,33 @@ function roleLabel(string $role): string {
     return $labels[$role] ?? $role;
 }
 
+// Validate password strength (minimum 12 chars, must have uppercase, lowercase, number, special char)
+function validatePassword(string $password): ?string {
+    $password = trim($password);
+    
+    if (strlen($password) < 12) {
+        return 'Password must be at least 12 characters long.';
+    }
+    
+    if (!preg_match('/[A-Z]/', $password)) {
+        return 'Password must contain at least one uppercase letter.';
+    }
+    
+    if (!preg_match('/[a-z]/', $password)) {
+        return 'Password must contain at least one lowercase letter.';
+    }
+    
+    if (!preg_match('/\d/', $password)) {
+        return 'Password must contain at least one number.';
+    }
+    
+    if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'\",.\/\<\>?\\\|`~]/', $password)) {
+        return 'Password must contain at least one special character (!@#$%^&*, etc).';
+    }
+    
+    return null;
+}
+
 // Create new staff account
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_staff'])) {
     requireCsrfToken();
@@ -40,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_staff'])) {
         $error = 'Full name, email, and password are required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address.';
-    } elseif (strlen($password) < 6) {
-        $error = 'Password must be at least 6 characters long.';
+    } elseif (($passwordError = validatePassword($password)) !== null) {
+        $error = $passwordError;
     } elseif (!in_array($role, $validRoles, true)) {
         $error = 'Invalid role selected.';
     } else {
@@ -139,8 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
 
     if ($staffId <= 0) {
         $error = 'Invalid staff member.';
-    } elseif ($newPassword === '' || strlen($newPassword) < 6) {
-        $error = 'Password must be at least 6 characters long.';
+    } elseif ($newPassword === '' || ($passwordError = validatePassword($newPassword)) !== null) {
+        $error = $passwordError ?? 'Password is required.';
     } else {
         try {
             $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
