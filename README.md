@@ -66,11 +66,12 @@
 4. **Configure Database Connection**
    - Update `config/db.php` with your database credentials:
    ```php
-   $host = "localhost";
-   $user = "root";           // Your MySQL username
-   $password = "";           // Your MySQL password
-   $database = "risk_secure_db";
+   $host = "localhost";         // Your MySQL host
+   $user = "root";              // Your MySQL username
+   $password = "";              // Your MySQL password
+   $database = "risk_secure_db"; // Database name
    ```
+   - Use environment variables in production (do not hardcode credentials)
 
 5. **Set File Permissions**
    - Ensure the web server has write permissions to the project directory
@@ -87,12 +88,14 @@
 
 **Admin Account**
 - Email: `admin@risksecure.local`
-- Password: `password` (change after first login)
+- Password: (Set during initial setup)
 
 **Sample Customers**
 - Juan Dela Cruz: `juan.delacruz@example.com`
 - Maria Santos: `maria.santos@example.com`
 - Leo Navarro: `leo.navarro@example.com`
+
+⚠️ **IMPORTANT**: Change all default credentials immediately after setup. Do not use weak passwords.
 
 ---
 
@@ -290,13 +293,23 @@ RiskSecureWebsite/
 
 ## Security Features
 
+✅ **Strong Password Requirements**: Minimum 12 characters with uppercase, lowercase, numbers, and special characters
+✅ **MIME Type Validation**: File uploads validated by actual content to prevent malware injection
 ✅ **Password Security**: Bcrypt hashing for all credentials
-✅ **Session Management**: HTTP-only session cookies
-✅ **Input Validation**: Server-side validation for forms
-✅ **Database Prepared Statements**: Protection against SQL injection (mysqli)
+✅ **Session Management**: HTTP-only session cookies with SameSite protection
+✅ **Input Validation**: Server-side validation for all forms
+✅ **Database Prepared Statements**: Protection against SQL injection
 ✅ **Role-Based Access Control**: Different permissions per staff role
+✅ **CSRF Protection**: Token-based cross-site request forgery prevention
 ✅ **Unique Constraints**: Email and policy number uniqueness enforced
-✅ **Cascade Deletes**: Data integrity through foreign keys
+
+### Security Roadmap (In Development)
+- 🔄 Rate limiting on login endpoints (prevent brute force attacks)
+- 🔄 Audit logging for all staff actions
+- 🔄 Two-factor authentication (TOTP)
+- 🔄 Field-level encryption for sensitive data
+- 🔄 HTTPS enforcement with security headers
+- 🔄 File size limits on uploads
 
 ---
 
@@ -343,12 +356,13 @@ This project is proprietary and confidential. All rights reserved.
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0.0 | May 2026 | Initial release with core features |
+| 1.1.0 | May 16, 2026 | Security: Strong password requirements, MIME type validation for file uploads |
+| 1.0.0 | May 4, 2026 | Initial release with core features |
 
 ---
 
-**Last Updated**: May 4, 2026
-**Status**: Active Development
+**Last Updated**: May 16, 2026
+**Status**: Active Development - Security Hardening Phase
 3. Create customer auth table (for existing databases):
    - Run `database/add_customer_accounts.sql`
 4. Create staff auth table and sample accounts (for existing databases):
@@ -366,21 +380,19 @@ This project is proprietary and confidential. All rights reserved.
 
 Use `staff_login.php` for back-office pages.
 
-Default sample password for all seeded staff accounts: `password`
+**Available Staff Roles:**
+- **Admin**: Full system access including staff and partner management
+- **Manager**: Dashboard, clients, quotes, policies, claims, documents, renewals, meetings, payments, reports, partner management
+- **Underwriter**: Dashboard, clients, quotes, policies, claims, documents, renewals, meetings, reports
+- **Claims Officer**: Dashboard, claims, documents, meetings, reports
+- **Billing Officer**: Dashboard, payments, reports
 
-- admin@risksecure.local (role: admin)
-- manager@risksecure.local (role: manager)
-- underwriter@risksecure.local (role: underwriter)
-- claims@risksecure.local (role: claims_officer)
-- billing@risksecure.local (role: billing_officer)
-
-Role permissions:
-
-- Admin: full access (including Staff Management and Partner Management)
-- Manager: dashboard, clients, quotes, policies, claims, documents, renewals, meetings, payments, reports, partner management
-- Underwriter: dashboard, clients, quotes, policies, claims, documents, renewals, meetings, reports
-- Claims Officer: dashboard, claims, documents, meetings, reports
-- Billing Officer: dashboard, payments, reports
+**Password Requirements for All Accounts:**
+- Minimum 12 characters
+- Must include uppercase letter (A-Z)
+- Must include lowercase letter (a-z)
+- Must include number (0-9)
+- Must include special character (!@#$%^&*, etc)
 
 Navigation and dashboard quick action cards are role-aware and automatically hidden when not permitted for the signed-in role.
 
