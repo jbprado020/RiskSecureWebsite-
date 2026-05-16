@@ -1,0 +1,14 @@
+# Logs
+logs/
+
+# Uploads (should be writable, but not committed)
+uploads/
+
+# Environment
+.env
+
+# Vendor (future)
+vendor/
+
+# IDE
+.vscode/
