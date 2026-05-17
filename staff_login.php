@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/rate_limit_helpers.php';
 
 ensureSessionStarted();
 
@@ -25,28 +26,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
         $error = 'Enter a valid email and password.';
     } else {
-        $stmt = $pdo->prepare(
-            'SELECT id, full_name, email, password_hash, role, is_active
-             FROM staff_accounts
-             WHERE email = :email
-             LIMIT 1'
-        );
-        $stmt->execute([':email' => $email]);
-        $staff = $stmt->fetch();
-
-        if (!$staff || (int) $staff['is_active'] !== 1 || !password_verify($password, (string) $staff['password_hash'])) {
-            $error = 'Invalid staff credentials.';
+        // Check rate limiting before attempting login
+        $rateCheck = checkLoginRateLimit($pdo, 'staff', $email);
+        if (!$rateCheck['allowed']) {
+            $error = $rateCheck['reason'] ?? 'Too many failed attempts. Please try again later.';
         } else {
-            session_regenerate_id(true);
-            $_SESSION['staff_id'] = (int) $staff['id'];
-            $_SESSION['staff_name'] = (string) $staff['full_name'];
-            $_SESSION['staff_email'] = (string) $staff['email'];
-            $_SESSION['staff_role'] = (string) $staff['role'];
+            $stmt = $pdo->prepare(
+                'SELECT id, full_name, email, password_hash, role, is_active
+                 FROM staff_accounts
+                 WHERE email = :email
+                 LIMIT 1'
+            );
+            $stmt->execute([':email' => $email]);
+            $staff = $stmt->fetch();
 
-            header('Location: index.php');
-            exit;
+            if (!$staff || (int) $staff['is_active'] !== 1 || !password_verify($password, (string) $staff['password_hash'])) {
+                recordLoginAttempt($pdo, 'staff', $email, false);
+                $error = 'Invalid staff credentials.';
+            } else {
+                recordLoginAttempt($pdo, 'staff', $email, true);
+                session_regenerate_id(true);
+                $_SESSION['staff_id'] = (int) $staff['id'];
+                $_SESSION['staff_name'] = (string) $staff['full_name'];
+                $_SESSION['staff_email'] = (string) $staff['email'];
+                $_SESSION['staff_role'] = (string) $staff['role'];
+
+                header('Location: index.php');
+                exit;
+            }
         }
-    }
 }
 
 renderHeader('Staff Login');

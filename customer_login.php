@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/rate_limit_helpers.php';
 
 ensureSessionStarted();
 
@@ -25,28 +26,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
         $error = 'Enter a valid email and password.';
     } else {
-        $stmt = $pdo->prepare(
-            'SELECT c.id, c.full_name, c.email, ca.password_hash
-             FROM clients c
-             INNER JOIN customer_accounts ca ON ca.client_id = c.id
-             WHERE c.email = :email
-             LIMIT 1'
-        );
-        $stmt->execute([':email' => $email]);
-        $account = $stmt->fetch();
-
-        if (!$account || !password_verify($password, (string) $account['password_hash'])) {
-            $error = 'Invalid login credentials.';
+        // Check rate limiting before attempting login
+        $rateCheck = checkLoginRateLimit($pdo, 'customer', $email);
+        if (!$rateCheck['allowed']) {
+            $error = $rateCheck['reason'] ?? 'Too many failed attempts. Please try again later.';
         } else {
-            session_regenerate_id(true);
-            $_SESSION['customer_client_id'] = (int) $account['id'];
-            $_SESSION['customer_email'] = (string) $account['email'];
-            $_SESSION['customer_name'] = (string) $account['full_name'];
+            $stmt = $pdo->prepare(
+                'SELECT c.id, c.full_name, c.email, ca.password_hash
+                 FROM clients c
+                 INNER JOIN customer_accounts ca ON ca.client_id = c.id
+                 WHERE c.email = :email
+                 LIMIT 1'
+            );
+            $stmt->execute([':email' => $email]);
+            $account = $stmt->fetch();
 
-            header('Location: customer_portal.php');
-            exit;
+            if (!$account || !password_verify($password, (string) $account['password_hash'])) {
+                recordLoginAttempt($pdo, 'customer', $email, false);
+                $error = 'Invalid login credentials.';
+            } else {
+                recordLoginAttempt($pdo, 'customer', $email, true);
+                session_regenerate_id(true);
+                $_SESSION['customer_client_id'] = (int) $account['id'];
+                $_SESSION['customer_email'] = (string) $account['email'];
+                $_SESSION['customer_name'] = (string) $account['full_name'];
+
+                header('Location: customer_portal.php');
+                exit;
+            }
         }
-    }
 }
 
 renderHeader('Customer Login');
