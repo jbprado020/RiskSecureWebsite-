@@ -63,7 +63,13 @@
    mysql -u root -p risk_secure_db < database/risk_secure_db.sql
    ```
 
-4. **Configure Database Connection**
+4. **Apply Database Migrations**
+   ```bash
+   # Apply all pending migrations from database/migrations/
+   mysql -u root -p risk_secure_db < database/migrations/001_add_login_attempts_table.sql
+   ```
+
+5. **Configure Database Connection**
    - Update `config/db.php` with your database credentials:
    ```php
    $host = "localhost";         // Your MySQL host
@@ -73,11 +79,11 @@
    ```
    - Use environment variables in production (do not hardcode credentials)
 
-5. **Set File Permissions**
+6. **Set File Permissions**
    - Ensure the web server has write permissions to the project directory
    - Create uploads directory if needed: `mkdir -p uploads/`
 
-6. **Start Web Server**
+7. **Start Web Server**
    ```bash
    # Using PHP built-in server (development only)
    php -S localhost:8000
@@ -295,6 +301,7 @@ RiskSecureWebsite/
 
 ✅ **Strong Password Requirements**: Minimum 12 characters with uppercase, lowercase, numbers, and special characters
 ✅ **MIME Type Validation**: File uploads validated by actual content to prevent malware injection
+✅ **Rate Limiting**: 5 failed login attempts per IP/email locks account for 15 minutes (prevents brute force)
 ✅ **Password Security**: Bcrypt hashing for all credentials
 ✅ **Session Management**: HTTP-only session cookies with SameSite protection
 ✅ **Input Validation**: Server-side validation for all forms
@@ -304,7 +311,6 @@ RiskSecureWebsite/
 ✅ **Unique Constraints**: Email and policy number uniqueness enforced
 
 ### Security Roadmap (In Development)
-- 🔄 Rate limiting on login endpoints (prevent brute force attacks)
 - 🔄 Audit logging for all staff actions
 - 🔄 Two-factor authentication (TOTP)
 - 🔄 Field-level encryption for sensitive data
