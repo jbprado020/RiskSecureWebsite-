@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -68,6 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_renewal'])) {
                 }
 
                 $pdo->commit();
+                logAuditEvent($pdo, 'create_renewal', [
+                    'entity_type' => 'renewals',
+                    'entity_id' => (int) $pdo->lastInsertId(),
+                    'status' => 'success',
+                    'details' => 'Created renewal for policy ID ' . $policyId . ' with status ' . $status . '.',
+                ]);
                 $message = 'Renewal process entry created.';
             }
         } catch (Throwable $exception) {
@@ -137,6 +144,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_renewal'])) {
                 }
 
                 $pdo->commit();
+                logAuditEvent($pdo, 'update_renewal', [
+                    'entity_type' => 'renewals',
+                    'entity_id' => $renewalId,
+                    'status' => 'success',
+                    'details' => 'Updated renewal status to ' . $status . '.',
+                ]);
                 $message = 'Renewal status updated.';
             }
         } catch (Throwable $exception) {

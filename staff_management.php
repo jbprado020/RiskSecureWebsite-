@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 requireStaffRole(['admin']);
 
@@ -95,6 +96,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_staff'])) {
                     ':contact_number' => $contact,
                     ':is_active' => 1,
                 ]);
+                logAuditEvent($pdo, 'create_staff', [
+                    'entity_type' => 'staff_accounts',
+                    'entity_id' => (int) $pdo->lastInsertId(),
+                    'status' => 'success',
+                    'details' => 'Created staff account for ' . $fullName . ' (' . $email . ').',
+                ]);
                 $message = "Staff account created for {$fullName}.";
             }
         } catch (Throwable $e) {
@@ -149,6 +156,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_staff'])) {
                     ':is_active' => $isActive,
                     ':id' => $staffId,
                 ]);
+                logAuditEvent($pdo, 'update_staff', [
+                    'entity_type' => 'staff_accounts',
+                    'entity_id' => $staffId,
+                    'status' => 'success',
+                    'details' => 'Updated staff account for ' . $fullName . ' (' . $email . ').',
+                ]);
                 $message = "Staff account updated.";
             }
         } catch (Throwable $e) {
@@ -173,6 +186,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
             $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
             $stmt = $pdo->prepare('UPDATE staff_accounts SET password_hash = :password WHERE id = :id');
             $stmt->execute([':password' => $hashedPassword, ':id' => $staffId]);
+            logAuditEvent($pdo, 'reset_staff_password', [
+                'entity_type' => 'staff_accounts',
+                'entity_id' => $staffId,
+                'status' => 'success',
+                'details' => 'Reset password for staff account ID ' . $staffId . '.',
+            ]);
             $message = 'Password reset successfully.';
         } catch (Throwable $e) {
             $error = 'Failed to reset password: ' . $e->getMessage();
@@ -193,6 +212,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_staff'])) {
     } else {
         try {
             $pdo->prepare('DELETE FROM staff_accounts WHERE id = :id')->execute([':id' => $staffId]);
+            logAuditEvent($pdo, 'delete_staff', [
+                'entity_type' => 'staff_accounts',
+                'entity_id' => $staffId,
+                'status' => 'success',
+                'details' => 'Deleted staff account ID ' . $staffId . '.',
+            ]);
             $message = 'Staff account deleted.';
         } catch (Throwable $e) {
             $error = 'Failed to delete staff account: ' . $e->getMessage();

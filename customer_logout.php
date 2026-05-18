@@ -2,9 +2,18 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 ensureSessionStarted();
+
+$pdo = db();
+logAuditEvent($pdo, 'customer_logout', [
+    'entity_type' => 'session',
+    'status' => 'success',
+    'details' => 'Customer logged out.',
+]);
 session_regenerate_id(true);
 $_SESSION = [];
 

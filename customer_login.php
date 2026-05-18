@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/rate_limit_helpers.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 ensureSessionStarted();
 
@@ -29,6 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Check rate limiting before attempting login
         $rateCheck = checkLoginRateLimit($pdo, 'customer', $email);
         if (!$rateCheck['allowed']) {
+            logAuditEvent($pdo, 'customer_login', [
+                'actor_type' => 'customer',
+                'actor_email' => $email,
+                'status' => 'failure',
+                'entity_type' => 'login',
+                'details' => $rateCheck['reason'] ?? 'Login blocked by rate limit.',
+            ]);
             $error = $rateCheck['reason'] ?? 'Too many failed attempts. Please try again later.';
         } else {
             $stmt = $pdo->prepare(
@@ -43,6 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!$account || !password_verify($password, (string) $account['password_hash'])) {
                 recordLoginAttempt($pdo, 'customer', $email, false);
+                logAuditEvent($pdo, 'customer_login', [
+                    'actor_type' => 'customer',
+                    'actor_email' => $email,
+                    'status' => 'failure',
+                    'entity_type' => 'login',
+                    'details' => 'Invalid customer credentials.',
+                ]);
                 $error = 'Invalid login credentials.';
             } else {
                 recordLoginAttempt($pdo, 'customer', $email, true);
@@ -50,6 +65,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['customer_client_id'] = (int) $account['id'];
                 $_SESSION['customer_email'] = (string) $account['email'];
                 $_SESSION['customer_name'] = (string) $account['full_name'];
+                logAuditEvent($pdo, 'customer_login', [
+                    'actor_type' => 'customer',
+                    'actor_id' => (int) $account['id'],
+                    'actor_name' => (string) $account['full_name'],
+                    'actor_email' => (string) $account['email'],
+                    'status' => 'success',
+                    'entity_type' => 'login',
+                    'details' => 'Customer login successful.',
+                ]);
 
                 header('Location: customer_portal.php');
                 exit;

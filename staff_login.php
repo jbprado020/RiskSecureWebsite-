@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/rate_limit_helpers.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 ensureSessionStarted();
 
@@ -29,6 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Check rate limiting before attempting login
         $rateCheck = checkLoginRateLimit($pdo, 'staff', $email);
         if (!$rateCheck['allowed']) {
+            logAuditEvent($pdo, 'staff_login', [
+                'actor_type' => 'staff',
+                'actor_email' => $email,
+                'status' => 'failure',
+                'entity_type' => 'login',
+                'details' => $rateCheck['reason'] ?? 'Login blocked by rate limit.',
+            ]);
             $error = $rateCheck['reason'] ?? 'Too many failed attempts. Please try again later.';
         } else {
             $stmt = $pdo->prepare(
@@ -42,6 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!$staff || (int) $staff['is_active'] !== 1 || !password_verify($password, (string) $staff['password_hash'])) {
                 recordLoginAttempt($pdo, 'staff', $email, false);
+                logAuditEvent($pdo, 'staff_login', [
+                    'actor_type' => 'staff',
+                    'actor_email' => $email,
+                    'status' => 'failure',
+                    'entity_type' => 'login',
+                    'details' => 'Invalid staff credentials.',
+                ]);
                 $error = 'Invalid staff credentials.';
             } else {
                 recordLoginAttempt($pdo, 'staff', $email, true);
@@ -50,6 +65,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['staff_name'] = (string) $staff['full_name'];
                 $_SESSION['staff_email'] = (string) $staff['email'];
                 $_SESSION['staff_role'] = (string) $staff['role'];
+                logAuditEvent($pdo, 'staff_login', [
+                    'actor_type' => 'staff',
+                    'actor_id' => (int) $staff['id'],
+                    'actor_name' => (string) $staff['full_name'],
+                    'actor_email' => (string) $staff['email'],
+                    'actor_role' => (string) $staff['role'],
+                    'status' => 'success',
+                    'entity_type' => 'login',
+                    'details' => 'Staff login successful.',
+                ]);
 
                 header('Location: index.php');
                 exit;

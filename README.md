@@ -112,6 +112,7 @@
 - ✅ Role-based access control (Admin, Manager, Underwriter, Claims Officer, Billing Officer)
 - ✅ Secure password hashing using Bcrypt
 - ✅ Session management and logout functionality
+- ✅ Audit logging for logins, logouts, and key staff actions
 
 ### 2. Customer Portal
 - ✅ View personal policies with coverage details

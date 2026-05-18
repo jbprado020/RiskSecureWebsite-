@@ -14,7 +14,7 @@ function db(): PDO
     $port = getenv('DB_PORT') ?: '3306';
     $dbName = getenv('DB_NAME') ?: 'risk_secure_db';
     $user = getenv('DB_USER') ?: 'root';
-    $pass = getenv('DB_PASS') ?: '';
+    $pass = getenv('DB_PASS') ?: 'root';
 
     $dsn = "mysql:host={$host};port={$port};dbname={$dbName};charset=utf8mb4";
 

@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/db_helpers.php';
 require_once __DIR__ . '/includes/upload_helpers.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter', 'claims_officer']);
 
@@ -98,6 +99,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_document'])) {
                                     }
                                 }, $insertId);
 
+                                logAuditEvent($pdo, 'upload_document', [
+                                    'entity_type' => 'documents',
+                                    'entity_id' => $insertId,
+                                    'status' => 'success',
+                                    'details' => 'Uploaded document type ' . $documentType . ' for client ' . $clientId . ' / policy ' . $policyId . '.',
+                                ]);
                                 $message = 'Document uploaded and categorized.';
                             } catch (Throwable $e) {
                                 $error = 'Unable to finalize uploaded file after save. Please contact admin.';
@@ -122,6 +129,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_hard_copy'])) 
         $stmt->execute([
             ':is_hard_copy_received' => $isHardCopyReceived,
             ':id' => $documentId,
+        ]);
+        logAuditEvent($pdo, 'update_document_hard_copy', [
+            'entity_type' => 'documents',
+            'entity_id' => $documentId,
+            'status' => 'success',
+            'details' => 'Updated hard copy status to ' . ($isHardCopyReceived === 1 ? 'received' : 'pending') . '.',
         ]);
         $message = 'Hard copy status updated.';
     }

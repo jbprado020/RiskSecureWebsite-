@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/insurance_service.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -38,6 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':premium_amount' => $premium,
             ':status' => 'pending',
         ]);
+        logAuditEvent($pdo, 'create_quote', [
+            'actor_type' => 'staff',
+            'entity_type' => 'quotes',
+            'entity_id' => (int) $pdo->lastInsertId(),
+            'status' => 'success',
+            'details' => 'Created quote for client ID ' . $clientId . ' with premium ' . number_format($premium, 2, '.', '') . '.',
+        ]);
         $message = 'Quote created. Premium is PHP ' . number_format($premium, 2) . '.';
     }
 }
@@ -52,6 +60,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quote_status']
         $pdo->prepare('UPDATE quotes SET status = :status WHERE id = :id')->execute([
             ':status' => $status,
             ':id' => $quoteId,
+        ]);
+        logAuditEvent($pdo, 'update_quote_status', [
+            'actor_type' => 'staff',
+            'entity_type' => 'quotes',
+            'entity_id' => $quoteId,
+            'status' => 'success',
+            'details' => 'Quote status updated to ' . $status . '.',
         ]);
         header('Location: quotes.php');
         exit;

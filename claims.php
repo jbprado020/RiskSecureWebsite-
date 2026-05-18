@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/db_helpers.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 requireStaffRole(['admin', 'manager', 'claims_officer', 'underwriter']);
 
@@ -60,6 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_claim'])) {
             ':claim_status' => 'pending',
             ':requirements_complete' => 0,
         ]);
+        logAuditEvent($pdo, 'create_claim', [
+            'entity_type' => 'claims',
+            'entity_id' => (int) $pdo->lastInsertId(),
+            'status' => 'success',
+            'details' => 'Created claim for policy ID ' . $policyId . ' amount ' . number_format($claimAmount, 2, '.', '') . '.',
+        ]);
         $message = 'Claim has been filed.';
     } else {
         $error = 'Please complete the required claim fields.';
@@ -98,6 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_claim'])) {
             ':decision_by_staff_id' => $decisionByStaffId,
             ':id' => $claimId,
         ]);
+        logAuditEvent($pdo, 'update_claim', [
+            'entity_type' => 'claims',
+            'entity_id' => $claimId,
+            'status' => 'success',
+            'details' => 'Updated claim status to ' . $claimStatus . '.',
+        ]);
         $message = 'Claim status updated.';
     } else {
         $error = 'Invalid claim status update request.';
@@ -127,6 +140,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_requirement'])) {
                 syncClaimRequirementsComplete($pdo, $claimId);
                 return true;
             });
+            logAuditEvent($pdo, 'create_claim_requirement', [
+                'entity_type' => 'claim_requirements',
+                'status' => 'success',
+                'details' => 'Added requirement ' . $requirementName . ' to claim ID ' . $claimId . '.',
+            ]);
             $message = 'Claim requirement added.';
         } catch (Throwable $exception) {
             $error = 'Unable to add requirement right now. Please try again.';
@@ -170,6 +188,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_requirement'])
                 return true;
             });
 
+            logAuditEvent($pdo, 'update_claim_requirement', [
+                'entity_type' => 'claim_requirements',
+                'entity_id' => $requirementId,
+                'status' => 'success',
+                'details' => 'Updated requirement status to ' . $status . '.',
+            ]);
             $message = 'Requirement status updated.';
         } catch (Throwable $exception) {
             $error = 'Unable to update requirement right now. Please try again.';
@@ -219,6 +243,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record_claim_payment'
                 return true;
             });
 
+            logAuditEvent($pdo, 'record_claim_payment', [
+                'entity_type' => 'claim_payments',
+                'status' => 'success',
+                'details' => 'Recorded claim payment for claim ID ' . $claimId . ' amount ' . number_format($amount, 2, '.', '') . '.',
+            ]);
             $message = 'Claim payment recorded.';
         } catch (RuntimeException $re) {
             $error = $re->getMessage();

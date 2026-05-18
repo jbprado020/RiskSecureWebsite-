@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/audit_helpers.php';
 
 requireStaffRole(['admin', 'manager']);
 
@@ -60,6 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_partner'])) {
                     ':contact_person' => $contactPerson,
                     ':contact_email' => $contactEmail,
                 ]);
+                logAuditEvent($pdo, 'create_partner', [
+                    'entity_type' => 'insurance_partners',
+                    'entity_id' => (int) $pdo->lastInsertId(),
+                    'status' => 'success',
+                    'details' => 'Created partner ' . $companyName . ' (' . $contactEmail . ').',
+                ]);
                 $message = "Insurance partner '{$companyName}' created successfully.";
             }
         } catch (Throwable $e) {
@@ -112,6 +119,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_partner'])) {
                     ':contact_email' => $contactEmail,
                     ':id' => $partnerId,
                 ]);
+                logAuditEvent($pdo, 'update_partner', [
+                    'entity_type' => 'insurance_partners',
+                    'entity_id' => $partnerId,
+                    'status' => 'success',
+                    'details' => 'Updated partner ' . $companyName . ' (' . $contactEmail . ').',
+                ]);
                 $message = 'Insurance partner updated successfully.';
             }
         } catch (Throwable $e) {
@@ -141,6 +154,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_partner'])) {
                 $error = "Cannot delete partner with {$activePolicies} active policy/policies. Deactivate policies first.";
             } else {
                 $pdo->prepare('DELETE FROM insurance_partners WHERE id = :id')->execute([':id' => $partnerId]);
+                logAuditEvent($pdo, 'delete_partner', [
+                    'entity_type' => 'insurance_partners',
+                    'entity_id' => $partnerId,
+                    'status' => 'success',
+                    'details' => 'Deleted insurance partner ID ' . $partnerId . '.',
+                ]);
                 $message = 'Insurance partner deleted successfully.';
             }
         } catch (Throwable $e) {
