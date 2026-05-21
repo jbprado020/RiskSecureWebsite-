@@ -19,26 +19,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_meeting'])) {
     $clientId = $clientIdRaw === '' ? null : (int) $clientIdRaw;
     $agentId = (int) ($_POST['agent_id'] ?? 0);
     $meetingAt = trim((string) ($_POST['meeting_at'] ?? ''));
+    $durationMinutes = (int) ($_POST['duration_minutes'] ?? 30);
     $channel = (string) ($_POST['channel'] ?? 'zoom');
     $purpose = trim((string) ($_POST['purpose'] ?? ''));
     $notes = trim((string) ($_POST['notes'] ?? ''));
     $allowedChannels = ['zoom', 'phone', 'in-person'];
 
     if ($meetingAt !== '' && $purpose !== '' && $agentId > 0 && in_array($channel, $allowedChannels, true)) {
-        $stmt = $pdo->prepare(
-            'INSERT INTO meeting_schedules (client_id, agent_id, meeting_at, channel, purpose, status, notes)
-             VALUES (:client_id, :agent_id, :meeting_at, :channel, :purpose, :status, :notes)'
+        // Normalize datetime-local value
+        $startAt = str_replace('T', ' ', $meetingAt);
+        if ($durationMinutes <= 0) {
+            $durationMinutes = 30;
+        }
+        $endAt = date('Y-m-d H:i:s', strtotime($startAt) + ($durationMinutes * 60));
+
+        // Overlap check using start/end ranges
+        $conflictStmt = $pdo->prepare(
+            'SELECT COUNT(*) FROM meeting_schedules
+             WHERE agent_id = :agent_id AND status = "scheduled"
+               AND (meeting_at < :end_at AND COALESCE(end_at, meeting_at) > :start_at)'
         );
-        $stmt->execute([
-            ':client_id' => $clientId,
+        $conflictStmt->execute([
             ':agent_id' => $agentId,
-            ':meeting_at' => $meetingAt,
-            ':channel' => $channel,
-            ':purpose' => $purpose,
-            ':status' => 'scheduled',
-            ':notes' => $notes,
+            ':start_at' => $startAt,
+            ':end_at' => $endAt,
         ]);
-        $message = 'Meeting scheduled.';
+
+        if ((int) $conflictStmt->fetchColumn() > 0) {
+            $error = 'Selected agent already has an appointment overlapping that time range. Choose another time or agent.';
+        } else {
+            $stmt = $pdo->prepare(
+                'INSERT INTO meeting_schedules (client_id, agent_id, meeting_at, end_at, duration_minutes, channel, purpose, status, notes)
+                 VALUES (:client_id, :agent_id, :meeting_at, :end_at, :duration_minutes, :channel, :purpose, :status, :notes)'
+            );
+            $stmt->execute([
+                ':client_id' => $clientId,
+                ':agent_id' => $agentId,
+                ':meeting_at' => $startAt,
+                ':end_at' => $endAt,
+                ':duration_minutes' => $durationMinutes,
+                ':channel' => $channel,
+                ':purpose' => $purpose,
+                ':status' => 'scheduled',
+                ':notes' => $notes,
+            ]);
+            $message = 'Meeting scheduled.';
+        }
     } else {
         $error = 'Please provide valid meeting details.';
     }
@@ -146,6 +172,10 @@ renderHeader('Meetings');
             <div>
                 <label>Date and Time</label>
                 <input type="datetime-local" name="meeting_at" required>
+            </div>
+            <div>
+                <label>Duration (minutes)</label>
+                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required>
             </div>
             <div>
                 <label>Channel</label>

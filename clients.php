@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_client'])) {
     }
 }
 
-$clients = $pdo->query('SELECT * FROM clients ORDER BY created_at DESC')->fetchAll();
+$clients = $pdo->query('SELECT * FROM clients ORDER BY id ASC')->fetchAll();
 
 renderHeader('Clients');
 ?>
