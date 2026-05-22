@@ -6,26 +6,58 @@ require_once __DIR__ . '/../config/db.php';
 
 $pdo = db();
 $markerEmail = 'analytics.demo@risksecure.local';
+$sampleClients = [
+    ['full_name' => 'Alyssa Reyes', 'email' => 'analytics.demo@risksecure.local', 'phone' => '+63-917-800-1001', 'address' => 'Makati City, Metro Manila', 'date_of_birth' => '1991-03-14'],
+    ['full_name' => 'Benito Cruz', 'email' => 'analytics.demo2@risksecure.local', 'phone' => '+63-917-800-1002', 'address' => 'Quezon City, Metro Manila', 'date_of_birth' => '1987-08-22'],
+    ['full_name' => 'Carla Mendoza', 'email' => 'analytics.demo3@risksecure.local', 'phone' => '+63-917-800-1003', 'address' => 'Cebu City, Cebu', 'date_of_birth' => '1994-12-05'],
+    ['full_name' => 'Darren Villanueva', 'email' => 'analytics.demo4@risksecure.local', 'phone' => '+63-917-800-1004', 'address' => 'Davao City, Davao del Sur', 'date_of_birth' => '1998-06-30'],
+    ['full_name' => 'Elena Navarro', 'email' => 'analytics.demo5@risksecure.local', 'phone' => '+63-917-800-1005', 'address' => 'Pasig City, Metro Manila', 'date_of_birth' => '1985-11-18'],
+    ['full_name' => 'Francis Dizon', 'email' => 'analytics.demo6@risksecure.local', 'phone' => '+63-917-800-1006', 'address' => 'Baguio City, Benguet', 'date_of_birth' => '1990-01-09'],
+];
 
 $markerStmt = $pdo->prepare('SELECT COUNT(*) FROM clients WHERE email = :email');
 $markerStmt->execute([':email' => $markerEmail]);
 
 if ((int) $markerStmt->fetchColumn() > 0) {
-    echo "Analytics seed already applied.\n";
+    $updateClientStmt = $pdo->prepare(
+        'UPDATE clients
+         SET full_name = :full_name,
+             phone = :phone,
+             address = :address,
+             date_of_birth = :date_of_birth
+         WHERE email = :email'
+    );
+
+    $pdo->beginTransaction();
+    try {
+        foreach ($sampleClients as $client) {
+            $updateClientStmt->execute([
+                ':full_name' => $client['full_name'],
+                ':phone' => $client['phone'],
+                ':address' => $client['address'],
+                ':date_of_birth' => $client['date_of_birth'],
+                ':email' => $client['email'],
+            ]);
+        }
+
+        $pdo->commit();
+        echo "Analytics sample names updated.\n";
+    } catch (Throwable $exception) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        fwrite(STDERR, 'Analytics rename failed: ' . $exception->getMessage() . PHP_EOL);
+        exit(1);
+    }
+
     exit(0);
 }
 
 $pdo->beginTransaction();
 
 try {
-    $clients = [
-        ['Analytics Demo One', 'analytics.demo@risksecure.local', '+63-917-800-1001', 'Makati City, Metro Manila', '1991-03-14'],
-        ['Analytics Demo Two', 'analytics.demo2@risksecure.local', '+63-917-800-1002', 'Quezon City, Metro Manila', '1987-08-22'],
-        ['Analytics Demo Three', 'analytics.demo3@risksecure.local', '+63-917-800-1003', 'Cebu City, Cebu', '1994-12-05'],
-        ['Analytics Demo Four', 'analytics.demo4@risksecure.local', '+63-917-800-1004', 'Davao City, Davao del Sur', '1998-06-30'],
-        ['Analytics Demo Five', 'analytics.demo5@risksecure.local', '+63-917-800-1005', 'Pasig City, Metro Manila', '1985-11-18'],
-        ['Analytics Demo Six', 'analytics.demo6@risksecure.local', '+63-917-800-1006', 'Baguio City, Benguet', '1990-01-09'],
-    ];
+    $clients = $sampleClients;
 
     $clientIds = [];
     $insertClientStmt = $pdo->prepare(
