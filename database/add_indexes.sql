@@ -183,18 +183,25 @@ SET @idx_exists := (SELECT COUNT(*) FROM information_schema.statistics WHERE tab
 SET @sql := IF(@idx_exists = 0, 'CREATE INDEX idx_policies_policy_number ON policies(policy_number)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+SET @audit_logs_exists := (
+		SELECT COUNT(*)
+		FROM information_schema.tables
+		WHERE table_schema = DATABASE()
+			AND table_name = 'audit_logs'
+);
+
 SET @idx_exists := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'audit_logs' AND index_name = 'idx_audit_logs_action');
-SET @sql := IF(@idx_exists = 0, 'CREATE INDEX idx_audit_logs_action ON audit_logs(action)', 'SELECT 1');
+SET @sql := IF(@audit_logs_exists = 1 AND @idx_exists = 0, 'CREATE INDEX idx_audit_logs_action ON audit_logs(action)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET @idx_exists := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'audit_logs' AND index_name = 'idx_audit_logs_actor_type');
-SET @sql := IF(@idx_exists = 0, 'CREATE INDEX idx_audit_logs_actor_type ON audit_logs(actor_type)', 'SELECT 1');
+SET @sql := IF(@audit_logs_exists = 1 AND @idx_exists = 0, 'CREATE INDEX idx_audit_logs_actor_type ON audit_logs(actor_type)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET @idx_exists := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'audit_logs' AND index_name = 'idx_audit_logs_entity_type');
-SET @sql := IF(@idx_exists = 0, 'CREATE INDEX idx_audit_logs_entity_type ON audit_logs(entity_type)', 'SELECT 1');
+SET @sql := IF(@audit_logs_exists = 1 AND @idx_exists = 0, 'CREATE INDEX idx_audit_logs_entity_type ON audit_logs(entity_type)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET @idx_exists := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'audit_logs' AND index_name = 'idx_audit_logs_created_at');
-SET @sql := IF(@idx_exists = 0, 'CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at)', 'SELECT 1');
+SET @sql := IF(@audit_logs_exists = 1 AND @idx_exists = 0, 'CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;

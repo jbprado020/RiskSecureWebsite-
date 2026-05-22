@@ -236,50 +236,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_customer_docum
             if ($error === '') {
                 $file = $_FILES['document_file'];
                 $allowedExt = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+                $allowedMimeTypes = [
+                    'application/pdf',
+                    'image/jpeg',
+                    'image/png',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                ];
+                $maxBytes = 10 * 1024 * 1024; // 10 MB
 
-                if ((int) $file['error'] !== UPLOAD_ERR_OK) {
-                    $error = 'File upload failed.';
-                } else {
-                    $ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
-                    if (!in_array($ext, $allowedExt, true)) {
-                        $error = 'Unsupported file type. Allowed: pdf, jpg, jpeg, png, doc, docx.';
-                    } else {
-                        try {
-                            $uploadInfo = prepareUploadTemp($file, $uploadDir, 'cust');
+                try {
+                    $uploadInfo = processUpload($file, $uploadDir, 'cust', $allowedExt, $allowedMimeTypes, $maxBytes);
 
-                            $insertId = runTransactionWithRetries($pdo, function (PDO $pdo) use ($clientId, $policyId, $claimId, $documentType, $uploadInfo) {
-                                $insertDocumentStmt = $pdo->prepare(
-                                    'INSERT INTO documents (client_id, policy_id, claim_id, document_type, file_path, uploaded_by)
-                                     VALUES (:client_id, :policy_id, :claim_id, :document_type, :file_path, :uploaded_by)'
-                                );
-                                $insertDocumentStmt->execute([
-                                    ':client_id' => $clientId,
-                                    ':policy_id' => $policyId,
-                                    ':claim_id' => $claimId,
-                                    ':document_type' => $documentType,
-                                    ':file_path' => $uploadInfo['relativePath'],
-                                    ':uploaded_by' => 'customer',
-                                ]);
+                    $insertId = runTransactionWithRetries($pdo, function (PDO $pdo) use ($clientId, $policyId, $claimId, $documentType, $uploadInfo) {
+                        $insertDocumentStmt = $pdo->prepare(
+                            'INSERT INTO documents (client_id, policy_id, claim_id, document_type, file_path, uploaded_by)
+                             VALUES (:client_id, :policy_id, :claim_id, :document_type, :file_path, :uploaded_by)'
+                        );
+                        $insertDocumentStmt->execute([
+                            ':client_id' => $clientId,
+                            ':policy_id' => $policyId,
+                            ':claim_id' => $claimId,
+                            ':document_type' => $documentType,
+                            ':file_path' => $uploadInfo['relativePath'],
+                            ':uploaded_by' => 'customer',
+                        ]);
 
-                                return (int) $pdo->lastInsertId();
-                            });
+                        return (int) $pdo->lastInsertId();
+                    });
 
-                            try {
-                                finalizeUploadMove($uploadInfo['tempPath'], $uploadInfo['finalPath'], function (?int $id) use ($pdo) {
-                                    if ($id !== null) {
-                                        $del = $pdo->prepare('DELETE FROM documents WHERE id = :id');
-                                        $del->execute([':id' => $id]);
-                                    }
-                                }, $insertId);
-
-                                $message = 'Document uploaded successfully.';
-                            } catch (Throwable $e) {
-                                $error = 'Unable to finalize uploaded file after save. Please contact admin.';
+                    try {
+                        finalizeUploadMove($uploadInfo['tempPath'], $uploadInfo['finalPath'], function (?int $id) use ($pdo) {
+                            if ($id !== null) {
+                                $del = $pdo->prepare('DELETE FROM documents WHERE id = :id');
+                                $del->execute([':id' => $id]);
                             }
-                        } catch (Throwable $e) {
-                            $error = $e->getMessage() ?: 'Unable to store uploaded file.';
-                        }
+                        }, $insertId);
+
+                        $message = 'Document uploaded successfully.';
+                    } catch (Throwable $e) {
+                        $error = 'Unable to finalize uploaded file after save. Please contact admin.';
                     }
+                } catch (Throwable $e) {
+                    $error = $e->getMessage() ?: 'Unable to store uploaded file.';
                 }
             }
         }

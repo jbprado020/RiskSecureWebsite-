@@ -1,0 +1,8 @@
+# Prevent execution of scripts and disallow directory listing
+Options -Indexes
+<FilesMatch "\.(php|php5|phtml|pl|py|jsp|asp|aspx|sh|exe)$">
+    Require all denied
+</FilesMatch>
+# Disable handlers for PHP in shared hosts
+RemoveHandler .php .phtml
+RemoveType .php .phtml

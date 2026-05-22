@@ -72,6 +72,81 @@ function prepareUploadTemp(array $file, string $uploadDir, string $prefix = ''):
     ];
 }
 
+
+/**
+ * Process an uploaded file with validations: extension, MIME type, size, and simple content checks.
+ * Returns same array as prepareUploadTemp on success.
+ * Throws RuntimeException on validation failure.
+ *
+ * @param array $file The $_FILES entry
+ * @param string $uploadDir Absolute uploads directory
+ * @param string $prefix Filename prefix (eg. user id)
+ * @param array $allowedExt Allowed file extensions (lowercase, without dot)
+ * @param array $allowedMimeTypes Allowed MIME types
+ * @param int $maxBytes Maximum allowed file size in bytes
+ */
+function processUpload(array $file, string $uploadDir, string $prefix, array $allowedExt, array $allowedMimeTypes, int $maxBytes): array
+{
+    // Basic PHP upload error
+    if (!isset($file['error']) || (int)$file['error'] !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('File upload failed (PHP error).');
+    }
+
+    // Extension check
+    $originalName = (string) ($file['name'] ?? 'upload');
+    $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    if ($ext === '') {
+        throw new RuntimeException('Uploaded file missing extension.');
+    }
+    if (!in_array($ext, $allowedExt, true)) {
+        throw new RuntimeException('Unsupported file type.');
+    }
+
+    // Size check (before moving)
+    if (isset($file['size']) && $file['size'] > 0) {
+        if ($file['size'] > $maxBytes) {
+            throw new RuntimeException('File exceeds maximum allowed size.');
+        }
+    }
+
+    // Move to temp then validate content
+    $uploadInfo = prepareUploadTemp($file, $uploadDir, $prefix);
+
+    // Validate MIME type using finfo on the temp file
+    if (!validateUploadMimeType($uploadInfo['tempPath'], $allowedMimeTypes)) {
+        // cleanup temp
+        if (is_file($uploadInfo['tempPath'])) {
+            @unlink($uploadInfo['tempPath']);
+        }
+        throw new RuntimeException('Uploaded file MIME type is not allowed.');
+    }
+
+    // Re-check filesize from temp file (server-side reliable)
+    $actualSize = @filesize($uploadInfo['tempPath']);
+    if ($actualSize === false || $actualSize > $maxBytes) {
+        if (is_file($uploadInfo['tempPath'])) {
+            @unlink($uploadInfo['tempPath']);
+        }
+        throw new RuntimeException('Uploaded file is too large.');
+    }
+
+    // Simple content scanning for executable PHP code
+    $handle = @fopen($uploadInfo['tempPath'], 'rb');
+    if ($handle !== false) {
+        $firstBytes = fread($handle, 4096);
+        fclose($handle);
+        if (strpos($firstBytes, '<?php') !== false || stripos($firstBytes, '<script') !== false) {
+            @unlink($uploadInfo['tempPath']);
+            throw new RuntimeException('Uploaded file contains disallowed content.');
+        }
+    }
+
+    // Harden permissions for temp file
+    @chmod($uploadInfo['tempPath'], 0640);
+
+    return $uploadInfo;
+}
+
 /**
  * Finalize upload after DB commit: move temp file to final location and
  * perform cleanup on failure (delete DB record using provided delete callback).
