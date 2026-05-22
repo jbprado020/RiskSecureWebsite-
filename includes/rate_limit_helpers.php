@@ -13,20 +13,31 @@ declare(strict_types=1);
  */
 function checkLoginRateLimit(PDO $pdo, string $accountType, string $identifier): array
 {
+    if (!loginAttemptsTableExists($pdo)) {
+        return ['allowed' => true];
+    }
+
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-    
+
     // Query existing attempt record
-    $stmt = $pdo->prepare(
-        'SELECT * FROM login_attempts 
-         WHERE ip_address = :ip AND account_type = :account_type AND account_identifier = :identifier 
-         LIMIT 1'
-    );
-    $stmt->execute([
-        ':ip' => $ip,
-        ':account_type' => $accountType,
-        ':identifier' => $identifier,
-    ]);
-    $attempt = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        $stmt = $pdo->prepare(
+            'SELECT * FROM login_attempts 
+             WHERE ip_address = :ip AND account_type = :account_type AND account_identifier = :identifier 
+             LIMIT 1'
+        );
+        $stmt->execute([
+            ':ip' => $ip,
+            ':account_type' => $accountType,
+            ':identifier' => $identifier,
+        ]);
+        $attempt = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $exception) {
+        if (($exception->errorInfo[1] ?? null) === 1146) {
+            return ['allowed' => true];
+        }
+        throw $exception;
+    }
 
     // No record yet = allowed
     if (!$attempt) {
@@ -62,6 +73,10 @@ function checkLoginRateLimit(PDO $pdo, string $accountType, string $identifier):
  */
 function recordLoginAttempt(PDO $pdo, string $accountType, string $identifier, bool $success): void
 {
+    if (!loginAttemptsTableExists($pdo)) {
+        return;
+    }
+
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     $maxAttempts = 5;
     $lockoutMinutes = 15;
@@ -100,4 +115,32 @@ function recordLoginAttempt(PDO $pdo, string $accountType, string $identifier, b
             ':lockout_minutes' => $lockoutMinutes,
         ]);
     }
+}
+
+/**
+ * Check whether the login_attempts table exists.
+ */
+function loginAttemptsTableExists(PDO $pdo): bool
+{
+    static $knownState = null;
+
+    if ($knownState !== null) {
+        return $knownState;
+    }
+
+    try {
+        $stmt = $pdo->prepare(
+            'SELECT 1
+             FROM information_schema.tables
+             WHERE table_schema = DATABASE()
+               AND table_name = :table_name
+             LIMIT 1'
+        );
+        $stmt->execute([':table_name' => 'login_attempts']);
+        $knownState = (bool) $stmt->fetchColumn();
+    } catch (Throwable $exception) {
+        $knownState = false;
+    }
+
+    return $knownState;
 }

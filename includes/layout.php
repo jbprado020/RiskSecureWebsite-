@@ -46,11 +46,40 @@ function statusLabel(string $status): string
     return ucwords(str_replace('_', ' ', $status));
 }
 
+function iconMarkup(string $name): string
+{
+    $icons = [
+        'dashboard' => '<path d="M4 4h6v6H4z"></path><path d="M14 4h6v4h-6z"></path><path d="M14 10h6v10h-6z"></path><path d="M4 12h6v8H4z"></path>',
+        'group' => '<circle cx="8" cy="8" r="3"></circle><path d="M2.8 20c.9-3 3.1-4.6 5.2-4.6S12.3 17 13.2 20"></path><circle cx="18" cy="9" r="2.3"></circle><path d="M15.2 20c.4-1.9 1.5-3.2 3.2-3.2 1 0 1.9.3 2.6 1"></path>',
+        'request_quote' => '<path d="M5 3h10l4 4v14H5z"></path><path d="M15 3v5h5"></path><path d="M8 11h8"></path><path d="M8 15h5"></path>',
+        'policy' => '<path d="M6 3h8l4 4v14H6z"></path><path d="M14 3v5h4"></path><path d="M8 11h6"></path><path d="M8 15h4"></path>',
+        'cycle' => '<path d="M5 7a7 7 0 0 1 12-1"></path><path d="M17 4v4h-4"></path><path d="M19 17a7 7 0 0 1-12 1"></path><path d="M7 20v-4h4"></path>',
+        'gavel' => '<path d="M8 4l3 3-2 2-3-3z"></path><path d="M11 7l5 5"></path><path d="M4 16h8"></path><path d="M14 14l-4 4"></path>',
+        'folder_open' => '<path d="M3 6h6l2 2h10v10H3z"></path><path d="M3 8h20"></path>',
+        'event' => '<rect x="4" y="6" width="16" height="14" rx="2"></rect><path d="M8 4v4M16 4v4M4 10h16"></path><path d="M8 14h4M8 17h6"></path>',
+        'payments' => '<rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M3 10h18"></path><path d="M7 14h4"></path><circle cx="15.5" cy="14.5" r="1.4"></circle>',
+        'monitoring' => '<path d="M4 19h16"></path><rect x="6" y="12" width="2.5" height="5"></rect><rect x="11" y="9" width="2.5" height="8"></rect><rect x="16" y="6" width="2.5" height="11"></rect>',
+        'business' => '<path d="M4 8h16v12H4z"></path><path d="M8 20V4h8v16"></path><path d="M7 12h2M7 16h2M13 12h2M13 16h2"></path>',
+        'manage_accounts' => '<circle cx="8" cy="8" r="3"></circle><path d="M2.8 20c.8-2.8 2.9-4.3 5.2-4.3 1.5 0 2.8.4 3.9 1.2"></path><path d="M16.5 12.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4"></path><path d="M16.5 9.5v1.2M16.5 17.3v1.2M13.8 12.5l1.1.6M18.1 14.9l1.1.6M13.8 16.9l1.1-.6M18.1 12.5l1.1-.6"></path>',
+        'logout' => '<path d="M10 5H4v14h6"></path><path d="M13 12H4"></path><path d="M16 9l4 3-4 3"></path>',
+        'person' => '<circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 20c1.2-3.2 3.7-5 7.5-5s6.3 1.8 7.5 5"></path>',
+        'admin_panel_settings' => '<path d="M12 3l7 3v5c0 4.5-2.9 7.8-7 10-4.1-2.2-7-5.5-7-10V6z"></path><circle cx="12" cy="11" r="1.8"></circle><path d="M12 13.1v3"></path>',
+        'login' => '<path d="M10 5H4v14h6"></path><path d="M13 12h7"></path><path d="M16 9l4 3-4 3"></path>',
+        'person_add' => '<circle cx="9" cy="8" r="3"></circle><path d="M3.8 20c1-2.9 3-4.3 5.2-4.3 1.7 0 3.2.5 4.3 1.4"></path><path d="M18 9v6M15 12h6"></path>',
+        'workspace_premium' => '<path d="M12 3l7 4-1.4 7.5L12 21 6.4 14.5 5 7z"></path><path d="M12 8l1.2 2.4 2.7.4-2 1.9.5 2.7L12 13.8 9.6 15.4l.5-2.7-2-1.9 2.7-.4z"></path>',
+        'logout_default' => '<path d="M10 5H4v14h6"></path><path d="M13 12H4"></path><path d="M16 9l4 3-4 3"></path>',
+    ];
+
+    $path = $icons[$name] ?? $icons['logout_default'];
+
+    return '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' . $path . '</svg>';
+}
+
 function navLink(string $href, string $label, string $currentPage, string $icon = 'radio_button_unchecked'): void
 {
     $activeClass = $currentPage === $href ? ' class="active"' : '';
     echo '<a href="' . e($href) . '"' . $activeClass . '>';
-    echo '<span class="material-symbols-rounded nav-icon" aria-hidden="true">' . e($icon) . '</span>';
+    echo iconMarkup($icon);
     echo '<span class="nav-text">' . e($label) . '</span>';
     echo '</a>';
 }
@@ -137,7 +166,7 @@ function renderHeader(string $title): void
     echo '</header>';
     echo '<main class="container">';
     echo '<section class="page-banner">';
-    echo '<p class="page-banner-kicker"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> RiskSecure Operations Console</p>';
+    echo '<p class="page-banner-kicker">' . iconMarkup('workspace_premium') . ' RiskSecure Operations Console</p>';
     echo '<h1>' . e($title) . '</h1>';
 
     if (isStaffLoggedIn()) {
