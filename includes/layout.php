@@ -104,12 +104,11 @@ function renderHeader(string $title): void
     echo '<meta charset="UTF-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<title>' . e($title) . ' | RiskSecure Insurance</title>';
-    echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">';
     echo '<link rel="stylesheet" href="styles.css">';
     echo '</head>';
     echo '<body>';
-    echo '<header class="topbar">';
-    echo '<div class="container">';
+    echo '<div class="app-shell">';
+    echo '<aside class="sidebar">';
     echo '<div class="brand">';
     echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
     echo '<div class="brand-copy">';
@@ -117,7 +116,7 @@ function renderHeader(string $title): void
     echo '<span class="brand-subtitle">Operations Workflow</span>';
     echo '</div>';
     echo '</div>';
-    echo '<nav class="nav">';
+    echo '<nav class="nav sidebar-nav">';
 
     if (isStaffLoggedIn()) {
         navLink('index.php', 'Dashboard', $currentPage, 'dashboard');
@@ -162,8 +161,8 @@ function renderHeader(string $title): void
     }
 
     echo '</nav>';
-    echo '</div>';
-    echo '</header>';
+    echo '</aside>';
+    echo '<div class="app-content">';
     echo '<main class="container">';
     echo '<section class="page-banner">';
     echo '<p class="page-banner-kicker">' . iconMarkup('workspace_premium') . ' RiskSecure Operations Console</p>';
@@ -185,6 +184,8 @@ function renderHeader(string $title): void
 function renderFooter(): void
 {
     echo '</main>';
+    echo '</div>';
+    echo '</div>';
     echo '<div class="footer">Sample educational system for life/non-life insurance operations.</div>';
     echo '</body>';
     echo '</html>';

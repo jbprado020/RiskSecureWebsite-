@@ -137,6 +137,114 @@ $policyTrendStmt->execute([
 ]);
 $policyTrend = $policyTrendStmt->fetchAll();
 
+$totalQuotes = array_sum(array_map(static fn(array $row): int => (int) $row['total'], $quoteSummary));
+$totalPolicies = array_sum(array_map(static fn(array $row): int => (int) $row['total'], $policySummary));
+$activePolicies = 0;
+foreach ($policySummary as $row) {
+    if ((string) $row['status'] === 'active') {
+        $activePolicies = (int) $row['total'];
+        break;
+    }
+}
+
+$openClaims = 0;
+$totalClaims = 0;
+$totalClaimAmount = 0.0;
+foreach ($claimSummary as $row) {
+    $claimCount = (int) $row['total'];
+    $claimAmount = (float) $row['total_amount'];
+    $totalClaims += $claimCount;
+    $totalClaimAmount += $claimAmount;
+    if (in_array((string) $row['claim_status'], ['pending', 'under_review'], true)) {
+        $openClaims += $claimCount;
+    }
+}
+
+$claimPaymentCount = (int) ($claimPaymentSummary['payment_count'] ?? 0);
+$totalClaimPaid = (float) ($claimPaymentSummary['total_paid'] ?? 0);
+$quoteToPolicyRate = $totalQuotes > 0 ? round(($totalPolicies / $totalQuotes) * 100, 1) : 0.0;
+$claimPaidRate = $totalClaimAmount > 0 ? round(($totalClaimPaid / $totalClaimAmount) * 100, 1) : 0.0;
+
+$kpiCards = [
+    [
+        'label' => 'Quotes Generated',
+        'value' => number_format($totalQuotes),
+        'note' => 'Quote-to-policy rate: ' . number_format($quoteToPolicyRate, 1) . '%',
+    ],
+    [
+        'label' => 'Active Policies',
+        'value' => number_format($activePolicies),
+        'note' => 'Policies issued in range: ' . number_format($totalPolicies),
+    ],
+    [
+        'label' => 'Open Claims',
+        'value' => number_format($openClaims),
+        'note' => 'Total claims logged: ' . number_format($totalClaims),
+    ],
+    [
+        'label' => 'Claim Payments',
+        'value' => 'PHP ' . number_format($totalClaimPaid, 2),
+        'note' => 'Paid against claim amount: ' . number_format($claimPaidRate, 1) . '%',
+    ],
+    [
+        'label' => 'Payment Count',
+        'value' => number_format($claimPaymentCount),
+        'note' => 'Recorded claim payment transactions',
+    ],
+    [
+        'label' => 'Claims Total Amount',
+        'value' => 'PHP ' . number_format($totalClaimAmount, 2),
+        'note' => 'Aggregate claim value in range',
+    ],
+];
+
+$quoteChartRows = array_map(
+    static fn(array $row): array => [
+        'label' => statusLabel((string) $row['status']),
+        'value' => (int) $row['total'],
+    ],
+    $quoteSummary
+);
+$policyChartRows = array_map(
+    static fn(array $row): array => [
+        'label' => statusLabel((string) $row['status']),
+        'value' => (int) $row['total'],
+    ],
+    $policySummary
+);
+$claimChartRows = array_map(
+    static fn(array $row): array => [
+        'label' => statusLabel((string) $row['claim_status']),
+        'value' => (int) $row['total'],
+    ],
+    $claimSummary
+);
+$clientTrendChartRows = array_map(
+    static fn(array $row): array => [
+        'label' => (string) $row['period'],
+        'value' => (int) $row['total_clients'],
+    ],
+    $clientTrend
+);
+
+$chartMax = static function (array $rows): int {
+    $values = array_map(static fn(array $row): int => (int) $row['value'], $rows);
+    return $values === [] ? 0 : max($values);
+};
+
+$chartPercent = static function (int $value, int $max): string {
+    if ($max <= 0) {
+        return '0%';
+    }
+
+    return number_format(($value / $max) * 100, 1) . '%';
+};
+
+$quoteChartMax = $chartMax($quoteChartRows);
+$policyChartMax = $chartMax($policyChartRows);
+$claimChartMax = $chartMax($claimChartRows);
+$clientTrendChartMax = $chartMax($clientTrendChartRows);
+
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     $fileName = 'risksecure_summary_' . $startDate . '_to_' . $endDate . '.csv';
     header('Content-Type: text/csv');
@@ -181,6 +289,99 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 
 renderHeader('Reports');
 ?>
+
+<section class="grid cols-3">
+    <?php foreach ($kpiCards as $card): ?>
+        <article class="card kpi">
+            <h3><?= e($card['label']); ?></h3>
+            <p><?= e($card['value']); ?></p>
+            <div class="kpi-note"><?= e($card['note']); ?></div>
+        </article>
+    <?php endforeach; ?>
+</section>
+
+<section class="card">
+    <div class="section-heading">
+        <div>
+            <h2>Visual Analytics</h2>
+            <p>Simple data visuals for status mix and growth trends across the selected date range.</p>
+        </div>
+    </div>
+
+    <div class="grid cols-2 analytics-grid">
+        <article class="chart-card">
+            <h3>Quote Status Mix</h3>
+            <div class="chart-list">
+                <?php foreach ($quoteChartRows as $row): ?>
+                    <div class="chart-row">
+                        <div class="chart-row-label"><?= e($row['label']); ?></div>
+                        <div class="chart-track">
+                            <div class="chart-fill" style="width: <?= e($chartPercent($row['value'], $quoteChartMax)); ?>;"></div>
+                        </div>
+                        <div class="chart-row-value"><?= number_format($row['value']); ?></div>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (count($quoteChartRows) === 0): ?>
+                    <div class="chart-empty">No quote data in range.</div>
+                <?php endif; ?>
+            </div>
+        </article>
+
+        <article class="chart-card">
+            <h3>Policy Status Mix</h3>
+            <div class="chart-list">
+                <?php foreach ($policyChartRows as $row): ?>
+                    <div class="chart-row">
+                        <div class="chart-row-label"><?= e($row['label']); ?></div>
+                        <div class="chart-track">
+                            <div class="chart-fill alt" style="width: <?= e($chartPercent($row['value'], $policyChartMax)); ?>;"></div>
+                        </div>
+                        <div class="chart-row-value"><?= number_format($row['value']); ?></div>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (count($policyChartRows) === 0): ?>
+                    <div class="chart-empty">No policy data in range.</div>
+                <?php endif; ?>
+            </div>
+        </article>
+
+        <article class="chart-card">
+            <h3>Claim Status Mix</h3>
+            <div class="chart-list">
+                <?php foreach ($claimChartRows as $row): ?>
+                    <div class="chart-row">
+                        <div class="chart-row-label"><?= e($row['label']); ?></div>
+                        <div class="chart-track">
+                            <div class="chart-fill danger" style="width: <?= e($chartPercent($row['value'], $claimChartMax)); ?>;"></div>
+                        </div>
+                        <div class="chart-row-value"><?= number_format($row['value']); ?></div>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (count($claimChartRows) === 0): ?>
+                    <div class="chart-empty">No claim data in range.</div>
+                <?php endif; ?>
+            </div>
+        </article>
+
+        <article class="chart-card">
+            <h3>Client Growth Trend</h3>
+            <div class="chart-list">
+                <?php foreach ($clientTrendChartRows as $row): ?>
+                    <div class="chart-row">
+                        <div class="chart-row-label"><?= e($row['label']); ?></div>
+                        <div class="chart-track">
+                            <div class="chart-fill success" style="width: <?= e($chartPercent($row['value'], $clientTrendChartMax)); ?>;"></div>
+                        </div>
+                        <div class="chart-row-value"><?= number_format($row['value']); ?></div>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (count($clientTrendChartRows) === 0): ?>
+                    <div class="chart-empty">No client trend data in range.</div>
+                <?php endif; ?>
+            </div>
+        </article>
+    </div>
+</section>
 
 <section class="card">
     <h2>Generate Data Summaries</h2>
