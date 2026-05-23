@@ -205,12 +205,12 @@ renderHeader('Renewals');
 <section class="grid cols-2">
     <article class="card">
         <h2>Process Policy Renewal</h2>
-        <form method="post" class="grid cols-2">
+        <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="create_renewal" value="1">
             <div>
                 <label>Policy</label>
-                <select name="policy_id" required>
+                <select name="policy_id" required aria-label="Policy" aria-required="true">
                     <option value="">Select policy</option>
                     <?php foreach ($policies as $policy): ?>
                         <option value="<?= (int) $policy['id']; ?>">
@@ -221,15 +221,15 @@ renderHeader('Renewals');
             </div>
             <div>
                 <label>Renewal Date</label>
-                <input type="date" name="renewal_date" value="<?= date('Y-m-d'); ?>" required>
+                <input type="date" name="renewal_date" value="<?= date('Y-m-d'); ?>" required aria-label="Renewal Date" aria-required="true">
             </div>
             <div>
                 <label>New Expiry Date</label>
-                <input type="date" name="new_expiry" required>
+                <input type="date" name="new_expiry" required aria-label="New Expiry Date" aria-required="true">
             </div>
             <div>
                 <label>Renewal Status</label>
-                <select name="status" required>
+                <select name="status" required aria-label="Renewal Status" aria-required="true">
                     <option value="notified">Notified</option>
                     <option value="in_progress">In Progress</option>
                     <option value="renewed">Renewed</option>
@@ -301,11 +301,11 @@ renderHeader('Renewals');
                         <td><?= e((string) $renewal['new_expiry']); ?></td>
                         <td><span class="badge <?= badgeClass((string) $renewal['status']); ?>"><?= e(statusLabel((string) $renewal['status'])); ?></span></td>
                         <td>
-                            <form method="post" class="grid renewal-update-form">
+                            <form method="post" class="grid renewal-update-form" data-validate="true">
                                 <?= csrfField(); ?>
                                 <input type="hidden" name="update_renewal" value="1">
                                 <input type="hidden" name="renewal_id" value="<?= (int) $renewal['id']; ?>">
-                                <select name="status">
+                                <select name="status" aria-label="Renewal Status" aria-required="true">
                                     <?php $statusOptions = ['notified', 'in_progress', 'renewed', 'lapsed']; ?>
                                     <?php foreach ($statusOptions as $statusOption): ?>
                                         <option value="<?= e($statusOption); ?>" <?= (string) $renewal['status'] === $statusOption ? 'selected' : ''; ?>>
@@ -313,8 +313,8 @@ renderHeader('Renewals');
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <input type="date" name="new_expiry" value="<?= e((string) $renewal['new_expiry']); ?>">
-                                <input name="notes" value="<?= e((string) ($renewal['notes'] ?? '')); ?>" placeholder="Notes">
+                                <input type="date" name="new_expiry" value="<?= e((string) $renewal['new_expiry']); ?>" aria-label="New Expiry Date">
+                                <input name="notes" value="<?= e((string) ($renewal['notes'] ?? '')); ?>" placeholder="Notes" aria-label="Notes">
                                 <button type="submit">Save</button>
                             </form>
                         </td>

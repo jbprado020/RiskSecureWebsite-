@@ -95,28 +95,28 @@ renderHeader('Clients');
         <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="create_client" value="1">
         <div>
             <label>Full Name</label>
-            <input name="full_name" required>
+            <input name="full_name" required aria-label="Full Name" aria-required="true">
         </div>
         <div>
             <label>Email</label>
-            <input name="email" type="email" required>
+            <input name="email" type="email" required aria-label="Email" aria-required="true">
         </div>
         <div>
             <label>Phone</label>
-            <input name="phone" required>
+            <input name="phone" required aria-label="Phone" aria-required="true">
         </div>
         <div>
             <label>Date of Birth</label>
-            <input name="date_of_birth" type="date" required>
+            <input name="date_of_birth" type="date" required aria-label="Date of Birth" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <label>Address</label>
-            <textarea name="address" required></textarea>
+            <textarea name="address" required aria-label="Address" aria-required="true"></textarea>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Save Client</button>
@@ -150,15 +150,15 @@ renderHeader('Clients');
                 <td>
                     <details>
                         <summary>Edit</summary>
-                        <form method="post" class="grid" style="gap:0.45rem; min-width:260px; margin-top:0.4rem;">
+                        <form method="post" class="grid" style="gap:0.45rem; min-width:260px; margin-top:0.4rem;" data-validate="true">
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_client" value="1">
                             <input type="hidden" name="client_id" value="<?= (int) $client['id']; ?>">
-                            <input name="full_name" value="<?= e((string) $client['full_name']); ?>" required>
-                            <input name="email" type="email" value="<?= e((string) $client['email']); ?>" required>
-                            <input name="phone" value="<?= e((string) $client['phone']); ?>" required>
-                            <input name="date_of_birth" type="date" value="<?= e((string) $client['date_of_birth']); ?>" required>
-                            <textarea name="address" required><?= e((string) $client['address']); ?></textarea>
+                            <input name="full_name" value="<?= e((string) $client['full_name']); ?>" required aria-label="Full Name" aria-required="true">
+                            <input name="email" type="email" value="<?= e((string) $client['email']); ?>" required aria-label="Email" aria-required="true">
+                            <input name="phone" value="<?= e((string) $client['phone']); ?>" required aria-label="Phone" aria-required="true">
+                            <input name="date_of_birth" type="date" value="<?= e((string) $client['date_of_birth']); ?>" required aria-label="Date of Birth" aria-required="true">
+                            <textarea name="address" required aria-label="Address" aria-required="true"><?= e((string) $client['address']); ?></textarea>
                             <button type="submit">Update</button>
                         </form>
                     </details>

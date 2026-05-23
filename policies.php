@@ -134,12 +134,12 @@ renderHeader('Policies');
         <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="issue_policy" value="1">
         <div>
             <label>Approved Quote</label>
-            <select name="quote_id" required>
+            <select name="quote_id" required aria-label="Approved Quote" aria-required="true">
                 <option value="">Select approved quote</option>
                 <?php foreach ($approvedQuotes as $quote): ?>
                     <option value="<?= (int) $quote['id']; ?>">
@@ -150,7 +150,7 @@ renderHeader('Policies');
         </div>
         <div>
             <label>Insurance Partner</label>
-            <select name="partner_id" required>
+            <select name="partner_id" required aria-label="Insurance Partner" aria-required="true">
                 <option value="">Select partner</option>
                 <?php foreach ($partners as $partner): ?>
                     <option value="<?= (int) $partner['id']; ?>">
@@ -161,7 +161,7 @@ renderHeader('Policies');
         </div>
         <div>
             <label>Policy Start Date</label>
-            <input type="date" name="start_date" value="<?= date('Y-m-d'); ?>" required>
+            <input type="date" name="start_date" value="<?= date('Y-m-d'); ?>" required aria-label="Policy Start Date" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Issue Policy</button>
@@ -201,18 +201,18 @@ renderHeader('Policies');
                 <td><?= e($policy['start_date']); ?> to <?= e($policy['end_date']); ?></td>
                 <td><span class="badge <?= badgeClass((string) $policy['status']); ?>"><?= e(statusLabel((string) $policy['status'])); ?></span></td>
                 <td>
-                    <form method="post" style="display:grid; gap:0.35rem; min-width:220px;">
+                    <form method="post" style="display:grid; gap:0.35rem; min-width:220px;" data-validate="true">
                         <?= csrfField(); ?>
                         <input type="hidden" name="update_policy" value="1">
                         <input type="hidden" name="policy_id" value="<?= (int) $policy['id']; ?>">
-                        <select name="partner_id">
+                        <select name="partner_id" required aria-label="Policy Partner" aria-required="true">
                             <?php foreach ($partners as $partner): ?>
                                 <option value="<?= (int) $partner['id']; ?>" <?= (int) $policy['partner_id'] === (int) $partner['id'] ? 'selected' : ''; ?>>
                                     <?= e((string) $partner['company_name']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <select name="status">
+                        <select name="status" required aria-label="Policy Status" aria-required="true">
                             <?php $statusOptions = ['active', 'expired', 'pending_renewal', 'cancelled']; ?>
                             <?php foreach ($statusOptions as $statusOption): ?>
                                 <option value="<?= e($statusOption); ?>" <?= (string) $policy['status'] === $statusOption ? 'selected' : ''; ?>>

@@ -73,12 +73,12 @@ renderHeader('Payments');
         <div class="notice ok"><?= e($message); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="create_payment" value="1">
         <div>
             <label>Policy</label>
-            <select name="policy_id" required>
+            <select name="policy_id" required aria-label="Policy" aria-required="true">
                 <option value="">Select policy</option>
                 <?php foreach ($policies as $policy): ?>
                     <option value="<?= (int) $policy['id']; ?>">
@@ -89,11 +89,11 @@ renderHeader('Payments');
         </div>
         <div>
             <label>Amount (PHP)</label>
-            <input type="number" step="0.01" min="1" name="amount" required>
+            <input type="number" step="0.01" min="1" name="amount" required aria-label="Amount" aria-required="true">
         </div>
         <div>
             <label>Due Date</label>
-            <input type="date" name="due_date" value="<?= date('Y-m-d'); ?>" required>
+            <input type="date" name="due_date" value="<?= date('Y-m-d'); ?>" required aria-label="Due Date" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Save Payment Schedule</button>

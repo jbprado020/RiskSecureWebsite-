@@ -90,11 +90,11 @@ renderHeader('Quotes');
         <div class="notice ok"><?= e($message); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <div>
             <label>Client</label>
-            <select name="client_id" required>
+            <select name="client_id" required aria-label="Client" aria-required="true">
                 <option value="">Select a client</option>
                 <?php foreach ($clients as $client): ?>
                     <option value="<?= (int) $client['id']; ?>"><?= e($client['full_name']); ?></option>
@@ -103,18 +103,18 @@ renderHeader('Quotes');
         </div>
         <div>
             <label>Policy Type</label>
-            <select name="policy_type" required>
+            <select name="policy_type" required aria-label="Policy Type" aria-required="true">
                 <option value="life">Life</option>
                 <option value="non-life">Non-Life</option>
             </select>
         </div>
         <div>
             <label>Product Name</label>
-            <input name="product_name" required placeholder="e.g. Family Life Shield">
+            <input name="product_name" required placeholder="e.g. Family Life Shield" aria-label="Product Name" aria-required="true">
         </div>
         <div>
             <label>Risk Level</label>
-            <select name="risk_level" required>
+            <select name="risk_level" required aria-label="Risk Level" aria-required="true">
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
@@ -122,11 +122,11 @@ renderHeader('Quotes');
         </div>
         <div>
             <label>Coverage Amount (PHP)</label>
-            <input name="coverage_amount" type="number" step="0.01" min="1" required>
+            <input name="coverage_amount" type="number" step="0.01" min="1" required aria-label="Coverage Amount" aria-required="true">
         </div>
         <div>
             <label>Term (Months)</label>
-            <input name="term_months" type="number" min="1" value="12" required>
+            <input name="term_months" type="number" min="1" value="12" required aria-label="Term (Months)" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Compute Premium and Save Quote</button>
