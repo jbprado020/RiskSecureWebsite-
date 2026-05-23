@@ -110,7 +110,7 @@ $approvedQuotes = $pdo->query(
      INNER JOIN clients c ON c.id = q.client_id
      LEFT JOIN policies p ON p.quote_id = q.id
      WHERE q.status = "approved" AND p.id IS NULL
-     ORDER BY q.created_at DESC'
+    ORDER BY q.id ASC'
 )->fetchAll();
 
 $policies = $pdo->query(
@@ -119,7 +119,7 @@ $policies = $pdo->query(
      INNER JOIN quotes q ON q.id = p.quote_id
     INNER JOIN clients c ON c.id = p.client_id
      INNER JOIN insurance_partners ip ON ip.id = p.partner_id
-     ORDER BY p.issued_at DESC'
+    ORDER BY p.id ASC'
 )->fetchAll();
 
 renderHeader('Policies');

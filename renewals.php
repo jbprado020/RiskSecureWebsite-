@@ -276,54 +276,56 @@ renderHeader('Renewals');
 
 <section class="card">
     <h2>Update Renewal Status</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Policy</th>
-                <th>Client</th>
-                <th>Renewal Date</th>
-                <th>Previous Expiry</th>
-                <th>New Expiry</th>
-                <th>Status</th>
-                <th>Update</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($renewals as $renewal): ?>
+    <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td><?= (int) $renewal['id']; ?></td>
-                    <td><?= e((string) $renewal['policy_number']); ?></td>
-                    <td><?= e((string) $renewal['full_name']); ?></td>
-                    <td><?= e((string) $renewal['renewal_date']); ?></td>
-                    <td><?= e((string) $renewal['previous_expiry']); ?></td>
-                    <td><?= e((string) $renewal['new_expiry']); ?></td>
-                    <td><span class="badge <?= badgeClass((string) $renewal['status']); ?>"><?= e(statusLabel((string) $renewal['status'])); ?></span></td>
-                    <td>
-                        <form method="post" class="grid" style="gap:0.4rem; min-width:230px;">
-                            <?= csrfField(); ?>
-                            <input type="hidden" name="update_renewal" value="1">
-                            <input type="hidden" name="renewal_id" value="<?= (int) $renewal['id']; ?>">
-                            <select name="status">
-                                <?php $statusOptions = ['notified', 'in_progress', 'renewed', 'lapsed']; ?>
-                                <?php foreach ($statusOptions as $statusOption): ?>
-                                    <option value="<?= e($statusOption); ?>" <?= (string) $renewal['status'] === $statusOption ? 'selected' : ''; ?>>
-                                        <?= e(statusLabel($statusOption)); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <input type="date" name="new_expiry" value="<?= e((string) $renewal['new_expiry']); ?>">
-                            <input name="notes" value="<?= e((string) ($renewal['notes'] ?? '')); ?>" placeholder="Notes">
-                            <button type="submit">Save</button>
-                        </form>
-                    </td>
+                    <th>ID</th>
+                    <th>Policy</th>
+                    <th>Client</th>
+                    <th>Renewal Date</th>
+                    <th>Previous Expiry</th>
+                    <th>New Expiry</th>
+                    <th>Status</th>
+                    <th>Update</th>
                 </tr>
-            <?php endforeach; ?>
-            <?php if (count($renewals) === 0): ?>
-                <tr><td colspan="8">No renewal records yet.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($renewals as $renewal): ?>
+                    <tr>
+                        <td><?= (int) $renewal['id']; ?></td>
+                        <td><?= e((string) $renewal['policy_number']); ?></td>
+                        <td><?= e((string) $renewal['full_name']); ?></td>
+                        <td><?= e((string) $renewal['renewal_date']); ?></td>
+                        <td><?= e((string) $renewal['previous_expiry']); ?></td>
+                        <td><?= e((string) $renewal['new_expiry']); ?></td>
+                        <td><span class="badge <?= badgeClass((string) $renewal['status']); ?>"><?= e(statusLabel((string) $renewal['status'])); ?></span></td>
+                        <td>
+                            <form method="post" class="grid renewal-update-form">
+                                <?= csrfField(); ?>
+                                <input type="hidden" name="update_renewal" value="1">
+                                <input type="hidden" name="renewal_id" value="<?= (int) $renewal['id']; ?>">
+                                <select name="status">
+                                    <?php $statusOptions = ['notified', 'in_progress', 'renewed', 'lapsed']; ?>
+                                    <?php foreach ($statusOptions as $statusOption): ?>
+                                        <option value="<?= e($statusOption); ?>" <?= (string) $renewal['status'] === $statusOption ? 'selected' : ''; ?>>
+                                            <?= e(statusLabel($statusOption)); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input type="date" name="new_expiry" value="<?= e((string) $renewal['new_expiry']); ?>">
+                                <input name="notes" value="<?= e((string) ($renewal['notes'] ?? '')); ?>" placeholder="Notes">
+                                <button type="submit">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (count($renewals) === 0): ?>
+                    <tr><td colspan="8">No renewal records yet.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </section>
 
 <?php

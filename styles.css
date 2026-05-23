@@ -15,6 +15,13 @@
     --border: #e7c7ce;
     --border-strong: #d7a2ad;
     --ring: rgba(198, 31, 61, 0.22);
+    /* Quick-win tokens */
+    --base-font-size: 16px;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --radius: 9px;
+    --fw-semibold: 600;
 }
 
 * {
@@ -29,7 +36,8 @@ body {
         radial-gradient(900px 420px at 95% -8%, #f4c9d3 0%, rgba(244, 201, 211, 0) 70%),
         radial-gradient(620px 340px at -5% 12%, #f3dbd8 0%, rgba(243, 219, 216, 0) 64%),
         linear-gradient(180deg, var(--bg), var(--bg-deep));
-    line-height: 1.45;
+    font-size: var(--base-font-size);
+    line-height: 1.6;
     position: relative;
     min-height: 100vh;
     isolation: isolate;
@@ -137,6 +145,18 @@ body::after {
     letter-spacing: 0.15px;
     line-height: 1.05;
 }
+
+/* Standard heading scale */
+h1, h2, h3 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--ink);
+    font-weight: var(--fw-semibold);
+    line-height: 1.15;
+}
+
+h1 { font-size: clamp(1.4rem, 2.6vw, 2.2rem); }
+h2 { font-size: clamp(1.2rem, 2.2vw, 1.6rem); }
+h3 { font-size: 1rem; }
 
 .brand-subtitle {
     font-size: 0.76rem;
@@ -273,7 +293,7 @@ main {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 1rem;
+    padding: var(--space-md);
     box-shadow: 0 10px 24px rgba(16, 46, 63, 0.07);
     margin-bottom: 1rem;
     animation: riseIn 300ms ease-out;
@@ -426,6 +446,19 @@ main {
     padding: 0.35rem 0;
 }
 
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.renewal-update-form {
+    gap: 0.35rem;
+    min-width: 0;
+    width: 100%;
+    max-width: 220px;
+}
+
 label {
     display: block;
     font-size: 0.86rem;
@@ -440,8 +473,8 @@ select,
 textarea,
 button {
     width: 100%;
-    padding: 0.62rem 0.68rem;
-    border-radius: 9px;
+    padding: 0.56rem 0.68rem;
+    border-radius: var(--radius);
     border: 1px solid var(--border);
     font: inherit;
 }

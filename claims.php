@@ -264,7 +264,7 @@ $activePolicies = $pdo->query(
      FROM policies p
     INNER JOIN clients c ON c.id = p.client_id
      WHERE p.status = "active"
-     ORDER BY p.issued_at DESC'
+    ORDER BY p.id ASC'
 )->fetchAll();
 
 $claims = $pdo->query(
@@ -285,7 +285,7 @@ $claims = $pdo->query(
          GROUP BY claim_id
      ) req ON req.claim_id = cl.id
      LEFT JOIN claim_payments cp ON cp.claim_id = cl.id
-     ORDER BY cl.created_at DESC'
+    ORDER BY cl.id ASC'
 )->fetchAll();
 
 $requirements = $pdo->query(
@@ -293,7 +293,7 @@ $requirements = $pdo->query(
      FROM claim_requirements cr
      INNER JOIN claims cl ON cl.id = cr.claim_id
      INNER JOIN policies p ON p.id = cl.policy_id
-     ORDER BY cr.created_at DESC'
+    ORDER BY cr.id ASC'
 )->fetchAll();
 
 $approvedClaimsForPayment = $pdo->query(
@@ -302,7 +302,7 @@ $approvedClaimsForPayment = $pdo->query(
     INNER JOIN policies p ON p.id = cl.policy_id
     LEFT JOIN claim_payments cp ON cp.claim_id = cl.id
     WHERE cl.claim_status = "approved" AND cp.id IS NULL
-    ORDER BY cl.created_at DESC'
+    ORDER BY cl.id ASC'
 )->fetchAll();
 
 $claimPayments = $pdo->query(
@@ -311,7 +311,7 @@ $claimPayments = $pdo->query(
     INNER JOIN claims cl ON cl.id = cp.claim_id
     INNER JOIN policies p ON p.id = cl.policy_id
     INNER JOIN clients c ON c.id = p.client_id
-    ORDER BY cp.created_at DESC'
+    ORDER BY cp.id ASC'
 )->fetchAll();
 
 renderHeader('Claims');
