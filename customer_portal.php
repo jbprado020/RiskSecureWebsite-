@@ -391,31 +391,31 @@ renderHeader('Customer Portal');
 <section class="grid cols-2">
     <article class="card">
         <h2>Apply for Insurance</h2>
-        <form method="post" class="grid cols-2">
+        <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="submit_application" value="1">
             <div>
                 <label>Policy Type</label>
-                <select name="policy_type" required>
+                <select name="policy_type" required aria-label="Policy Type" aria-required="true">
                     <option value="life">Life</option>
                     <option value="non-life">Non-Life</option>
                 </select>
             </div>
             <div>
                 <label>Product Name</label>
-                <input name="product_name" placeholder="e.g. Family Life Shield" required>
+                <input name="product_name" placeholder="e.g. Family Life Shield" required aria-label="Product Name" aria-required="true">
             </div>
             <div>
                 <label>Coverage Amount (PHP)</label>
-                <input name="coverage_amount" type="number" step="0.01" min="1" required>
+                <input name="coverage_amount" type="number" step="0.01" min="1" required aria-label="Coverage Amount" aria-required="true">
             </div>
             <div>
                 <label>Term (Months)</label>
-                <input name="term_months" type="number" min="1" value="12" required>
+                <input name="term_months" type="number" min="1" value="12" required aria-label="Term Months" aria-required="true">
             </div>
             <div>
                 <label>Risk Level</label>
-                <select name="risk_level" required>
+                <select name="risk_level" required aria-label="Risk Level" aria-required="true">
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
@@ -429,12 +429,12 @@ renderHeader('Customer Portal');
 
     <article class="card">
         <h2>File a Claim</h2>
-        <form method="post" class="grid cols-2">
+        <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="file_customer_claim" value="1">
             <div>
                 <label>Policy Number</label>
-                <select name="policy_id" required>
+                <select name="policy_id" required aria-label="Policy Number" aria-required="true">
                     <option value="">Select your policy</option>
                     <?php foreach ($accountPolicies as $policy): ?>
                         <option value="<?= (int) $policy['id']; ?>"><?= e((string) $policy['policy_number']); ?></option>
@@ -443,15 +443,15 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Incident Date</label>
-                <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required>
+                <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required aria-label="Incident Date" aria-required="true">
             </div>
             <div>
                 <label>Claim Amount (PHP)</label>
-                <input type="number" step="0.01" min="1" name="claim_amount" required>
+                <input type="number" step="0.01" min="1" name="claim_amount" required aria-label="Claim Amount" aria-required="true">
             </div>
             <div style="grid-column: 1 / -1;">
                 <label>Description</label>
-                <textarea name="description" required></textarea>
+                <textarea name="description" required aria-label="Description" aria-required="true"></textarea>
             </div>
             <div style="grid-column: 1 / -1;">
                 <button type="submit">Submit Claim</button>
@@ -463,20 +463,20 @@ renderHeader('Customer Portal');
 <section class="grid cols-2">
     <article class="card">
         <h2>Schedule Appointment</h2>
-        <form method="post" class="grid cols-2">
+        <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="schedule_customer_appointment" value="1">
             <div>
                 <label>Date and Time</label>
-                <input type="datetime-local" name="meeting_at" required>
+                <input type="datetime-local" name="meeting_at" required aria-label="Meeting Date and Time" aria-required="true">
             </div>
             <div>
                 <label>Duration (minutes)</label>
-                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required>
+                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required aria-label="Duration Minutes" aria-required="true">
             </div>
             <div>
                 <label>Preferred Channel</label>
-                <select name="channel" required>
+                <select name="channel" required aria-label="Preferred Channel" aria-required="true">
                     <option value="zoom">Zoom</option>
                     <option value="phone">Phone</option>
                     <option value="in-person">In-person</option>
@@ -484,7 +484,7 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Assign Agent</label>
-                <select name="agent_id" required>
+                <select name="agent_id" required aria-label="Assign Agent" aria-required="true">
                     <option value="">Select agent</option>
                     <?php foreach ($availableAgents as $agent): ?>
                         <option value="<?= (int) $agent['id']; ?>">
@@ -495,7 +495,7 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Purpose</label>
-                <input name="purpose" placeholder="e.g. Claim follow-up" required>
+                <input name="purpose" placeholder="e.g. Claim follow-up" required aria-label="Purpose" aria-required="true">
             </div>
             <div style="grid-column: 1 / -1;">
                 <label>Notes</label>
@@ -509,12 +509,12 @@ renderHeader('Customer Portal');
 
     <article class="card">
         <h2>Upload Documents</h2>
-        <form method="post" enctype="multipart/form-data" class="grid cols-2">
+        <form method="post" enctype="multipart/form-data" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="upload_customer_document" value="1">
             <div>
                 <label>Policy</label>
-                <select name="policy_id" required>
+                <select name="policy_id" required aria-label="Policy" aria-required="true">
                     <option value="">Select your policy</option>
                     <?php foreach ($accountPolicies as $policy): ?>
                         <option value="<?= (int) $policy['id']; ?>"><?= e((string) $policy['policy_number']); ?></option>
@@ -523,7 +523,7 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Claim (Optional)</label>
-                <select name="claim_id">
+                <select name="claim_id" aria-label="Claim (Optional)">
                     <option value="">No specific claim</option>
                     <?php foreach ($accountClaims as $claim): ?>
                         <option value="<?= (int) $claim['id']; ?>">#<?= (int) $claim['id']; ?> - <?= e((string) $claim['policy_number']); ?></option>
@@ -532,11 +532,11 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Document Type</label>
-                <input name="document_type" placeholder="e.g. ORCR, Policy Form" required>
+                <input name="document_type" placeholder="e.g. ORCR, Policy Form" required aria-label="Document Type" aria-required="true">
             </div>
             <div>
                 <label>File</label>
-                <input type="file" name="document_file" required>
+                <input type="file" name="document_file" required aria-label="Document File" aria-required="true">
             </div>
             <div style="grid-column: 1 / -1;">
                 <button type="submit">Upload Document</button>

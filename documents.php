@@ -177,12 +177,12 @@ renderHeader('Documents');
         <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" enctype="multipart/form-data" class="grid cols-2">
+    <form method="post" enctype="multipart/form-data" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="upload_document" value="1">
         <div>
             <label>Client</label>
-            <select name="client_id" required>
+            <select name="client_id" required aria-label="Client" aria-required="true">
                 <option value="">Select client</option>
                 <?php foreach ($clients as $client): ?>
                     <option value="<?= (int) $client['id']; ?>"><?= e((string) $client['full_name']); ?></option>
@@ -191,7 +191,7 @@ renderHeader('Documents');
         </div>
         <div>
             <label>Policy</label>
-            <select name="policy_id" required>
+            <select name="policy_id" required aria-label="Policy" aria-required="true">
                 <option value="">Select policy</option>
                 <?php foreach ($policies as $policy): ?>
                     <option value="<?= (int) $policy['id']; ?>">
@@ -202,7 +202,7 @@ renderHeader('Documents');
         </div>
         <div>
             <label>Claim (Optional)</label>
-            <select name="claim_id">
+            <select name="claim_id" aria-label="Claim (Optional)">
                 <option value="">No specific claim</option>
                 <?php foreach ($claims as $claim): ?>
                     <option value="<?= (int) $claim['id']; ?>">
@@ -213,11 +213,11 @@ renderHeader('Documents');
         </div>
         <div>
             <label>Document Type</label>
-            <input name="document_type" placeholder="e.g. ORCR, Policy Form, Valid ID" required>
+            <input name="document_type" placeholder="e.g. ORCR, Policy Form, Valid ID" required aria-label="Document Type" aria-required="true">
         </div>
         <div>
             <label>File</label>
-            <input type="file" name="document_file" required>
+            <input type="file" name="document_file" required aria-label="Document File" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Upload Document</button>

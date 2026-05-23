@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', function () {
         removeError(el);
         if (el.hasAttribute('required')) {
             if (!el.value || el.value.trim() === '') {
-                createError(el, 'This field is required.');
+                var label = el.getAttribute('aria-label') || el.getAttribute('name') || 'This field';
+                createError(el, label + ' is required.');
                 return false;
             }
         }
@@ -44,8 +45,22 @@ document.addEventListener('DOMContentLoaded', function () {
         if (el.hasAttribute('minlength')) {
             var min = parseInt(el.getAttribute('minlength'), 10);
             if (el.value.length < min) {
-                createError(el, 'Minimum ' + min + ' characters required.');
+                var label = el.getAttribute('aria-label') || el.getAttribute('name') || 'This field';
+                createError(el, label + ' requires at least ' + min + ' characters.');
                 return false;
+            }
+        }
+        // Confirm target (e.g., confirm password) - element should have data-confirm-target="password"
+        var confirmTarget = el.getAttribute('data-confirm-target');
+        if (confirmTarget) {
+            var form = el.closest('form');
+            if (form) {
+                var target = form.querySelector('[name="' + confirmTarget + '"]');
+                if (target && el.value !== target.value) {
+                    var label = el.getAttribute('aria-label') || el.getAttribute('name') || 'This field';
+                    createError(el, label + ' does not match.');
+                    return false;
+                }
             }
         }
         return true;

@@ -144,11 +144,11 @@ renderHeader('Customer Register');
         </div>
         <div>
             <label>Password</label>
-            <input type="password" name="password" minlength="8" required>
+            <input type="password" name="password" minlength="8" required aria-label="Password" aria-required="true">
         </div>
         <div>
             <label>Confirm Password</label>
-            <input type="password" name="confirm_password" minlength="8" required>
+            <input type="password" name="confirm_password" minlength="8" required data-confirm-target="password" aria-label="Confirm Password" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Register Account</button>

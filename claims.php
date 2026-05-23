@@ -326,12 +326,12 @@ renderHeader('Claims');
         <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="create_claim" value="1">
         <div>
             <label>Policy</label>
-            <select name="policy_id" required>
+            <select name="policy_id" required aria-label="Policy" aria-required="true">
                 <option value="">Select active policy</option>
                 <?php foreach ($activePolicies as $policy): ?>
                     <option value="<?= (int) $policy['id']; ?>">
@@ -342,15 +342,15 @@ renderHeader('Claims');
         </div>
         <div>
             <label>Incident Date</label>
-            <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required>
+            <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required aria-label="Incident Date" aria-required="true">
         </div>
         <div>
             <label>Claim Amount (PHP)</label>
-            <input type="number" step="0.01" min="1" name="claim_amount" required>
+            <input type="number" step="0.01" min="1" name="claim_amount" required aria-label="Claim Amount" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <label>Description</label>
-            <textarea name="description" required></textarea>
+            <textarea name="description" required aria-label="Description" aria-required="true"></textarea>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Submit Claim</button>
@@ -415,12 +415,12 @@ renderHeader('Claims');
 
 <section class="card">
     <h2>Claim Requirements Checklist</h2>
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="add_requirement" value="1">
         <div>
             <label>Claim</label>
-            <select name="claim_id" required>
+            <select name="claim_id" required aria-label="Claim" aria-required="true">
                 <option value="">Select claim</option>
                 <?php foreach ($claims as $claim): ?>
                     <option value="<?= (int) $claim['id']; ?>">
@@ -431,7 +431,7 @@ renderHeader('Claims');
         </div>
         <div>
             <label>Requirement Name</label>
-            <input name="requirement_name" placeholder="e.g. ORCR, Police Report" required>
+            <input name="requirement_name" placeholder="e.g. ORCR, Police Report" required aria-label="Requirement Name" aria-required="true">
         </div>
         <div>
             <label style="display:flex; align-items:center; gap:0.4rem; margin-top:1.8rem;">
@@ -498,12 +498,12 @@ renderHeader('Claims');
     <article class="card">
         <h2>Record Claim Payment</h2>
         <p>Only approved claims can be paid.</p>
-        <form method="post" class="grid cols-2">
+        <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="record_claim_payment" value="1">
             <div>
                 <label>Approved Claim</label>
-                <select name="claim_id" required>
+                <select name="claim_id" required aria-label="Approved Claim" aria-required="true">
                     <option value="">Select claim</option>
                     <?php foreach ($approvedClaimsForPayment as $approvedClaim): ?>
                         <option value="<?= (int) $approvedClaim['id']; ?>">
@@ -514,15 +514,15 @@ renderHeader('Claims');
             </div>
             <div>
                 <label>Amount (PHP)</label>
-                <input type="number" min="1" step="0.01" name="amount" required>
+                <input type="number" min="1" step="0.01" name="amount" required aria-label="Amount" aria-required="true">
             </div>
             <div>
                 <label>Paid Date</label>
-                <input type="date" name="paid_date" value="<?= date('Y-m-d'); ?>" required>
+                <input type="date" name="paid_date" value="<?= date('Y-m-d'); ?>" required aria-label="Paid Date" aria-required="true">
             </div>
             <div>
                 <label>Reference No.</label>
-                <input name="reference_no" placeholder="e.g. CLM-PAY-2026-0003" required>
+                <input name="reference_no" placeholder="e.g. CLM-PAY-2026-0003" required aria-label="Reference Number" aria-required="true">
             </div>
             <div style="grid-column: 1 / -1;">
                 <button type="submit">Record Claim Payment</button>
