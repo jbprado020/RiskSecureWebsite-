@@ -187,6 +187,7 @@ function renderFooter(): void
     echo '</div>';
     echo '</div>';
     echo '<div class="footer">Sample educational system for life/non-life insurance operations.</div>';
+    echo '<script src="assets/js/form-validate.js"></script>';
     echo '</body>';
     echo '</html>';
 }

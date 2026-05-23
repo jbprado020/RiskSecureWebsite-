@@ -571,6 +571,16 @@ tbody tr:hover {
     color: #155f39;
 }
 
+/* Form error styles */
+.field-error {
+    box-shadow: 0 0 0 3px rgba(198,31,61,0.06);
+}
+.error-text {
+    color: #ad2f3d;
+    font-size: 0.82rem;
+    margin-top: 0.28rem;
+}
+
 .footer {
     text-align: center;
     color: #804c58;

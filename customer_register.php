@@ -120,7 +120,7 @@ renderHeader('Customer Register');
         <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <div>
             <label>Full Name</label>

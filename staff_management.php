@@ -245,7 +245,7 @@ renderHeader('Staff Management');
         <div class="notice error"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="create_staff" value="1">
         

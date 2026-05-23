@@ -94,7 +94,7 @@ renderHeader('Staff Login');
         <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid">
+    <form method="post" class="grid" data-validate="true">
         <?= csrfField(); ?>
         <div>
             <label>Email</label>
