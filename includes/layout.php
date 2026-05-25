@@ -107,6 +107,7 @@ function renderHeader(string $title): void
     echo '<link rel="stylesheet" href="styles.css">';
     echo '</head>';
     echo '<body>';
+    echo '<a class="skip-link" href="#main-content">Skip to content</a>';
     echo '<div class="app-shell">';
     echo '<aside class="sidebar">';
     echo '<div class="brand">';
@@ -116,7 +117,7 @@ function renderHeader(string $title): void
     echo '<span class="brand-subtitle">Operations Workflow</span>';
     echo '</div>';
     echo '</div>';
-    echo '<nav class="nav sidebar-nav">';
+    echo '<nav class="nav sidebar-nav" id="primary-navigation" aria-label="Primary navigation">';
 
     if (isStaffLoggedIn()) {
         navLink('index.php', 'Dashboard', $currentPage, 'dashboard');
@@ -163,7 +164,12 @@ function renderHeader(string $title): void
     echo '</nav>';
     echo '</aside>';
     echo '<div class="app-content">';
-    echo '<main class="container">';
+    echo '<button class="sidebar-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation menu">';
+    echo '<span class="sidebar-toggle-lines" aria-hidden="true"><span></span><span></span><span></span></span>';
+    echo '<span class="sidebar-toggle-text">Menu</span>';
+    echo '</button>';
+    echo '<div class="sidebar-backdrop" hidden></div>';
+    echo '<main class="container" id="main-content" tabindex="-1">';
     echo '<section class="page-banner">';
     echo '<p class="page-banner-kicker">' . iconMarkup('workspace_premium') . ' RiskSecure Operations Console</p>';
     echo '<h1>' . e($title) . '</h1>';
@@ -187,6 +193,7 @@ function renderFooter(): void
     echo '</div>';
     echo '</div>';
     echo '<div class="footer">Sample educational system for life/non-life insurance operations.</div>';
+    echo '<script src="assets/js/sidebar.js"></script>';
     echo '<script src="assets/js/form-validate.js"></script>';
     echo '</body>';
     echo '</html>';

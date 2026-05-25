@@ -76,6 +76,26 @@ body::after {
     min-height: 100vh;
 }
 
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 1000;
+    padding: 0.6rem 0.9rem;
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--primary);
+    border: 1px solid var(--border-strong);
+    transform: translateY(-180%);
+    transition: transform 0.18s ease;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
 .sidebar {
     position: sticky;
     top: 0;
@@ -108,6 +128,54 @@ body::after {
     flex: 1;
     min-width: 0;
     padding-bottom: 1.5rem;
+}
+
+.sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: auto;
+    margin: 1rem 0 0.6rem auto;
+    padding: 0.72rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--ink);
+    box-shadow: 0 10px 18px rgba(69, 16, 26, 0.08);
+}
+
+.sidebar-toggle:hover {
+    transform: translateY(-1px);
+}
+
+.sidebar-toggle-lines {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.22rem;
+}
+
+.sidebar-toggle-lines span {
+    display: block;
+    width: 1.1rem;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+}
+
+.sidebar-toggle-text {
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 28;
+    background: rgba(38, 8, 15, 0.48);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
 }
 
 .container {
@@ -235,6 +303,13 @@ h3 { font-size: 1rem; }
     color: #6c0f22;
     border-color: rgba(255, 255, 255, 0.98);
     box-shadow: 0 14px 30px rgba(46, 7, 16, 0.16);
+}
+
+.nav a:focus-visible,
+.sidebar-toggle:focus-visible,
+.skip-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.24), 0 0 0 7px rgba(198, 31, 61, 0.36);
 }
 
 main {
@@ -590,15 +665,39 @@ tbody tr:hover {
 
 @media (max-width: 1080px) {
     .app-shell {
-        flex-direction: column;
+        display: block;
     }
 
     .sidebar {
-        position: relative;
-        width: 100%;
-        min-height: auto;
-        border-right: 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 30;
+        width: min(88vw, 320px);
+        height: 100vh;
+        min-height: 100vh;
+        border-right: 1px solid rgba(255, 255, 255, 0.16);
+        border-bottom: 0;
+        transform: translateX(-102%);
+        transition: transform 0.24s ease;
+        box-shadow: 18px 0 34px rgba(84, 10, 24, 0.22);
+    }
+
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
+    body.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    body.sidebar-open .sidebar-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .sidebar-toggle {
+        display: inline-flex;
     }
 
     .sidebar .brand {
@@ -606,12 +705,15 @@ tbody tr:hover {
     }
 
     .nav {
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-direction: column;
     }
 
     .nav a {
-        flex: 1 1 220px;
+        flex: 1 1 auto;
+    }
+
+    .app-content {
+        padding-top: 0.3rem;
     }
 
     .grid.cols-3,
@@ -625,20 +727,7 @@ tbody tr:hover {
         width: min(100%, 94%);
     }
 
-    .sidebar {
-        padding: 0.85rem 0.72rem;
-    }
-
-    .sidebar .brand-title {
-        font-size: 1.16rem;
-    }
-
-    .nav {
-        gap: 0.34rem;
-    }
-
     .nav a {
-        flex: 1 1 100%;
         padding: 0.66rem 0.74rem;
     }
 
