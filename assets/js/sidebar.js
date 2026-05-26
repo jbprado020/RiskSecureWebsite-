@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function setExpanded(isOpen) {
         body.classList.toggle('sidebar-open', isOpen);
         toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        toggle.classList.toggle('open', isOpen);
         backdrop.hidden = !isOpen;
     }
 
