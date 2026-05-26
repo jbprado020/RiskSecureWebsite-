@@ -16,6 +16,14 @@ document.addEventListener('DOMContentLoaded', function () {
         toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         toggle.classList.toggle('open', isOpen);
         backdrop.hidden = !isOpen;
+        // Update accessible label and visible text
+        try {
+            toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+            var txt = toggle.querySelector('.sidebar-toggle-text');
+            if (txt) txt.textContent = isOpen ? 'Close' : 'Menu';
+        } catch (err) {
+            // ignore
+        }
     }
 
     function openSidebar() {
