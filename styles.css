@@ -210,8 +210,9 @@ body::after {
     z-index: 28;
     background: rgba(38, 8, 15, 0.48);
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.22s ease, visibility 0.22s linear;
 }
 
 .container {
@@ -729,6 +730,7 @@ tbody tr:hover {
 
     body.sidebar-open .sidebar-backdrop {
         opacity: 1;
+        visibility: visible;
         pointer-events: auto;
     }
 
