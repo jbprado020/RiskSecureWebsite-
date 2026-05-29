@@ -9,14 +9,20 @@ function ensureSessionStarted(): void
         ini_set('session.use_only_cookies', '1');
         ini_set('session.cookie_httponly', '1');
 
-        $isSecure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        // Determine if the request is secure. Respect common proxy headers
+        // and allow an override via FORCE_HTTPS environment variable.
+        $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (is_string($forwardedProto) && strtolower($forwardedProto) === 'https')
+            || (getenv('FORCE_HTTPS') === '1');
+
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
             'domain' => '',
             'secure' => $isSecure,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => getenv('SESSION_SAMESITE') ?: 'Lax',
         ]);
 
         session_start();
