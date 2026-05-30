@@ -118,6 +118,12 @@ function renderHeader(string $title): void
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
     }
 
+    // Common security headers
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+
     echo '<!DOCTYPE html>';
     echo '<html lang="en">';
     echo '<head>';
