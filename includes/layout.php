@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/auth.php';
 
+// Configure PHP error display based on environment. In production, hide errors from output.
+$env = getenv('APP_ENV') ?: getenv('ENV') ?: '';
+if (strtolower($env) === 'production' || getenv('FORCE_HTTPS') === '1') {
+    ini_set('display_errors', '0');
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+} else {
+    ini_set('display_errors', '1');
+    error_reporting(E_ALL);
+}
+
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
