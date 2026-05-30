@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/auth.php';
 
+// Configure PHP error display based on environment. In production, hide errors from output.
+$env = getenv('APP_ENV') ?: getenv('ENV') ?: '';
+if (strtolower($env) === 'production' || getenv('FORCE_HTTPS') === '1') {
+    ini_set('display_errors', '0');
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+} else {
+    ini_set('display_errors', '1');
+    error_reporting(E_ALL);
+}
+
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -97,6 +107,32 @@ function renderHeader(string $title): void
 {
     ensureSessionStarted();
     $currentPage = basename((string) ($_SERVER['PHP_SELF'] ?? ''));
+
+    // Determine if request is secure. Respect proxy headers and env overrides.
+    $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (is_string($forwardedProto) && strtolower($forwardedProto) === 'https')
+        || (getenv('FORCE_HTTPS') === '1');
+
+    // Redirect to HTTPS when FORCE_HTTPS=1 and request is not secure.
+    if (!$isSecure && (getenv('FORCE_HTTPS') === '1')) {
+        $host = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $redirect = 'https://' . $host . $uri;
+        header('Location: ' . $redirect, true, 301);
+        exit;
+    }
+
+    // Send HSTS header when connection is secure. Allow disabling via ENABLE_HSTS=0.
+    if ($isSecure && getenv('ENABLE_HSTS') !== '0') {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
+    }
+
+    // Common security headers
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 
     echo '<!DOCTYPE html>';
     echo '<html lang="en">';
