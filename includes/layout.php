@@ -4,9 +4,35 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/auth.php';
 
+// Configure PHP error display based on environment. In production, hide errors from output.
+$env = getenv('APP_ENV') ?: getenv('ENV') ?: '';
+if (strtolower($env) === 'production' || getenv('FORCE_HTTPS') === '1') {
+    ini_set('display_errors', '0');
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+} else {
+    ini_set('display_errors', '1');
+    error_reporting(E_ALL);
+}
+
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Render an accessible notice/flash message.
+ * Uses role="alert" and aria-live to ensure assistive tech announces it.
+ */
+function renderNotice(string $message, string $type = 'error'): void
+{
+    $class = 'notice';
+    if ($type === 'ok') {
+        $class .= ' ok';
+    } elseif ($type === 'error') {
+        $class .= ' error';
+    }
+
+    echo '<div role="alert" aria-live="assertive" class="' . $class . '" tabindex="-1">' . e($message) . '</div>';
 }
 
 function badgeClass(string $status): string
@@ -117,6 +143,12 @@ function renderHeader(string $title): void
     if ($isSecure && getenv('ENABLE_HSTS') !== '0') {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
     }
+
+    // Common security headers
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 
     echo '<!DOCTYPE html>';
     echo '<html lang="en">';

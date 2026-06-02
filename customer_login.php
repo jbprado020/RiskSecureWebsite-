@@ -90,7 +90,7 @@ renderHeader('Customer Login');
     <p>Sign in to submit applications, file claims, and track your account.</p>
 
     <?php if ($error !== ''): ?>
-        <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
+        <?php renderNotice($error, 'error'); ?>
     <?php endif; ?>
 
     <form method="post" class="grid">

@@ -16,13 +16,18 @@ function ensureSessionStarted(): void
             || (is_string($forwardedProto) && strtolower($forwardedProto) === 'https')
             || (getenv('FORCE_HTTPS') === '1');
 
+        $env = getenv('APP_ENV') ?: getenv('ENV') ?: '';
+
+        // Determine sensible SameSite default: prefer Strict in production/when forcing HTTPS.
+        $sameSiteDefault = getenv('SESSION_SAMESITE') ?: ((getenv('FORCE_HTTPS') === '1' || strtolower($env) === 'production') ? 'Strict' : 'Lax');
+
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
             'domain' => '',
             'secure' => $isSecure,
             'httponly' => true,
-            'samesite' => getenv('SESSION_SAMESITE') ?: 'Lax',
+            'samesite' => $sameSiteDefault,
         ]);
 
         session_start();

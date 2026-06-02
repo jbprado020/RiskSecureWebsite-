@@ -174,7 +174,7 @@ renderHeader('Documents');
         <div class="notice ok"><?= e($message); ?></div>
     <?php endif; ?>
     <?php if ($error !== ''): ?>
-        <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
+        <?php renderNotice($error, 'error'); ?>
     <?php endif; ?>
 
     <form method="post" enctype="multipart/form-data" class="grid cols-2" data-validate="true">
