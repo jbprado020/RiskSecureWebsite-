@@ -1,0 +1,27 @@
+# Sensitive config
+.env
+.env.*
+
+# Uploaded files (customer documents, etc.)
+uploads/*
+!uploads/.htaccess
+!uploads/web.config
+!uploads/README.txt
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temp
+tmp/
+temp/
