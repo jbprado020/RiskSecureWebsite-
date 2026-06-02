@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/validation.php';
 
 ensureSessionStarted();
 
@@ -27,16 +28,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = (string) ($_POST['password'] ?? '');
     $confirmPassword = (string) ($_POST['confirm_password'] ?? '');
 
+    $passwordError = validatePasswordStrength($password);
+
     if (
         $fullName === '' ||
-        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+        !isValidEmail($email) ||
         $phone === '' ||
         $address === '' ||
-        $birthDate === '' ||
-        strlen($password) < 8 ||
+        !isValidDate($birthDate) ||
+        $passwordError !== null ||
         $password !== $confirmPassword
     ) {
-        $error = 'Please complete all fields. Password must be at least 8 characters and match confirmation.';
+        $error = $passwordError ?? 'Please complete all fields with valid values.';
     } else {
         $pdo->beginTransaction();
 
@@ -124,31 +127,31 @@ renderHeader('Customer Register');
         <?= csrfField(); ?>
         <div>
             <label>Full Name</label>
-            <input name="full_name" required>
+            <input name="full_name" required autocomplete="name">
         </div>
         <div>
             <label>Email</label>
-            <input type="email" name="email" required>
+            <input type="email" name="email" required autocomplete="email">
         </div>
         <div>
             <label>Phone</label>
-            <input name="phone" required>
+            <input name="phone" required autocomplete="tel">
         </div>
         <div>
             <label>Date of Birth</label>
-            <input type="date" name="date_of_birth" required>
+            <input type="date" name="date_of_birth" required autocomplete="bday">
         </div>
         <div style="grid-column: 1 / -1;">
             <label>Address</label>
-            <textarea name="address" required></textarea>
+            <textarea name="address" required autocomplete="street-address"></textarea>
         </div>
         <div>
             <label>Password</label>
-            <input type="password" name="password" minlength="8" required aria-label="Password" aria-required="true">
+            <input type="password" name="password" minlength="12" required autocomplete="new-password" aria-label="Password" aria-required="true">
         </div>
         <div>
             <label>Confirm Password</label>
-            <input type="password" name="confirm_password" minlength="8" required data-confirm-target="password" aria-label="Confirm Password" aria-required="true">
+            <input type="password" name="confirm_password" minlength="12" required data-confirm-target="password" autocomplete="new-password" aria-label="Confirm Password" aria-required="true">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Register Account</button>

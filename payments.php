@@ -5,11 +5,13 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'billing_officer']);
 
 $pdo = db();
 $message = '';
+$error = '';
 
 $pdo->exec("UPDATE payments SET status = 'overdue' WHERE status = 'pending' AND due_date < CURDATE()");
 
@@ -18,9 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_payment'])) {
 
     $policyId = (int) ($_POST['policy_id'] ?? 0);
     $amount = (float) ($_POST['amount'] ?? 0);
-    $dueDate = $_POST['due_date'] ?? date('Y-m-d');
+    $dueDate = trim((string) ($_POST['due_date'] ?? ''));
 
-    if ($policyId > 0 && $amount > 0) {
+    if ($policyId > 0 && $amount > 0 && isValidDate($dueDate)) {
         $stmt = $pdo->prepare(
             'INSERT INTO payments (policy_id, amount, due_date, status) VALUES (:policy_id, :amount, :due_date, :status)'
         );
@@ -31,6 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_payment'])) {
             ':status' => 'pending',
         ]);
         $message = 'Payment schedule added.';
+    } else {
+        $error = 'Please provide a valid policy, amount, and due date.';
     }
 }
 
@@ -72,6 +76,9 @@ renderHeader('Payments');
     <?php if ($message !== ''): ?>
         <div class="notice ok"><?= e($message); ?></div>
     <?php endif; ?>
+    <?php if ($error !== ''): ?>
+        <?php renderNotice($error, 'error'); ?>
+    <?php endif; ?>
 
     <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
@@ -103,6 +110,7 @@ renderHeader('Payments');
 
 <section class="card">
     <h2>Payment Ledger</h2>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -140,6 +148,7 @@ renderHeader('Payments');
             <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <?php

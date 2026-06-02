@@ -7,23 +7,29 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/insurance_service.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
 $pdo = db();
 $message = '';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     requireCsrfToken();
 
     $clientId = (int) ($_POST['client_id'] ?? 0);
-    $policyType = $_POST['policy_type'] ?? 'life';
+    $policyType = (string) ($_POST['policy_type'] ?? 'life');
     $productName = trim($_POST['product_name'] ?? '');
     $coverageAmount = (float) ($_POST['coverage_amount'] ?? 0);
     $termMonths = (int) ($_POST['term_months'] ?? 12);
-    $riskLevel = $_POST['risk_level'] ?? 'medium';
+    $riskLevel = (string) ($_POST['risk_level'] ?? 'medium');
+    $allowedPolicyTypes = ['life', 'non-life'];
+    $allowedRiskLevels = ['low', 'medium', 'high'];
 
-    if ($clientId > 0 && $productName !== '' && $coverageAmount > 0 && $termMonths > 0) {
+    if ($clientId > 0 && $productName !== '' && $coverageAmount > 0 && $termMonths > 0
+        && in_array($policyType, $allowedPolicyTypes, true) && in_array($riskLevel, $allowedRiskLevels, true)
+    ) {
         $premium = calculatePremium($coverageAmount, $policyType, $riskLevel, $termMonths);
         $stmt = $pdo->prepare(
             'INSERT INTO quotes (client_id, policy_type, product_name, coverage_amount, term_months, risk_level, premium_amount, status)
@@ -47,6 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'details' => 'Created quote for client ID ' . $clientId . ' with premium ' . number_format($premium, 2, '.', '') . '.',
         ]);
         $message = 'Quote created. Premium is PHP ' . number_format($premium, 2) . '.';
+    } else {
+        $error = 'Please provide valid quote details.';
     }
 }
 
@@ -88,6 +96,9 @@ renderHeader('Quotes');
     <h2>Create Quote</h2>
     <?php if ($message !== ''): ?>
         <div class="notice ok"><?= e($message); ?></div>
+    <?php endif; ?>
+    <?php if ($error !== ''): ?>
+        <?php renderNotice($error, 'error'); ?>
     <?php endif; ?>
 
     <form method="post" class="grid cols-2" data-validate="true">
@@ -136,6 +147,7 @@ renderHeader('Quotes');
 
 <section class="card">
     <h2>Quote List</h2>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -174,6 +186,7 @@ renderHeader('Quotes');
             <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <?php

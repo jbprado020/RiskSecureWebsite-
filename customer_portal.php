@@ -8,6 +8,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/insurance_service.php';
 require_once __DIR__ . '/includes/db_helpers.php';
 require_once __DIR__ . '/includes/upload_helpers.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireCustomerLogin();
 
@@ -83,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['file_customer_claim']
     $claimAmount = (float) ($_POST['claim_amount'] ?? 0);
     $description = trim((string) ($_POST['description'] ?? ''));
 
-    if ($policyId <= 0 || $incidentDate === '' || $claimAmount <= 0 || $description === '') {
+    if ($policyId <= 0 || $incidentDate === '' || !isValidDate($incidentDate) || $claimAmount <= 0 || $description === '') {
         $error = 'Please fill in valid claim details.';
     } else {
         $policyLookupStmt = $pdo->prepare(
@@ -130,7 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['schedule_customer_app
     $agentId = (int) ($_POST['agent_id'] ?? 0);
     $allowedChannels = ['zoom', 'phone', 'in-person'];
 
-    if ($meetingAt === '' || $purpose === '' || $agentId <= 0 || !in_array($channel, $allowedChannels, true)) {
+    $startAt = parseDateTimeLocal($meetingAt);
+    if ($startAt === null || $purpose === '' || $agentId <= 0 || !in_array($channel, $allowedChannels, true)) {
         $error = 'Please complete appointment details with a valid channel and agent.';
     } else {
         $agentLookupStmt = $pdo->prepare(
@@ -146,7 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['schedule_customer_app
             $error = 'Selected agent is not available.';
         } else {
             // Normalize datetime-local value (browser uses 'T')
-            $startAt = str_replace('T', ' ', $meetingAt);
             if ($durationMinutes <= 0) {
                 $durationMinutes = 30;
             }
@@ -403,15 +404,15 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Product Name</label>
-                <input name="product_name" placeholder="e.g. Family Life Shield" required aria-label="Product Name" aria-required="true">
+                <input name="product_name" placeholder="e.g. Family Life Shield" required aria-label="Product Name" aria-required="true" autocomplete="off">
             </div>
             <div>
                 <label>Coverage Amount (PHP)</label>
-                <input name="coverage_amount" type="number" step="0.01" min="1" required aria-label="Coverage Amount" aria-required="true">
+                <input name="coverage_amount" type="number" step="0.01" min="1" required aria-label="Coverage Amount" aria-required="true" inputmode="decimal">
             </div>
             <div>
                 <label>Term (Months)</label>
-                <input name="term_months" type="number" min="1" value="12" required aria-label="Term Months" aria-required="true">
+                <input name="term_months" type="number" min="1" value="12" required aria-label="Term Months" aria-required="true" inputmode="numeric">
             </div>
             <div>
                 <label>Risk Level</label>
@@ -447,7 +448,7 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Claim Amount (PHP)</label>
-                <input type="number" step="0.01" min="1" name="claim_amount" required aria-label="Claim Amount" aria-required="true">
+                <input type="number" step="0.01" min="1" name="claim_amount" required aria-label="Claim Amount" aria-required="true" inputmode="decimal">
             </div>
             <div style="grid-column: 1 / -1;">
                 <label>Description</label>
@@ -472,7 +473,7 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Duration (minutes)</label>
-                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required aria-label="Duration Minutes" aria-required="true">
+                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required aria-label="Duration Minutes" aria-required="true" inputmode="numeric">
             </div>
             <div>
                 <label>Preferred Channel</label>
@@ -495,7 +496,7 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Purpose</label>
-                <input name="purpose" placeholder="e.g. Claim follow-up" required aria-label="Purpose" aria-required="true">
+                <input name="purpose" placeholder="e.g. Claim follow-up" required aria-label="Purpose" aria-required="true" autocomplete="off">
             </div>
             <div style="grid-column: 1 / -1;">
                 <label>Notes</label>
@@ -532,11 +533,11 @@ renderHeader('Customer Portal');
             </div>
             <div>
                 <label>Document Type</label>
-                <input name="document_type" placeholder="e.g. ORCR, Policy Form" required aria-label="Document Type" aria-required="true">
+                <input name="document_type" placeholder="e.g. ORCR, Policy Form" required aria-label="Document Type" aria-required="true" autocomplete="off">
             </div>
             <div>
                 <label>File</label>
-                <input type="file" name="document_file" required aria-label="Document File" aria-required="true">
+                <input type="file" name="document_file" required aria-label="Document File" aria-required="true" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
             </div>
             <div style="grid-column: 1 / -1;">
                 <button type="submit">Upload Document</button>
@@ -549,6 +550,7 @@ renderHeader('Customer Portal');
     <h2>Your Account Status</h2>
 
     <h3>Quotes</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -574,8 +576,10 @@ renderHeader('Customer Portal');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 
     <h3>Policies</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -599,8 +603,10 @@ renderHeader('Customer Portal');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 
     <h3>Claims</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -624,8 +630,10 @@ renderHeader('Customer Portal');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 
     <h3>Payments</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -653,8 +661,10 @@ renderHeader('Customer Portal');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 
     <h3>Appointments</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -695,8 +705,10 @@ renderHeader('Customer Portal');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 
     <h3>Documents</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -726,6 +738,7 @@ renderHeader('Customer Portal');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <?php

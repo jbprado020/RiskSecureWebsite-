@@ -188,6 +188,7 @@ if (canAccess(['admin'])) {
     <?php if ($canViewClientPipeline): ?>
     <article class="card">
         <h2>Recent Quotes</h2>
+        <div class="table-wrap">
         <table>
             <thead>
                 <tr>
@@ -215,12 +216,14 @@ if (canAccess(['admin'])) {
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </article>
     <?php endif; ?>
 
     <?php if ($canViewClaims): ?>
     <article class="card">
         <h2>Recent Claims</h2>
+        <div class="table-wrap">
         <table>
             <thead>
                 <tr>
@@ -246,12 +249,14 @@ if (canAccess(['admin'])) {
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </article>
     <?php endif; ?>
 
     <?php if ($canViewPayments): ?>
     <article class="card">
         <h2>Recent Payments</h2>
+        <div class="table-wrap">
         <table>
             <thead>
                 <tr>
@@ -279,6 +284,7 @@ if (canAccess(['admin'])) {
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </article>
     <?php endif; ?>
 </section>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter', 'claims_officer']);
 
@@ -25,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_meeting'])) {
     $notes = trim((string) ($_POST['notes'] ?? ''));
     $allowedChannels = ['zoom', 'phone', 'in-person'];
 
-    if ($meetingAt !== '' && $purpose !== '' && $agentId > 0 && in_array($channel, $allowedChannels, true)) {
-        // Normalize datetime-local value
-        $startAt = str_replace('T', ' ', $meetingAt);
+    $startAt = parseDateTimeLocal($meetingAt);
+
+    if ($startAt !== null && $purpose !== '' && $agentId > 0 && in_array($channel, $allowedChannels, true)) {
         if ($durationMinutes <= 0) {
             $durationMinutes = 30;
         }
@@ -146,12 +147,12 @@ renderHeader('Meetings');
 <section class="grid cols-2">
     <article class="card">
         <h2>Create Meeting</h2>
-        <form method="post" class="grid cols-2">
+        <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="create_meeting" value="1">
             <div>
                 <label>Client (optional)</label>
-                <select name="client_id">
+                <select name="client_id" aria-label="Client (optional)">
                     <option value="">No specific client</option>
                     <?php foreach ($clients as $client): ?>
                         <option value="<?= (int) $client['id']; ?>"><?= e((string) $client['full_name']); ?></option>
@@ -160,7 +161,7 @@ renderHeader('Meetings');
             </div>
             <div>
                 <label>Assigned Agent</label>
-                <select name="agent_id" required>
+                <select name="agent_id" required aria-label="Assigned Agent" aria-required="true">
                     <option value="">Select agent</option>
                     <?php foreach ($agents as $agent): ?>
                         <option value="<?= (int) $agent['id']; ?>">
@@ -171,15 +172,15 @@ renderHeader('Meetings');
             </div>
             <div>
                 <label>Date and Time</label>
-                <input type="datetime-local" name="meeting_at" required>
+                <input type="datetime-local" name="meeting_at" required aria-label="Meeting Date and Time" aria-required="true">
             </div>
             <div>
                 <label>Duration (minutes)</label>
-                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required>
+                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required aria-label="Duration Minutes" aria-required="true">
             </div>
             <div>
                 <label>Channel</label>
-                <select name="channel" required>
+                <select name="channel" required aria-label="Meeting Channel" aria-required="true">
                     <option value="zoom">Zoom</option>
                     <option value="phone">Phone</option>
                     <option value="in-person">In-person</option>
@@ -187,11 +188,11 @@ renderHeader('Meetings');
             </div>
             <div style="grid-column: 1 / -1;">
                 <label>Purpose</label>
-                <input name="purpose" placeholder="e.g. Renewal discussion" required>
+                <input name="purpose" placeholder="e.g. Renewal discussion" required aria-label="Purpose" aria-required="true">
             </div>
             <div style="grid-column: 1 / -1;">
                 <label>Notes</label>
-                <textarea name="notes" placeholder="e.g. Send invite link and checklist"></textarea>
+                <textarea name="notes" placeholder="e.g. Send invite link and checklist" aria-label="Notes"></textarea>
             </div>
             <div style="grid-column: 1 / -1;">
                 <button type="submit">Schedule Meeting</button>
@@ -201,10 +202,10 @@ renderHeader('Meetings');
 
     <article class="card">
         <h2>Calendar View</h2>
-        <form method="get" style="display:flex; gap:0.6rem; align-items:end; margin-bottom:0.8rem;">
+        <form method="get" class="form-row">
             <div style="flex:1;">
                 <label>Month</label>
-                <input type="month" name="month" value="<?= e($selectedMonth); ?>">
+                <input type="month" name="month" value="<?= e($selectedMonth); ?>" aria-label="Month">
             </div>
             <div style="flex:0 0 auto;">
                 <button type="submit">Load</button>
@@ -265,7 +266,7 @@ renderHeader('Meetings');
                     <td><?= e((string) $meeting['purpose']); ?></td>
                     <td><span class="badge <?= badgeClass((string) $meeting['status']); ?>"><?= e(statusLabel((string) $meeting['status'])); ?></span></td>
                     <td>
-                        <form method="post" class="grid" style="gap:0.4rem; min-width:220px;">
+                        <form method="post" class="grid form-compact" data-validate="true">
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_meeting" value="1">
                             <input type="hidden" name="meeting_id" value="<?= (int) $meeting['id']; ?>">

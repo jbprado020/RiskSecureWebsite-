@@ -98,11 +98,11 @@ renderHeader('Staff Login');
         <?= csrfField(); ?>
         <div>
             <label>Email</label>
-            <input type="email" name="email" required>
+            <input type="email" name="email" required autocomplete="email">
         </div>
         <div>
             <label>Password</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" required autocomplete="current-password">
         </div>
         <div>
             <button type="submit">Login as Staff</button>

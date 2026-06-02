@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -17,13 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_renewal'])) {
     requireCsrfToken();
 
     $policyId = (int) ($_POST['policy_id'] ?? 0);
-    $renewalDate = trim((string) ($_POST['renewal_date'] ?? date('Y-m-d')));
+    $renewalDate = trim((string) ($_POST['renewal_date'] ?? ''));
     $newExpiry = trim((string) ($_POST['new_expiry'] ?? ''));
     $status = (string) ($_POST['status'] ?? 'notified');
     $notes = trim((string) ($_POST['notes'] ?? ''));
     $allowedStatuses = ['notified', 'in_progress', 'renewed', 'lapsed'];
 
-    if ($policyId > 0 && $renewalDate !== '' && $newExpiry !== '' && in_array($status, $allowedStatuses, true)) {
+    if ($policyId > 0 && isValidDate($renewalDate) && isValidDate($newExpiry) && in_array($status, $allowedStatuses, true)) {
         try {
             $pdo->beginTransaction();
 
@@ -97,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_renewal'])) {
     $notes = trim((string) ($_POST['notes'] ?? ''));
     $allowedStatuses = ['notified', 'in_progress', 'renewed', 'lapsed'];
 
-    if ($renewalId > 0 && in_array($status, $allowedStatuses, true)) {
+    if ($renewalId > 0 && in_array($status, $allowedStatuses, true) && ($newExpiry === '' || isValidDate($newExpiry))) {
         try {
             $pdo->beginTransaction();
 

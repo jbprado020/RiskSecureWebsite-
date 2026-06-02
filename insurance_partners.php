@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager']);
 
@@ -36,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_partner'])) {
 
     if ($companyName === '' || $contactPerson === '' || $contactEmail === '') {
         $error = 'Company name, contact person, and email are required.';
-    } elseif (!filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!isValidEmail($contactEmail)) {
         $error = 'Please enter a valid email address.';
     } elseif (!in_array($insuranceType, $validTypes, true)) {
         $error = 'Invalid insurance type selected.';
@@ -91,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_partner'])) {
         $error = 'Invalid partner.';
     } elseif ($companyName === '' || $contactPerson === '' || $contactEmail === '') {
         $error = 'Company name, contact person, and email are required.';
-    } elseif (!filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!isValidEmail($contactEmail)) {
         $error = 'Please enter a valid email address.';
     } elseif (!in_array($insuranceType, $validTypes, true)) {
         $error = 'Invalid insurance type selected.';
@@ -190,13 +191,13 @@ renderHeader('Insurance Partner Management');
         <div class="notice error"><?= e($error); ?></div>
     <?php endif; ?>
 
-    <form method="post" class="grid cols-2">
+    <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="create_partner" value="1">
         
         <div>
             <label>Company Name</label>
-            <input name="company_name" required placeholder="e.g. AIA Philippines">
+            <input name="company_name" required placeholder="e.g. AIA Philippines" autocomplete="organization">
         </div>
         <div>
             <label>Insurance Type</label>
@@ -208,11 +209,11 @@ renderHeader('Insurance Partner Management');
         </div>
         <div>
             <label>Contact Person</label>
-            <input name="contact_person" required placeholder="e.g. John Smith">
+            <input name="contact_person" required placeholder="e.g. John Smith" autocomplete="name">
         </div>
         <div>
             <label>Contact Email</label>
-            <input name="contact_email" type="email" required placeholder="liaison@partner.local">
+            <input name="contact_email" type="email" required placeholder="liaison@partner.local" autocomplete="email">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Add Insurance Partner</button>
@@ -252,21 +253,21 @@ renderHeader('Insurance Partner Management');
                 </td>
                 <td><?= date('M d, Y', strtotime((string) $partner['created_at'])); ?></td>
                 <td>
-                    <button class="btn-small" onclick="toggleEditForm(<?= (int) $partner['id']; ?>)">Edit</button>
+                    <button class="btn-small" type="button" data-toggle="edit-form" data-target="edit-form-<?= (int) $partner['id']; ?>" aria-expanded="false" aria-controls="edit-form-<?= (int) $partner['id']; ?>">Edit</button>
                 </td>
             </tr>
-            <tr id="edit-form-<?= (int) $partner['id']; ?>" style="display:none;">
+            <tr id="edit-form-<?= (int) $partner['id']; ?>" hidden aria-hidden="true">
                 <td colspan="9">
-                    <div style="padding: 1rem; background: var(--panel-soft); border-radius: 0.5rem;">
+                    <div class="panel-inline">
                         <h4>Edit Insurance Partner</h4>
-                        <form method="post" class="grid cols-2">
+                        <form method="post" class="grid cols-2" data-validate="true">
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_partner" value="1">
                             <input type="hidden" name="partner_id" value="<?= (int) $partner['id']; ?>">
                             
                             <div>
                                 <label>Company Name</label>
-                                <input name="company_name" required value="<?= e($partner['company_name']); ?>">
+                                <input name="company_name" required value="<?= e($partner['company_name']); ?>" autocomplete="organization">
                             </div>
                             <div>
                                 <label>Insurance Type</label>
@@ -278,23 +279,23 @@ renderHeader('Insurance Partner Management');
                             </div>
                             <div>
                                 <label>Contact Person</label>
-                                <input name="contact_person" required value="<?= e($partner['contact_person']); ?>">
+                                <input name="contact_person" required value="<?= e($partner['contact_person']); ?>" autocomplete="name">
                             </div>
                             <div>
                                 <label>Contact Email</label>
-                                <input name="contact_email" type="email" required value="<?= e($partner['contact_email']); ?>">
+                                <input name="contact_email" type="email" required value="<?= e($partner['contact_email']); ?>" autocomplete="email">
                             </div>
                             
-                            <div style="grid-column: 1 / -1; display: flex; gap: 0.5rem;">
+                            <div class="form-actions">
                                 <button type="submit">Save Changes</button>
-                                <button type="button" onclick="toggleEditForm(<?= (int) $partner['id']; ?>)" class="btn-secondary">Cancel</button>
+                                <button type="button" data-toggle="edit-form" data-target="edit-form-<?= (int) $partner['id']; ?>" aria-expanded="true" aria-controls="edit-form-<?= (int) $partner['id']; ?>" class="btn-secondary">Cancel</button>
                             </div>
                         </form>
 
-                        <hr style="margin: 1rem 0;">
+                        <hr class="divider">
                         
-                        <h4 style="color: var(--danger);">Delete Partner</h4>
-                        <p style="font-size: 0.9rem; color: var(--muted);">
+                        <h4 class="text-danger">Delete Partner</h4>
+                        <p class="text-muted">
                             This partner has <strong><?= (int) $partner['policy_count']; ?></strong> total policies 
                             (<strong><?= (int) $partner['active_count']; ?></strong> active).
                         </p>
@@ -391,13 +392,3 @@ renderHeader('Insurance Partner Management');
         border: none;
         border-top: 1px solid var(--border);
     }
-</style>
-
-<script>
-function toggleEditForm(partnerId) {
-    const form = document.getElementById(`edit-form-${partnerId}`);
-    if (form) {
-        form.style.display = form.style.display === 'none' ? 'table-row' : 'none';
-    }
-}
-</script>

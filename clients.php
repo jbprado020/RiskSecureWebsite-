@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -21,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_client'])) {
     $address = trim((string) ($_POST['address'] ?? ''));
     $birthDate = trim((string) ($_POST['date_of_birth'] ?? ''));
 
-    if ($fullName !== '' && $email !== '' && $phone !== '' && $address !== '' && $birthDate !== '') {
+    if ($fullName !== '' && isValidEmail($email) && $phone !== '' && $address !== '' && isValidDate($birthDate)) {
         try {
             $stmt = $pdo->prepare(
                 'INSERT INTO clients (full_name, email, phone, address, date_of_birth)
@@ -39,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_client'])) {
             $error = 'Unable to add client. Check if email is already in use.';
         }
     } else {
-        $error = 'Please complete all required client fields.';
+        $error = 'Please complete all required client fields with valid values.';
     }
 }
 
@@ -53,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_client'])) {
     $address = trim((string) ($_POST['address'] ?? ''));
     $birthDate = trim((string) ($_POST['date_of_birth'] ?? ''));
 
-    if ($clientId > 0 && $fullName !== '' && $email !== '' && $phone !== '' && $address !== '' && $birthDate !== '') {
+    if ($clientId > 0 && $fullName !== '' && isValidEmail($email) && $phone !== '' && $address !== '' && isValidDate($birthDate)) {
         try {
             $stmt = $pdo->prepare(
                 'UPDATE clients
@@ -77,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_client'])) {
             $error = 'Unable to update client. Check if email is already in use.';
         }
     } else {
-        $error = 'Please provide complete client details for update.';
+        $error = 'Please provide complete client details with valid values for update.';
     }
 }
 
@@ -100,23 +101,23 @@ renderHeader('Clients');
         <input type="hidden" name="create_client" value="1">
         <div>
             <label>Full Name</label>
-            <input name="full_name" required aria-label="Full Name" aria-required="true">
+            <input name="full_name" required aria-label="Full Name" aria-required="true" autocomplete="name">
         </div>
         <div>
             <label>Email</label>
-            <input name="email" type="email" required aria-label="Email" aria-required="true">
+            <input name="email" type="email" required aria-label="Email" aria-required="true" autocomplete="email">
         </div>
         <div>
             <label>Phone</label>
-            <input name="phone" required aria-label="Phone" aria-required="true">
+            <input name="phone" required aria-label="Phone" aria-required="true" autocomplete="tel">
         </div>
         <div>
             <label>Date of Birth</label>
-            <input name="date_of_birth" type="date" required aria-label="Date of Birth" aria-required="true">
+            <input name="date_of_birth" type="date" required aria-label="Date of Birth" aria-required="true" autocomplete="bday">
         </div>
         <div style="grid-column: 1 / -1;">
             <label>Address</label>
-            <textarea name="address" required aria-label="Address" aria-required="true"></textarea>
+            <textarea name="address" required aria-label="Address" aria-required="true" autocomplete="street-address"></textarea>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Save Client</button>
@@ -126,6 +127,7 @@ renderHeader('Clients');
 
 <section class="card">
     <h2>Client List</h2>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -154,11 +156,11 @@ renderHeader('Clients');
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_client" value="1">
                             <input type="hidden" name="client_id" value="<?= (int) $client['id']; ?>">
-                            <input name="full_name" value="<?= e((string) $client['full_name']); ?>" required aria-label="Full Name" aria-required="true">
-                            <input name="email" type="email" value="<?= e((string) $client['email']); ?>" required aria-label="Email" aria-required="true">
-                            <input name="phone" value="<?= e((string) $client['phone']); ?>" required aria-label="Phone" aria-required="true">
-                            <input name="date_of_birth" type="date" value="<?= e((string) $client['date_of_birth']); ?>" required aria-label="Date of Birth" aria-required="true">
-                            <textarea name="address" required aria-label="Address" aria-required="true"><?= e((string) $client['address']); ?></textarea>
+                            <input name="full_name" value="<?= e((string) $client['full_name']); ?>" required aria-label="Full Name" aria-required="true" autocomplete="name">
+                            <input name="email" type="email" value="<?= e((string) $client['email']); ?>" required aria-label="Email" aria-required="true" autocomplete="email">
+                            <input name="phone" value="<?= e((string) $client['phone']); ?>" required aria-label="Phone" aria-required="true" autocomplete="tel">
+                            <input name="date_of_birth" type="date" value="<?= e((string) $client['date_of_birth']); ?>" required aria-label="Date of Birth" aria-required="true" autocomplete="bday">
+                            <textarea name="address" required aria-label="Address" aria-required="true" autocomplete="street-address"><?= e((string) $client['address']); ?></textarea>
                             <button type="submit">Update</button>
                         </form>
                     </details>
@@ -170,6 +172,7 @@ renderHeader('Clients');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <?php

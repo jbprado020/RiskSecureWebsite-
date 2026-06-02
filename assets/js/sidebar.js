@@ -26,15 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
         toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         toggle.classList.toggle('open', isOpen);
 
-        // Expose or hide the sidebar to assistive tech, and hide main content when
-        // the sidebar is open on small screens.
-        try {
-            sidebar.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-        } catch (e) {}
-        try {
-            main.setAttribute('aria-hidden', isOpen ? 'true' : 'false');
-        } catch (e) {}
-
         // Update accessible label and visible text
         try {
             toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
@@ -118,27 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var active = document.activeElement;
         var idx = links.indexOf(active);
-
-        // Handle focus trapping for Tab when sidebar is open
-        if (event.key === 'Tab' && body.classList.contains('sidebar-open')) {
-            var focusable = Array.from(sidebar.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])'))
-                .filter(function (el) { return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length; });
-            if (!focusable.length) return;
-            var first = focusable[0];
-            var last = focusable[focusable.length - 1];
-
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last.focus();
-                return;
-            }
-
-            if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first.focus();
-                return;
-            }
-        }
 
         if (['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].indexOf(event.key) === -1) {
             return;

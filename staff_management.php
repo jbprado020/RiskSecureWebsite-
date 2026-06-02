@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin']);
 
@@ -25,33 +26,6 @@ function roleLabel(string $role): string {
     return $labels[$role] ?? $role;
 }
 
-// Validate password strength (minimum 12 chars, must have uppercase, lowercase, number, special char)
-function validatePassword(string $password): ?string {
-    $password = trim($password);
-    
-    if (strlen($password) < 12) {
-        return 'Password must be at least 12 characters long.';
-    }
-    
-    if (!preg_match('/[A-Z]/', $password)) {
-        return 'Password must contain at least one uppercase letter.';
-    }
-    
-    if (!preg_match('/[a-z]/', $password)) {
-        return 'Password must contain at least one lowercase letter.';
-    }
-    
-    if (!preg_match('/\d/', $password)) {
-        return 'Password must contain at least one number.';
-    }
-    
-    if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'\",.\/\<\>?\\\|`~]/', $password)) {
-        return 'Password must contain at least one special character (!@#$%^&*, etc).';
-    }
-    
-    return null;
-}
-
 // Create new staff account
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_staff'])) {
     requireCsrfToken();
@@ -68,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_staff'])) {
         $error = 'Full name, email, and password are required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address.';
-    } elseif (($passwordError = validatePassword($password)) !== null) {
+    } elseif (($passwordError = validatePasswordStrength($password)) !== null) {
         $error = $passwordError;
     } elseif (!in_array($role, $validRoles, true)) {
         $error = 'Invalid role selected.';
@@ -179,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
 
     if ($staffId <= 0) {
         $error = 'Invalid staff member.';
-    } elseif ($newPassword === '' || ($passwordError = validatePassword($newPassword)) !== null) {
+    } elseif ($newPassword === '' || ($passwordError = validatePasswordStrength($newPassword)) !== null) {
         $error = $passwordError ?? 'Password is required.';
     } else {
         try {
@@ -251,15 +225,15 @@ renderHeader('Staff Management');
         
         <div>
             <label>Full Name</label>
-            <input name="full_name" required placeholder="e.g. John Smith">
+            <input name="full_name" required placeholder="e.g. John Smith" autocomplete="name">
         </div>
         <div>
             <label>Email</label>
-            <input name="email" type="email" required placeholder="staff@risksecure.local">
+            <input name="email" type="email" required placeholder="staff@risksecure.local" autocomplete="email">
         </div>
         <div>
             <label>Password</label>
-            <input name="password" type="password" required placeholder="Minimum 6 characters">
+            <input name="password" type="password" required placeholder="Minimum 12 characters" autocomplete="new-password">
         </div>
         <div>
             <label>Role</label>
@@ -273,7 +247,7 @@ renderHeader('Staff Management');
         </div>
         <div style="grid-column: 1 / -1;">
             <label>Contact Number (Optional)</label>
-            <input name="contact_number" type="tel" placeholder="e.g. +63-917-123-4567">
+            <input name="contact_number" type="tel" placeholder="e.g. +63-917-123-4567" autocomplete="tel">
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Create Staff Account</button>
@@ -311,25 +285,25 @@ renderHeader('Staff Management');
                 </td>
                 <td><?= date('M d, Y', strtotime((string) $member['created_at'])); ?></td>
                 <td>
-                    <button class="btn-small" onclick="toggleEditForm(<?= (int) $member['id']; ?>)">Edit</button>
+                    <button class="btn-small" type="button" data-toggle="edit-form" data-target="edit-form-<?= (int) $member['id']; ?>" aria-expanded="false" aria-controls="edit-form-<?= (int) $member['id']; ?>">Edit</button>
                 </td>
             </tr>
-            <tr id="edit-form-<?= (int) $member['id']; ?>" style="display:none;">
+            <tr id="edit-form-<?= (int) $member['id']; ?>" hidden aria-hidden="true">
                 <td colspan="8">
-                    <div style="padding: 1rem; background: var(--panel-soft); border-radius: 0.5rem;">
+                    <div class="panel-inline">
                         <h4>Edit Staff Member</h4>
-                        <form method="post" class="grid cols-3">
+                        <form method="post" class="grid cols-3" data-validate="true">
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_staff" value="1">
                             <input type="hidden" name="staff_id" value="<?= (int) $member['id']; ?>">
                             
                             <div>
                                 <label>Full Name</label>
-                                <input name="full_name" required value="<?= e($member['full_name']); ?>">
+                                <input name="full_name" required value="<?= e($member['full_name']); ?>" autocomplete="name">
                             </div>
                             <div>
                                 <label>Email</label>
-                                <input name="email" type="email" required value="<?= e($member['email']); ?>">
+                                <input name="email" type="email" required value="<?= e($member['email']); ?>" autocomplete="email">
                             </div>
                             <div>
                                 <label>Role</label>
@@ -343,42 +317,42 @@ renderHeader('Staff Management');
                             </div>
                             <div>
                                 <label>Contact Number</label>
-                                <input name="contact_number" type="tel" value="<?= e((string) ($member['contact_number'] ?? '')); ?>">
+                                <input name="contact_number" type="tel" value="<?= e((string) ($member['contact_number'] ?? '')); ?>" autocomplete="tel">
                             </div>
-                            <div style="display: flex; align-items: flex-end;">
-                                <label style="display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                            <div class="checkbox-field">
+                                <label class="checkbox-inline">
                                     <input type="checkbox" name="is_active" <?= (int) $member['is_active'] === 1 ? 'checked' : ''; ?>>
                                     Active
                                 </label>
                             </div>
                             <div></div>
                             
-                            <div style="grid-column: 1 / -1; display: flex; gap: 0.5rem;">
+                            <div class="form-actions">
                                 <button type="submit">Save Changes</button>
-                                <button type="button" onclick="toggleEditForm(<?= (int) $member['id']; ?>)" class="btn-secondary">Cancel</button>
+                                <button type="button" data-toggle="edit-form" data-target="edit-form-<?= (int) $member['id']; ?>" aria-expanded="true" aria-controls="edit-form-<?= (int) $member['id']; ?>" class="btn-secondary">Cancel</button>
                             </div>
                         </form>
 
-                        <hr style="margin: 1rem 0;">
+                        <hr class="divider">
                         
                         <h4>Reset Password</h4>
-                        <form method="post" class="grid cols-2">
+                        <form method="post" class="grid cols-2" data-validate="true">
                             <?= csrfField(); ?>
                             <input type="hidden" name="reset_password" value="1">
                             <input type="hidden" name="staff_id" value="<?= (int) $member['id']; ?>">
                             
                             <div>
                                 <label>New Password</label>
-                                <input name="new_password" type="password" required placeholder="Minimum 6 characters">
+                                <input name="new_password" type="password" required placeholder="Minimum 12 characters" autocomplete="new-password">
                             </div>
-                            <div style="display: flex; align-items: flex-end;">
+                            <div class="form-actions align-end">
                                 <button type="submit" class="btn-secondary">Reset Password</button>
                             </div>
                         </form>
 
-                        <hr style="margin: 1rem 0;">
+                        <hr class="divider">
                         
-                        <h4 style="color: var(--danger);">Delete Account</h4>
+                        <h4 class="text-danger">Delete Account</h4>
                         <form method="post" onsubmit="return confirm('Are you sure? This cannot be undone.');">
                             <?= csrfField(); ?>
                             <input type="hidden" name="delete_staff" value="1">
@@ -472,13 +446,3 @@ renderHeader('Staff Management');
         border: none;
         border-top: 1px solid var(--border);
     }
-</style>
-
-<script>
-function toggleEditForm(staffId) {
-    const form = document.getElementById(`edit-form-${staffId}`);
-    if (form) {
-        form.style.display = form.style.display === 'none' ? 'table-row' : 'none';
-    }
-}
-</script>

@@ -93,15 +93,15 @@ renderHeader('Customer Login');
         <?php renderNotice($error, 'error'); ?>
     <?php endif; ?>
 
-    <form method="post" class="grid">
+    <form method="post" class="grid" data-validate="true">
         <?= csrfField(); ?>
         <div>
             <label>Email</label>
-            <input type="email" name="email" required>
+            <input type="email" name="email" required autocomplete="email">
         </div>
         <div>
             <label>Password</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" required autocomplete="current-password">
         </div>
         <div>
             <button type="submit">Login</button>

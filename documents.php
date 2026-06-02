@@ -8,6 +8,7 @@ require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/db_helpers.php';
 require_once __DIR__ . '/includes/upload_helpers.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter', 'claims_officer']);
 
@@ -59,60 +60,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_document'])) {
                 'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ];
+            $maxBytes = 10 * 1024 * 1024; // 10 MB
 
-            if ((int) $file['error'] !== UPLOAD_ERR_OK) {
-                $error = 'File upload failed.';
-            } else {
-                $ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
-                if (!in_array($ext, $allowedExt, true)) {
-                    $error = 'Unsupported file type. Allowed: pdf, jpg, jpeg, png, doc, docx.';
-                } elseif (!validateUploadMimeType($file['tmp_name'], $allowedMimeTypes)) {
-                    $error = 'Invalid file content. File does not match declared type.';
-                } else {
-                        try {
-                            $uploadInfo = prepareUploadTemp($file, $uploadDir, 'doc');
+            try {
+                $uploadInfo = processUpload($file, $uploadDir, 'doc', $allowedExt, $allowedMimeTypes, $maxBytes);
 
-                            // Insert record inside a retryable transaction, then move temp -> final
-                            $insertId = runTransactionWithRetries($pdo, function (PDO $pdo) use ($clientId, $policyId, $claimId, $documentType, $uploadInfo) {
-                                $stmt = $pdo->prepare(
-                                    'INSERT INTO documents (client_id, policy_id, claim_id, document_type, file_path, uploaded_by, is_hard_copy_received)
-                                     VALUES (:client_id, :policy_id, :claim_id, :document_type, :file_path, :uploaded_by, :is_hard_copy_received)'
-                                );
-                                $stmt->execute([
-                                    ':client_id' => $clientId,
-                                    ':policy_id' => $policyId,
-                                    ':claim_id' => $claimId,
-                                    ':document_type' => $documentType,
-                                    ':file_path' => $uploadInfo['relativePath'],
-                                    ':uploaded_by' => 'staff',
-                                    ':is_hard_copy_received' => 0,
-                                ]);
+                // Insert record inside a retryable transaction, then move temp -> final
+                $insertId = runTransactionWithRetries($pdo, function (PDO $pdo) use ($clientId, $policyId, $claimId, $documentType, $uploadInfo) {
+                    $stmt = $pdo->prepare(
+                        'INSERT INTO documents (client_id, policy_id, claim_id, document_type, file_path, uploaded_by, is_hard_copy_received)
+                         VALUES (:client_id, :policy_id, :claim_id, :document_type, :file_path, :uploaded_by, :is_hard_copy_received)'
+                    );
+                    $stmt->execute([
+                        ':client_id' => $clientId,
+                        ':policy_id' => $policyId,
+                        ':claim_id' => $claimId,
+                        ':document_type' => $documentType,
+                        ':file_path' => $uploadInfo['relativePath'],
+                        ':uploaded_by' => 'staff',
+                        ':is_hard_copy_received' => 0,
+                    ]);
 
-                                return (int) $pdo->lastInsertId();
-                            });
+                    return (int) $pdo->lastInsertId();
+                });
 
-                            try {
-                                finalizeUploadMove($uploadInfo['tempPath'], $uploadInfo['finalPath'], function (?int $id) use ($pdo) {
-                                    if ($id !== null) {
-                                        $del = $pdo->prepare('DELETE FROM documents WHERE id = :id');
-                                        $del->execute([':id' => $id]);
-                                    }
-                                }, $insertId);
-
-                                logAuditEvent($pdo, 'upload_document', [
-                                    'entity_type' => 'documents',
-                                    'entity_id' => $insertId,
-                                    'status' => 'success',
-                                    'details' => 'Uploaded document type ' . $documentType . ' for client ' . $clientId . ' / policy ' . $policyId . '.',
-                                ]);
-                                $message = 'Document uploaded and categorized.';
-                            } catch (Throwable $e) {
-                                $error = 'Unable to finalize uploaded file after save. Please contact admin.';
-                            }
-                        } catch (Throwable $e) {
-                            $error = $e->getMessage() ?: 'Unable to store uploaded file.';
+                try {
+                    finalizeUploadMove($uploadInfo['tempPath'], $uploadInfo['finalPath'], function (?int $id) use ($pdo) {
+                        if ($id !== null) {
+                            $del = $pdo->prepare('DELETE FROM documents WHERE id = :id');
+                            $del->execute([':id' => $id]);
                         }
+                    }, $insertId);
+
+                    logAuditEvent($pdo, 'upload_document', [
+                        'entity_type' => 'documents',
+                        'entity_id' => $insertId,
+                        'status' => 'success',
+                        'details' => 'Uploaded document type ' . $documentType . ' for client ' . $clientId . ' / policy ' . $policyId . '.',
+                    ]);
+                    $message = 'Document uploaded and categorized.';
+                } catch (Throwable $e) {
+                    $error = 'Unable to finalize uploaded file after save. Please contact admin.';
                 }
+            } catch (Throwable $e) {
+                $error = $e->getMessage() ?: 'Unable to store uploaded file.';
             }
         }
     }
@@ -227,6 +218,7 @@ renderHeader('Documents');
 
 <section class="card">
     <h2>Retrieve Client/Policy Documents</h2>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -265,12 +257,12 @@ renderHeader('Documents');
                     </td>
                     <td><a href="<?= e((string) $document['file_path']); ?>" target="_blank" rel="noopener noreferrer">View</a></td>
                     <td>
-                        <form method="post" style="display:flex; gap:0.5rem; align-items:center;">
+                        <form method="post" class="form-inline">
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_hard_copy" value="1">
                             <input type="hidden" name="document_id" value="<?= (int) $document['id']; ?>">
-                            <label style="display:flex; gap:0.35rem; align-items:center; margin:0;">
-                                <input type="checkbox" name="is_hard_copy_received" style="width:auto;" <?= (int) $document['is_hard_copy_received'] === 1 ? 'checked' : ''; ?>>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="is_hard_copy_received" <?= (int) $document['is_hard_copy_received'] === 1 ? 'checked' : ''; ?>>
                                 Received
                             </label>
                             <button type="submit">Save</button>
@@ -283,6 +275,7 @@ renderHeader('Documents');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <?php

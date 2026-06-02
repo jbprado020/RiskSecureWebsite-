@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/insurance_service.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -18,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['issue_policy'])) {
 
     $quoteId = (int) ($_POST['quote_id'] ?? 0);
     $partnerId = (int) ($_POST['partner_id'] ?? 0);
-    $startDate = $_POST['start_date'] ?? date('Y-m-d');
+    $startDate = trim((string) ($_POST['start_date'] ?? ''));
 
-    if ($quoteId > 0 && $partnerId > 0) {
+    if ($quoteId > 0 && $partnerId > 0 && isValidDate($startDate)) {
         try {
             $pdo->beginTransaction();
 
@@ -68,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['issue_policy'])) {
             $error = 'Unable to issue policy right now. Please try again.';
         }
     } else {
-        $error = 'Select both an approved quote and an insurance partner.';
+        $error = 'Select both an approved quote, insurance partner, and valid start date.';
     }
 }
 
@@ -171,6 +172,7 @@ renderHeader('Policies');
 
 <section class="card">
     <h2>Policy List</h2>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -230,6 +232,7 @@ renderHeader('Policies');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <?php

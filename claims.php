@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/db_helpers.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/includes/validation.php';
 
 requireStaffRole(['admin', 'manager', 'claims_officer', 'underwriter']);
 
@@ -43,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_claim'])) {
     requireCsrfToken();
 
     $policyId = (int) ($_POST['policy_id'] ?? 0);
-    $incidentDate = $_POST['incident_date'] ?? date('Y-m-d');
+    $incidentDate = trim((string) ($_POST['incident_date'] ?? ''));
     $claimAmount = (float) ($_POST['claim_amount'] ?? 0);
     $description = trim($_POST['description'] ?? '');
 
-    if ($policyId > 0 && $claimAmount > 0 && $description !== '') {
+    if ($policyId > 0 && $claimAmount > 0 && $description !== '' && isValidDate($incidentDate)) {
         $stmt = $pdo->prepare(
             'INSERT INTO claims (policy_id, incident_date, date_filed, claim_amount, description, claim_status, requirements_complete)
              VALUES (:policy_id, :incident_date, :date_filed, :claim_amount, :description, :claim_status, :requirements_complete)'
@@ -69,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_claim'])) {
         ]);
         $message = 'Claim has been filed.';
     } else {
-        $error = 'Please complete the required claim fields.';
+        $error = 'Please complete the required claim fields with valid values.';
     }
 }
 
@@ -208,10 +209,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record_claim_payment'
 
     $claimId = (int) ($_POST['claim_id'] ?? 0);
     $amount = (float) ($_POST['amount'] ?? 0);
-    $paidDate = trim((string) ($_POST['paid_date'] ?? date('Y-m-d')));
+    $paidDate = trim((string) ($_POST['paid_date'] ?? ''));
     $referenceNo = trim((string) ($_POST['reference_no'] ?? ''));
 
-    if ($claimId > 0 && $amount > 0 && $paidDate !== '' && $referenceNo !== '') {
+    if ($claimId > 0 && $amount > 0 && $referenceNo !== '' && isValidDate($paidDate)) {
         try {
             runTransactionWithRetries($pdo, function (PDO $pdo) use ($claimId, $amount, $paidDate, $referenceNo) {
                 $claimStmt = $pdo->prepare(
@@ -255,7 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record_claim_payment'
             $error = 'Unable to record claim payment right now. Please try again.';
         }
     } else {
-        $error = 'Provide approved claim, amount, paid date, and payment reference.';
+        $error = 'Provide approved claim, amount, valid paid date, and payment reference.';
     }
 }
 
@@ -360,6 +361,7 @@ renderHeader('Claims');
 
 <section class="card">
     <h2>Claim Handling</h2>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -411,6 +413,7 @@ renderHeader('Claims');
             <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <section class="card">
@@ -434,8 +437,8 @@ renderHeader('Claims');
             <input name="requirement_name" placeholder="e.g. ORCR, Police Report" required aria-label="Requirement Name" aria-required="true">
         </div>
         <div>
-            <label style="display:flex; align-items:center; gap:0.4rem; margin-top:1.8rem;">
-                <input type="checkbox" name="requires_original" checked style="width:auto;">
+            <label class="checkbox-inline checkbox-inline-top">
+                <input type="checkbox" name="requires_original" checked>
                 Requires Original Hard Copy
             </label>
         </div>
@@ -444,6 +447,7 @@ renderHeader('Claims');
         </div>
     </form>
 
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -468,18 +472,18 @@ renderHeader('Claims');
                     <td><?= (int) $requirement['hard_copy_received'] === 1 ? 'Received' : 'Pending'; ?></td>
                     <td><span class="badge <?= badgeClass($requirement['status']); ?>"><?= e($requirement['status']); ?></span></td>
                     <td>
-                        <form method="post" style="display:flex; align-items:center; gap:0.4rem;">
+                        <form method="post" class="form-inline">
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_requirement" value="1">
                             <input type="hidden" name="requirement_id" value="<?= (int) $requirement['id']; ?>">
                             <input type="hidden" name="claim_id" value="<?= (int) $requirement['claim_id']; ?>">
                             <input type="hidden" name="requires_original" value="<?= (int) $requirement['requires_original']; ?>">
-                            <label style="display:flex; align-items:center; gap:0.3rem; margin:0;">
-                                <input type="checkbox" name="soft_copy_received" style="width:auto;" <?= (int) $requirement['soft_copy_received'] === 1 ? 'checked' : ''; ?>>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="soft_copy_received" <?= (int) $requirement['soft_copy_received'] === 1 ? 'checked' : ''; ?>>
                                 Soft
                             </label>
-                            <label style="display:flex; align-items:center; gap:0.3rem; margin:0;">
-                                <input type="checkbox" name="hard_copy_received" style="width:auto;" <?= (int) $requirement['hard_copy_received'] === 1 ? 'checked' : ''; ?>>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="hard_copy_received" <?= (int) $requirement['hard_copy_received'] === 1 ? 'checked' : ''; ?>>
                                 Hard
                             </label>
                             <button type="submit">Save</button>
@@ -492,6 +496,7 @@ renderHeader('Claims');
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </section>
 
 <section class="grid cols-2">
@@ -532,6 +537,7 @@ renderHeader('Claims');
 
     <article class="card">
         <h2>Claim Payment Ledger</h2>
+        <div class="table-wrap">
         <table>
             <thead>
                 <tr>
@@ -559,6 +565,7 @@ renderHeader('Claims');
                 <?php endif; ?>
             </tbody>
         </table>
+        </div>
     </article>
 </section>
 
