@@ -98,6 +98,26 @@ function renderHeader(string $title): void
     ensureSessionStarted();
     $currentPage = basename((string) ($_SERVER['PHP_SELF'] ?? ''));
 
+    // Determine if request is secure. Respect proxy headers and env overrides.
+    $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (is_string($forwardedProto) && strtolower($forwardedProto) === 'https')
+        || (getenv('FORCE_HTTPS') === '1');
+
+    // Redirect to HTTPS when FORCE_HTTPS=1 and request is not secure.
+    if (!$isSecure && (getenv('FORCE_HTTPS') === '1')) {
+        $host = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $redirect = 'https://' . $host . $uri;
+        header('Location: ' . $redirect, true, 301);
+        exit;
+    }
+
+    // Send HSTS header when connection is secure. Allow disabling via ENABLE_HSTS=0.
+    if ($isSecure && getenv('ENABLE_HSTS') !== '0') {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
+    }
+
     echo '<!DOCTYPE html>';
     echo '<html lang="en">';
     echo '<head>';
