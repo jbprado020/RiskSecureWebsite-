@@ -91,7 +91,7 @@ renderHeader('Staff Login');
     <p>Use your staff account to access back-office operations.</p>
 
     <?php if ($error !== ''): ?>
-        <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
+        <?php renderNotice($error, 'error'); ?>
     <?php endif; ?>
 
     <form method="post" class="grid" data-validate="true">

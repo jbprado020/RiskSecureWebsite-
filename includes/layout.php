@@ -19,6 +19,22 @@ function e(string $value): string
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
+/**
+ * Render an accessible notice/flash message.
+ * Uses role="alert" and aria-live to ensure assistive tech announces it.
+ */
+function renderNotice(string $message, string $type = 'error'): void
+{
+    $class = 'notice';
+    if ($type === 'ok') {
+        $class .= ' ok';
+    } elseif ($type === 'error') {
+        $class .= ' error';
+    }
+
+    echo '<div role="alert" aria-live="assertive" class="' . $class . '" tabindex="-1">' . e($message) . '</div>';
+}
+
 function badgeClass(string $status): string
 {
     $success = ['active', 'approved', 'paid', 'complete', 'renewed', 'completed'];

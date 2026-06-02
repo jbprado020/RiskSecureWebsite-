@@ -89,10 +89,10 @@ renderHeader('Clients');
 <section class="card">
     <h2>Manage Client Profiles</h2>
     <?php if ($message !== ''): ?>
-        <div class="notice ok"><?= e($message); ?></div>
+        <?php renderNotice($message, 'ok'); ?>
     <?php endif; ?>
     <?php if ($error !== ''): ?>
-        <div class="notice" style="background:#fdecec; color:#7d1c1c;"><?= e($error); ?></div>
+        <?php renderNotice($error, 'error'); ?>
     <?php endif; ?>
 
     <form method="post" class="grid cols-2" data-validate="true">
