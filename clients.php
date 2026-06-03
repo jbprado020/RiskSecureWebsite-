@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -82,7 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_client'])) {
     }
 }
 
-$clients = $pdo->query('SELECT * FROM clients ORDER BY id ASC')->fetchAll();
+$clientsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM clients',
+    'SELECT * FROM clients ORDER BY id ASC',
+    [],
+    25,
+    'clients_page'
+);
+$clients = $clientsP['data'];
 
 renderHeader('Clients');
 ?>
@@ -172,6 +181,7 @@ renderHeader('Clients');
             <?php endif; ?>
         </tbody>
     </table>
+    <?= renderPagination($clientsP); ?>
     </div>
 </section>
 

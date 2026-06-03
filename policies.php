@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/insurance_service.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -114,14 +115,23 @@ $approvedQuotes = $pdo->query(
     ORDER BY q.id ASC'
 )->fetchAll();
 
-$policies = $pdo->query(
+$policiesP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM policies p
+     INNER JOIN quotes q ON q.id = p.quote_id
+     INNER JOIN clients c ON c.id = p.client_id
+     INNER JOIN insurance_partners ip ON ip.id = p.partner_id',
     'SELECT p.*, q.product_name, c.full_name, ip.company_name
      FROM policies p
      INNER JOIN quotes q ON q.id = p.quote_id
-    INNER JOIN clients c ON c.id = p.client_id
+     INNER JOIN clients c ON c.id = p.client_id
      INNER JOIN insurance_partners ip ON ip.id = p.partner_id
-    ORDER BY p.id ASC'
-)->fetchAll();
+     ORDER BY p.id ASC',
+    [],
+    25,
+    'policies_page'
+);
+$policies = $policiesP['data'];
 
 renderHeader('Policies');
 ?>
@@ -232,6 +242,7 @@ renderHeader('Policies');
             <?php endif; ?>
         </tbody>
     </table>
+    <?= renderPagination($policiesP); ?>
     </div>
 </section>
 

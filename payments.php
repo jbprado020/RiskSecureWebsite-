@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'billing_officer']);
 
@@ -61,12 +62,15 @@ $policies = $pdo->query(
      ORDER BY p.issued_at DESC'
 )->fetchAll();
 
-$payments = $pdo->query(
-    'SELECT pay.*, p.policy_number
-     FROM payments pay
-     INNER JOIN policies p ON p.id = pay.policy_id
-     ORDER BY pay.created_at DESC'
-)->fetchAll();
+$paymentsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM payments pay INNER JOIN policies p ON p.id = pay.policy_id',
+    'SELECT pay.*, p.policy_number FROM payments pay INNER JOIN policies p ON p.id = pay.policy_id ORDER BY pay.created_at DESC',
+    [],
+    25,
+    'payments_page'
+);
+$payments = $paymentsP['data'];
 
 renderHeader('Payments');
 ?>
@@ -148,6 +152,7 @@ renderHeader('Payments');
             <?php endforeach; ?>
         </tbody>
     </table>
+    <?= renderPagination($paymentsP); ?>
     </div>
 </section>
 

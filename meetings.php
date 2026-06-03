@@ -6,6 +6,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter', 'claims_officer']);
 
@@ -107,13 +108,21 @@ $agents = $pdo->query(
      ORDER BY full_name'
 )->fetchAll();
 
-$meetings = $pdo->query(
+$meetingsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM meeting_schedules ms
+     LEFT JOIN clients c ON c.id = ms.client_id
+     INNER JOIN staff_accounts sa ON sa.id = ms.agent_id',
     'SELECT ms.*, c.full_name, sa.full_name AS agent_name, sa.role AS agent_role
      FROM meeting_schedules ms
      LEFT JOIN clients c ON c.id = ms.client_id
      INNER JOIN staff_accounts sa ON sa.id = ms.agent_id
-     ORDER BY ms.meeting_at ASC'
-)->fetchAll();
+     ORDER BY ms.meeting_at ASC',
+    [],
+    25,
+    'meetings_page'
+);
+$meetings = $meetingsP['data'];
 
 $calendarStmt = $pdo->prepare(
     'SELECT ms.*, c.full_name, sa.full_name AS agent_name
@@ -289,6 +298,7 @@ renderHeader('Meetings');
             <?php endif; ?>
         </tbody>
     </table>
+    <?= renderPagination($meetingsP); ?>
 </section>
 
 <?php

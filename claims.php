@@ -8,6 +8,7 @@ require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/db_helpers.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'claims_officer', 'underwriter']);
 
@@ -268,7 +269,9 @@ $activePolicies = $pdo->query(
     ORDER BY p.id ASC'
 )->fetchAll();
 
-$claims = $pdo->query(
+$claimsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM claims cl INNER JOIN policies p ON p.id = cl.policy_id',
     'SELECT cl.*, p.policy_number,
             COALESCE(req.requirements_complete, 0) AS requirements_complete,
             COALESCE(req.requirements_total, 0) AS requirements_total,
@@ -286,16 +289,28 @@ $claims = $pdo->query(
          GROUP BY claim_id
      ) req ON req.claim_id = cl.id
      LEFT JOIN claim_payments cp ON cp.claim_id = cl.id
-    ORDER BY cl.id ASC'
-)->fetchAll();
+     ORDER BY cl.id ASC',
+    [],
+    25,
+    'claims_page'
+);
+$claims = $claimsP['data'];
 
-$requirements = $pdo->query(
+$requirementsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM claim_requirements cr
+     INNER JOIN claims cl ON cl.id = cr.claim_id
+     INNER JOIN policies p ON p.id = cl.policy_id',
     'SELECT cr.*, p.policy_number
      FROM claim_requirements cr
      INNER JOIN claims cl ON cl.id = cr.claim_id
      INNER JOIN policies p ON p.id = cl.policy_id
-    ORDER BY cr.id ASC'
-)->fetchAll();
+     ORDER BY cr.id ASC',
+    [],
+    25,
+    'req_page'
+);
+$requirements = $requirementsP['data'];
 
 $approvedClaimsForPayment = $pdo->query(
     'SELECT cl.id, p.policy_number, cl.claim_amount
@@ -306,14 +321,23 @@ $approvedClaimsForPayment = $pdo->query(
     ORDER BY cl.id ASC'
 )->fetchAll();
 
-$claimPayments = $pdo->query(
+$claimPaymentsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM claim_payments cp
+     INNER JOIN claims cl ON cl.id = cp.claim_id
+     INNER JOIN policies p ON p.id = cl.policy_id
+     INNER JOIN clients c ON c.id = p.client_id',
     'SELECT cp.*, p.policy_number, c.full_name
-    FROM claim_payments cp
-    INNER JOIN claims cl ON cl.id = cp.claim_id
-    INNER JOIN policies p ON p.id = cl.policy_id
-    INNER JOIN clients c ON c.id = p.client_id
-    ORDER BY cp.id ASC'
-)->fetchAll();
+     FROM claim_payments cp
+     INNER JOIN claims cl ON cl.id = cp.claim_id
+     INNER JOIN policies p ON p.id = cl.policy_id
+     INNER JOIN clients c ON c.id = p.client_id
+     ORDER BY cp.id ASC',
+    [],
+    25,
+    'cp_page'
+);
+$claimPayments = $claimPaymentsP['data'];
 
 renderHeader('Claims');
 ?>
@@ -413,6 +437,7 @@ renderHeader('Claims');
             <?php endforeach; ?>
         </tbody>
     </table>
+    <?= renderPagination($claimsP); ?>
     </div>
 </section>
 
@@ -496,6 +521,7 @@ renderHeader('Claims');
             <?php endif; ?>
         </tbody>
     </table>
+    <?= renderPagination($requirementsP); ?>
     </div>
 </section>
 
@@ -563,8 +589,9 @@ renderHeader('Claims');
                 <?php if (count($claimPayments) === 0): ?>
                     <tr><td colspan="6">No claim payments yet.</td></tr>
                 <?php endif; ?>
-            </tbody>
-        </table>
+        </tbody>
+    </table>
+        <?= renderPagination($claimPaymentsP); ?>
         </div>
     </article>
 </section>

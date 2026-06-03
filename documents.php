@@ -9,6 +9,7 @@ require_once __DIR__ . '/includes/db_helpers.php';
 require_once __DIR__ . '/includes/upload_helpers.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter', 'claims_officer']);
 
@@ -145,14 +146,23 @@ $claims = $pdo->query(
      ORDER BY cl.id DESC'
 )->fetchAll();
 
-$documents = $pdo->query(
+$documentsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM documents d
+     INNER JOIN clients c ON c.id = d.client_id
+     INNER JOIN policies p ON p.id = d.policy_id
+     LEFT JOIN claims cl ON cl.id = d.claim_id',
     'SELECT d.*, c.full_name, p.policy_number, cl.claim_status
      FROM documents d
      INNER JOIN clients c ON c.id = d.client_id
      INNER JOIN policies p ON p.id = d.policy_id
      LEFT JOIN claims cl ON cl.id = d.claim_id
-     ORDER BY d.date_uploaded DESC'
-)->fetchAll();
+     ORDER BY d.date_uploaded DESC',
+    [],
+    25,
+    'documents_page'
+);
+$documents = $documentsP['data'];
 
 renderHeader('Documents');
 ?>
@@ -275,6 +285,7 @@ renderHeader('Documents');
             <?php endif; ?>
         </tbody>
     </table>
+    <?= renderPagination($documentsP); ?>
     </div>
 </section>
 

@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager']);
 
@@ -169,13 +170,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_partner'])) {
     }
 }
 
-$partners = $pdo->query(
+$partnersP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM insurance_partners',
     'SELECT id, company_name, insurance_type, contact_person, contact_email, created_at,
             (SELECT COUNT(*) FROM policies WHERE partner_id = insurance_partners.id) as policy_count,
             (SELECT COUNT(*) FROM policies WHERE partner_id = insurance_partners.id AND status = "active") as active_count
      FROM insurance_partners
-     ORDER BY company_name'
-)->fetchAll();
+     ORDER BY company_name',
+    [],
+    25,
+    'partners_page'
+);
+$partners = $partnersP['data'];
 
 renderHeader('Insurance Partner Management');
 ?>
@@ -222,7 +229,7 @@ renderHeader('Insurance Partner Management');
 </section>
 
 <section class="card">
-    <h2>Insurance Partners (<?= count($partners); ?> registered)</h2>
+    <h2>Insurance Partners (<?= (int) $partnersP['total']; ?> registered)</h2>
     <table>
         <thead>
             <tr>
@@ -311,6 +318,7 @@ renderHeader('Insurance Partner Management');
             <?php endforeach; ?>
         </tbody>
     </table>
+    <?= renderPagination($partnersP); ?>
 </section>
 
 <style>

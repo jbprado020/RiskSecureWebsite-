@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin']);
 
@@ -199,11 +200,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_staff'])) {
     }
 }
 
-$staff = $pdo->query(
+$staffP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM staff_accounts',
     'SELECT id, full_name, email, role, is_active, contact_number, created_at
      FROM staff_accounts
-     ORDER BY full_name'
-)->fetchAll();
+     ORDER BY full_name',
+    [],
+    25,
+    'staff_page'
+);
+$staff = $staffP['data'];
 
 renderHeader('Staff Management');
 ?>
@@ -256,7 +263,7 @@ renderHeader('Staff Management');
 </section>
 
 <section class="card">
-    <h2>Staff Directory (<?= count($staff); ?> members)</h2>
+    <h2>Staff Directory (<?= (int) $staffP['total']; ?> members)</h2>
     <table>
         <thead>
             <tr>
@@ -365,6 +372,7 @@ renderHeader('Staff Management');
             <?php endforeach; ?>
         </tbody>
     </table>
+    <?= renderPagination($staffP); ?>
 </section>
 
 <style>

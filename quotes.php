@@ -8,6 +8,7 @@ require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/insurance_service.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -82,12 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quote_status']
 }
 
 $clients = $pdo->query('SELECT id, full_name FROM clients ORDER BY full_name')->fetchAll();
-$quotes = $pdo->query(
-    'SELECT q.*, c.full_name
-     FROM quotes q
-     INNER JOIN clients c ON c.id = q.client_id
-     ORDER BY q.created_at DESC'
-)->fetchAll();
+$quotesP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM quotes q INNER JOIN clients c ON c.id = q.client_id',
+    'SELECT q.*, c.full_name FROM quotes q INNER JOIN clients c ON c.id = q.client_id ORDER BY q.created_at DESC',
+    [],
+    25,
+    'quotes_page'
+);
+$quotes = $quotesP['data'];
 
 renderHeader('Quotes');
 ?>
@@ -186,6 +190,7 @@ renderHeader('Quotes');
             <?php endforeach; ?>
         </tbody>
     </table>
+    <?= renderPagination($quotesP); ?>
     </div>
 </section>
 

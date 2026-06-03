@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/audit_helpers.php';
 require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter']);
 
@@ -180,13 +181,21 @@ $expiringSoon = $pdo->query(
      ORDER BY p.end_date ASC'
 )->fetchAll();
 
-$renewals = $pdo->query(
+$renewalsP = paginatedQuery(
+    $pdo,
+    'SELECT COUNT(*) FROM renewals r
+     INNER JOIN policies p ON p.id = r.policy_id
+     INNER JOIN clients c ON c.id = p.client_id',
     'SELECT r.*, p.policy_number, c.full_name
      FROM renewals r
      INNER JOIN policies p ON p.id = r.policy_id
-    INNER JOIN clients c ON c.id = p.client_id
-     ORDER BY r.renewal_date DESC, r.created_at DESC'
-)->fetchAll();
+     INNER JOIN clients c ON c.id = p.client_id
+     ORDER BY r.renewal_date DESC, r.created_at DESC',
+    [],
+    25,
+    'renewals_page'
+);
+$renewals = $renewalsP['data'];
 
 renderHeader('Renewals');
 ?>
@@ -326,6 +335,7 @@ renderHeader('Renewals');
                 <?php endif; ?>
             </tbody>
         </table>
+    <?= renderPagination($renewalsP); ?>
     </div>
 </section>
 
