@@ -93,6 +93,7 @@ function iconMarkup(string $name): string
         'login' => '<path d="M10 5H4v14h6"></path><path d="M13 12h7"></path><path d="M16 9l4 3-4 3"></path>',
         'person_add' => '<circle cx="9" cy="8" r="3"></circle><path d="M3.8 20c1-2.9 3-4.3 5.2-4.3 1.7 0 3.2.5 4.3 1.4"></path><path d="M18 9v6M15 12h6"></path>',
         'workspace_premium' => '<path d="M12 3l7 4-1.4 7.5L12 21 6.4 14.5 5 7z"></path><path d="M12 8l1.2 2.4 2.7.4-2 1.9.5 2.7L12 13.8 9.6 15.4l.5-2.7-2-1.9 2.7-.4z"></path>',
+        'notifications' => '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path>',
         'logout_default' => '<path d="M10 5H4v14h6"></path><path d="M13 12H4"></path><path d="M16 9l4 3-4 3"></path>',
     ];
 
@@ -166,8 +167,6 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
     echo '<div class="brand-copy">';
     echo '<span class="brand-title">RiskSecure Insurance</span>';
-    $subtitle = isCustomerLoggedIn() ? 'Customer Portal' : 'Operations Workflow';
-    echo '<span class="brand-subtitle">' . e($subtitle) . '</span>';
     echo '</div>';
     echo '</div>';
     echo '<nav class="nav sidebar-nav" id="primary-navigation" aria-label="Primary navigation">';
@@ -217,10 +216,58 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '</nav>';
     echo '</aside>';
     echo '<div class="app-content">';
+
+    $displayName = '';
+    if (isStaffLoggedIn()) {
+        $displayName = staffName() !== '' ? staffName() : staffEmail();
+    } elseif (isCustomerLoggedIn()) {
+        $displayName = customerName() !== '' ? customerName() : customerEmail();
+    }
+
+    echo '<header class="top-bar">';
+    echo '<div class="container top-bar-inner">';
+    
     echo '<button class="sidebar-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation menu">';
     echo '<span class="sidebar-toggle-lines" aria-hidden="true"><span></span><span></span><span></span></span>';
     echo '<span class="sidebar-toggle-text">Menu</span>';
     echo '</button>';
+
+    echo '<div class="top-bar-actions">';
+    
+    echo '<div class="dropdown top-bar-item" id="notif-dropdown">';
+    echo '<button class="top-bar-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">';
+    echo iconMarkup('notifications');
+    echo '<span class="badge-dot"></span>';
+    echo '</button>';
+    echo '<div class="dropdown-menu" hidden>';
+    echo '<div class="dropdown-header">Notifications</div>';
+    echo '<div class="dropdown-item">No new notifications</div>';
+    echo '</div>';
+    echo '</div>';
+    
+    echo '<div class="dropdown top-bar-item" id="profile-dropdown">';
+    echo '<button class="top-bar-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="User Profile">';
+    echo iconMarkup('person');
+    echo '</button>';
+    echo '<div class="dropdown-menu" hidden>';
+    echo '<div class="dropdown-header">' . e($displayName) . '</div>';
+    echo '<a href="#" class="dropdown-item">My Profile</a>';
+    echo '<a href="#" class="dropdown-item">Settings</a>';
+    echo '<hr class="dropdown-divider">';
+    if (isStaffLoggedIn()) {
+        echo '<a href="staff_logout.php" class="dropdown-item text-danger">Logout</a>';
+    } elseif (isCustomerLoggedIn()) {
+        echo '<a href="customer_logout.php" class="dropdown-item text-danger">Logout</a>';
+    } else {
+        echo '<a href="customer_login.php" class="dropdown-item">Login</a>';
+    }
+    echo '</div>';
+    echo '</div>';
+    
+    echo '</div>';
+    echo '</div>';
+    echo '</header>';
+
     echo '<div class="sidebar-backdrop" hidden></div>';
     echo '<main class="container" id="main-content" tabindex="-1">';
 

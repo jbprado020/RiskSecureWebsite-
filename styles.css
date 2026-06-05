@@ -128,19 +128,150 @@ body::after {
     padding-bottom: 1.5rem;
 }
 
+/* Top Bar Styles */
+.top-bar {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 25;
+}
+
+.top-bar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-bar-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-left: auto; /* Ensure actions stay on right even if toggle is hidden */
+}
+
+.top-bar-item {
+    position: relative;
+}
+
+.top-bar-btn {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+}
+
+.top-bar-btn:hover {
+    background: var(--panel-soft);
+    border-color: var(--border-strong);
+    transform: none;
+}
+
+.top-bar-btn svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.badge-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background: var(--danger);
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    right: 0;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(69, 16, 26, 0.12);
+    min-width: 220px;
+    z-index: 100;
+    overflow: hidden;
+    transform-origin: top right;
+    animation: dropIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropIn {
+    from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.dropdown-header {
+    padding: 1rem 1.2rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    background: var(--panel-soft);
+    border-bottom: 1px solid var(--border);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.85rem 1.2rem;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.15s;
+    border: none;
+    text-align: left;
+    width: 100%;
+}
+
+.dropdown-item:hover {
+    background: var(--panel-soft);
+    color: var(--primary);
+}
+
+.dropdown-divider {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
 .sidebar-toggle {
     display: none;
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
     width: auto;
-    margin: 1rem 0 0.6rem auto;
-    padding: 0.72rem 1rem;
+    padding: 0.6rem 1rem;
     border-radius: 999px;
     border: 1px solid var(--border-strong);
-    background: rgba(255, 255, 255, 0.94);
+    background: #ffffff;
     color: var(--ink);
-    box-shadow: 0 10px 18px rgba(69, 16, 26, 0.08);
+    box-shadow: 0 4px 10px rgba(69, 16, 26, 0.06);
+    height: 42px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .sidebar-toggle:hover {
