@@ -394,332 +394,360 @@ foreach ($accountMeetings as $m) {
 renderHeader('Customer Portal');
 ?>
 
-<section class="grid cols-4">
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Welcome back, <?= e($customerName); ?>!</h1>
+        <p>Manage your insurance portfolio, track claims, and stay protected with RiskSecure.</p>
+    </div>
+</div>
+
+<section class="grid cols-4 kpi-container">
     <div class="card kpi">
-        <h3>Active Policies</h3>
+        <div class="kpi-header">
+            <?= iconMarkup('policy'); ?>
+            <h3>Active Policies</h3>
+        </div>
         <p><?= (int) $activePoliciesCount; ?></p>
         <div class="kpi-note">Protecting what matters</div>
     </div>
     <div class="card kpi">
-        <h3>Pending Claims</h3>
+        <div class="kpi-header">
+            <?= iconMarkup('gavel'); ?>
+            <h3>Pending Claims</h3>
+        </div>
         <p><?= (int) $pendingClaimsCount; ?></p>
         <div class="kpi-note">Currently in review</div>
     </div>
     <div class="card kpi">
-        <h3>Total Premium</h3>
+        <div class="kpi-header">
+            <?= iconMarkup('payments'); ?>
+            <h3>Total Premium</h3>
+        </div>
         <p>PHP <?= number_format($totalActivePremium, 2); ?></p>
         <div class="kpi-note">Annual commitment</div>
     </div>
     <div class="card kpi">
-        <h3>Next Meeting</h3>
+        <div class="kpi-header">
+            <?= iconMarkup('event'); ?>
+            <h3>Next Meeting</h3>
+        </div>
         <p><?= $nextMeeting ? date('M d, H:i', strtotime($nextMeeting['meeting_at'])) : 'No schedule'; ?></p>
         <div class="kpi-note"><?= $nextMeeting ? e((string)$nextMeeting['purpose']) : 'Book one below'; ?></div>
     </div>
 </section>
 
 <section class="card">
-    <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('dashboard'); ?> Quick Actions</span></h2>
-    <div class="grid cols-2">
-        <article class="card" style="background: var(--panel-soft);">
-            <h3><?= iconMarkup('request_quote'); ?> Apply for Insurance</h3>
+    <div class="section-header">
+        <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('dashboard'); ?> Quick Actions</span></h2>
+        <p>How can we help you today?</p>
+    </div>
+    
+    <div class="grid cols-4 action-grid">
+        <article class="card action-tile">
+            <div class="action-icon"><?= iconMarkup('request_quote'); ?></div>
+            <h3>Apply for Insurance</h3>
+            <p>Get a new quote for life or non-life insurance.</p>
+            <button type="button" class="btn-action" data-toggle="edit-form" data-target="form-apply">Get Started</button>
+        </article>
+
+        <article class="card action-tile">
+            <div class="action-icon"><?= iconMarkup('gavel'); ?></div>
+            <h3>File a Claim</h3>
+            <p>Report an incident and start your claim process.</p>
+            <button type="button" class="btn-action" data-toggle="edit-form" data-target="form-claim">File Now</button>
+        </article>
+
+        <article class="card action-tile">
+            <div class="action-icon"><?= iconMarkup('event'); ?></div>
+            <h3>Schedule Meeting</h3>
+            <p>Book a consultation with our insurance agents.</p>
+            <button type="button" class="btn-action" data-toggle="edit-form" data-target="form-meeting">Book Now</button>
+        </article>
+
+        <article class="card action-tile">
+            <div class="action-icon"><?= iconMarkup('folder_open'); ?></div>
+            <h3>Upload Document</h3>
+            <p>Submit requirements for your policy or claim.</p>
+            <button type="button" class="btn-action" data-toggle="edit-form" data-target="form-upload">Upload</button>
+        </article>
+    </div>
+
+    <!-- Hidden Forms -->
+    <div id="form-apply" class="form-drawer" hidden>
+        <div class="card form-container">
+            <h3><?= iconMarkup('request_quote'); ?> New Insurance Application</h3>
             <form method="post" class="grid" data-validate="true">
                 <?= csrfField(); ?>
                 <input type="hidden" name="submit_application" value="1">
-                <div>
-                    <label>Policy Type</label>
-                    <select name="policy_type" required>
-                        <option value="life">Life</option>
-                        <option value="non-life">Non-Life</option>
-                    </select>
+                <div class="grid cols-2">
+                    <div>
+                        <label>Policy Type</label>
+                        <select name="policy_type" required>
+                            <option value="life">Life</option>
+                            <option value="non-life">Non-Life</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Product Name</label>
+                        <input name="product_name" placeholder="e.g. Life Shield" required>
+                    </div>
                 </div>
-                <div>
-                    <label>Product Name</label>
-                    <input name="product_name" placeholder="e.g. Life Shield" required>
+                <div class="grid cols-3">
+                    <div>
+                        <label>Coverage (PHP)</label>
+                        <input name="coverage_amount" type="number" step="0.01" min="1" required>
+                    </div>
+                    <div>
+                        <label>Term (Months)</label>
+                        <input name="term_months" type="number" min="1" value="12" required>
+                    </div>
+                    <div>
+                        <label>Risk Level</label>
+                        <select name="risk_level" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label>Coverage (PHP)</label>
-                    <input name="coverage_amount" type="number" step="0.01" min="1" required>
+                <div class="form-actions">
+                    <button type="submit">Submit Application</button>
+                    <button type="button" class="btn-secondary" data-toggle="edit-form" data-target="form-apply">Cancel</button>
                 </div>
-                <button type="submit">Submit Application</button>
             </form>
-        </article>
+        </div>
+    </div>
 
-        <article class="card" style="background: var(--panel-soft);">
-            <h3><?= iconMarkup('gavel'); ?> File a Claim</h3>
+    <div id="form-claim" class="form-drawer" hidden>
+        <div class="card form-container">
+            <h3><?= iconMarkup('gavel'); ?> Submit a New Claim</h3>
             <form method="post" class="grid" data-validate="true">
                 <?= csrfField(); ?>
                 <input type="hidden" name="file_customer_claim" value="1">
-                <div>
-                    <label>Policy</label>
-                    <select name="policy_id" required>
-                        <option value="">Select policy</option>
-                        <?php foreach ($accountPolicies as $p): ?>
-                            <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <div class="grid cols-2">
+                    <div>
+                        <label>Select Policy</label>
+                        <select name="policy_id" required>
+                            <option value="">Choose policy</option>
+                            <?php foreach ($accountPolicies as $p): ?>
+                                <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Claim Amount (PHP)</label>
+                        <input name="claim_amount" type="number" step="0.01" min="1" required>
+                    </div>
                 </div>
-                <div>
-                    <label>Claim Amount (PHP)</label>
-                    <input name="claim_amount" type="number" step="0.01" min="1" required>
+                <div class="grid cols-2">
+                    <div>
+                        <label>Incident Date</label>
+                        <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required>
+                    </div>
+                    <div>
+                        <label>Description</label>
+                        <input name="description" placeholder="Brief details of the incident" required>
+                    </div>
                 </div>
-                <div style="grid-column: 1 / -1;">
-                    <label>Incident Date</label>
-                    <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required>
+                <div class="form-actions">
+                    <button type="submit">Submit Claim</button>
+                    <button type="button" class="btn-secondary" data-toggle="edit-form" data-target="form-claim">Cancel</button>
                 </div>
-                <button type="submit">Submit Claim</button>
             </form>
-        </article>
+        </div>
     </div>
 
-    <div class="grid cols-2" style="margin-top: 1rem;">
-        <article class="card" style="background: var(--panel-soft);">
-            <h3><?= iconMarkup('event'); ?> Schedule Meeting</h3>
+    <div id="form-meeting" class="form-drawer" hidden>
+        <div class="card form-container">
+            <h3><?= iconMarkup('event'); ?> Schedule an Appointment</h3>
             <form method="post" class="grid" data-validate="true">
                 <?= csrfField(); ?>
                 <input type="hidden" name="schedule_customer_appointment" value="1">
-                <div>
-                    <label>Date & Time</label>
-                    <input type="datetime-local" name="meeting_at" required>
+                <div class="grid cols-2">
+                    <div>
+                        <label>Date & Time</label>
+                        <input type="datetime-local" name="meeting_at" required>
+                    </div>
+                    <div>
+                        <label>Preferred Agent</label>
+                        <select name="agent_id" required>
+                            <option value="">Select agent</option>
+                            <?php foreach ($availableAgents as $a): ?>
+                                <option value="<?= (int)$a['id']; ?>"><?= e((string)$a['full_name']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label>Agent</label>
-                    <select name="agent_id" required>
-                        <option value="">Select agent</option>
-                        <?php foreach ($availableAgents as $a): ?>
-                            <option value="<?= (int)$a['id']; ?>"><?= e((string)$a['full_name']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <div class="grid cols-2">
+                    <div>
+                        <label>Meeting Channel</label>
+                        <select name="channel" required>
+                            <option value="zoom">Zoom / Online</option>
+                            <option value="phone">Phone Call</option>
+                            <option value="in-person">In-Person</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Purpose</label>
+                        <input name="purpose" placeholder="e.g. Policy Review" required>
+                    </div>
                 </div>
-                <div style="grid-column: 1 / -1;">
-                    <label>Purpose</label>
-                    <input name="purpose" placeholder="e.g. Policy Review" required>
+                <div class="form-actions">
+                    <button type="submit">Book Appointment</button>
+                    <button type="button" class="btn-secondary" data-toggle="edit-form" data-target="form-meeting">Cancel</button>
                 </div>
-                <button type="submit">Book Appointment</button>
             </form>
-        </article>
+        </div>
+    </div>
 
-        <article class="card" style="background: var(--panel-soft);">
-            <h3><?= iconMarkup('folder_open'); ?> Upload Document</h3>
+    <div id="form-upload" class="form-drawer" hidden>
+        <div class="card form-container">
+            <h3><?= iconMarkup('folder_open'); ?> Upload Required Documents</h3>
             <form method="post" enctype="multipart/form-data" class="grid" data-validate="true">
                 <?= csrfField(); ?>
                 <input type="hidden" name="upload_customer_document" value="1">
-                <div>
-                    <label>Policy</label>
-                    <select name="policy_id" required>
-                        <option value="">Select policy</option>
-                        <?php foreach ($accountPolicies as $p): ?>
-                            <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <div class="grid cols-2">
+                    <div>
+                        <label>Select Policy</label>
+                        <select name="policy_id" required>
+                            <option value="">Choose policy</option>
+                            <?php foreach ($accountPolicies as $p): ?>
+                                <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Document Type</label>
+                        <input name="document_type" placeholder="e.g. ID, Receipt, Medical Report" required>
+                    </div>
                 </div>
                 <div>
-                    <label>Doc Type</label>
-                    <input name="document_type" placeholder="e.g. ID, Receipt" required>
-                </div>
-                <div style="grid-column: 1 / -1;">
-                    <label>File</label>
+                    <label>File Upload (PDF, JPG, PNG)</label>
                     <input type="file" name="document_file" required accept=".pdf,.jpg,.jpeg,.png">
                 </div>
-                <button type="submit">Upload File</button>
+                <div class="form-actions">
+                    <button type="submit">Upload Document</button>
+                    <button type="button" class="btn-secondary" data-toggle="edit-form" data-target="form-upload">Cancel</button>
+                </div>
             </form>
-        </article>
+        </div>
     </div>
 </section>
 
-<section class="card">
-    <div class="section-heading">
-        <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('monitoring'); ?> Your Account Status</span></h2>
+<section class="card data-section">
+    <div class="section-header">
+        <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('monitoring'); ?> Your Account Portfolio</span></h2>
     </div>
 
-    <h3><?= iconMarkup('request_quote'); ?> Quotes</h3>
-    <div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Product</th>
-                <th>Coverage</th>
-                <th>Premium</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($accountQuotes as $quote): ?>
+    <div class="tab-container">
+        <h3>Recent Quotes</h3>
+        <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td><?= (int) $quote['id']; ?></td>
-                    <td><?= e((string) $quote['product_name']); ?> (<?= e((string) $quote['policy_type']); ?>)</td>
-                    <td>PHP <?= number_format((float) $quote['coverage_amount'], 2); ?></td>
-                    <td>PHP <?= number_format((float) $quote['premium_amount'], 2); ?></td>
-                    <td><span class="badge <?= badgeClass((string) $quote['status']); ?>"><?= e(statusLabel((string) $quote['status'])); ?></span></td>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Coverage</th>
+                    <th>Premium</th>
+                    <th>Status</th>
                 </tr>
-            <?php endforeach; ?>
-            <?php if (count($accountQuotes) === 0): ?>
-                <tr><td colspan="5">No quotes yet.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    </div>
+            </thead>
+            <tbody>
+                <?php foreach ($accountQuotes as $quote): ?>
+                    <tr>
+                        <td><?= (int) $quote['id']; ?></td>
+                        <td><?= e((string) $quote['product_name']); ?> <small>(<?= e((string) $quote['policy_type']); ?>)</small></td>
+                        <td>PHP <?= number_format((float) $quote['coverage_amount'], 2); ?></td>
+                        <td>PHP <?= number_format((float) $quote['premium_amount'], 2); ?></td>
+                        <td><span class="badge <?= badgeClass((string) $quote['status']); ?>"><?= e(statusLabel((string) $quote['status'])); ?></span></td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (count($accountQuotes) === 0): ?>
+                    <tr><td colspan="5" class="empty-state">No quotes yet. Start by applying for one!</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        </div>
 
-    <h3>Policies</h3>
-    <div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th>Policy Number</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($accountPolicies as $policy): ?>
+        <h3>Active Policies</h3>
+        <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td><?= e((string) $policy['policy_number']); ?></td>
-                    <td><?= e((string) $policy['start_date']); ?></td>
-                    <td><?= e((string) $policy['end_date']); ?></td>
-                    <td><span class="badge <?= badgeClass((string) $policy['status']); ?>"><?= e(statusLabel((string) $policy['status'])); ?></span></td>
+                    <th>Policy Number</th>
+                    <th>Coverage Period</th>
+                    <th>Status</th>
                 </tr>
-            <?php endforeach; ?>
-            <?php if (count($accountPolicies) === 0): ?>
-                <tr><td colspan="4">No policies yet.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    </div>
+            </thead>
+            <tbody>
+                <?php foreach ($accountPolicies as $policy): ?>
+                    <tr>
+                        <td><strong><?= e((string) $policy['policy_number']); ?></strong></td>
+                        <td><?= e((string) $policy['start_date']); ?> to <?= e((string) $policy['end_date']); ?></td>
+                        <td><span class="badge <?= badgeClass((string) $policy['status']); ?>"><?= e(statusLabel((string) $policy['status'])); ?></span></td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (count($accountPolicies) === 0): ?>
+                    <tr><td colspan="3" class="empty-state">No active policies found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        </div>
 
-    <h3>Claims</h3>
-    <div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Policy</th>
-                <th>Amount</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($accountClaims as $claim): ?>
-                <tr>
-                    <td><?= (int) $claim['id']; ?></td>
-                    <td><?= e((string) $claim['policy_number']); ?></td>
-                    <td>PHP <?= number_format((float) $claim['claim_amount'], 2); ?></td>
-                    <td><span class="badge <?= badgeClass((string) $claim['claim_status']); ?>"><?= e(statusLabel((string) $claim['claim_status'])); ?></span></td>
-                </tr>
-            <?php endforeach; ?>
-            <?php if (count($accountClaims) === 0): ?>
-                <tr><td colspan="4">No claims yet.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    </div>
-
-    <h3>Payments</h3>
-    <div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Policy</th>
-                <th>Amount</th>
-                <th>Due</th>
-                <th>Paid Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($accountPayments as $payment): ?>
-                <tr>
-                    <td><?= (int) $payment['id']; ?></td>
-                    <td><?= e((string) $payment['policy_number']); ?></td>
-                    <td>PHP <?= number_format((float) $payment['amount'], 2); ?></td>
-                    <td><?= e((string) $payment['due_date']); ?></td>
-                    <td><?= e((string) ($payment['paid_date'] ?? '-')); ?></td>
-                    <td><span class="badge <?= badgeClass((string) $payment['status']); ?>"><?= e(statusLabel((string) $payment['status'])); ?></span></td>
-                </tr>
-            <?php endforeach; ?>
-            <?php if (count($accountPayments) === 0): ?>
-                <tr><td colspan="6">No payments yet.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    </div>
-
-    <h3>Appointments</h3>
-    <div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Date/Time</th>
-                <th>Channel</th>
-                <th>Purpose</th>
-                <th>Assigned Agent</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($accountMeetings as $meeting): ?>
-                <tr>
-                    <td><?= (int) $meeting['id']; ?></td>
-                    <td><?= e((string) $meeting['meeting_at']); ?></td>
-                    <td><?= e((string) $meeting['channel']); ?></td>
-                    <td><?= e((string) $meeting['purpose']); ?></td>
-                    <td><?= e((string) $meeting['agent_name']); ?> (<?= e(statusLabel((string) $meeting['agent_role'])); ?>)</td>
-                    <td><span class="badge <?= badgeClass((string) $meeting['status']); ?>"><?= e(statusLabel((string) $meeting['status'])); ?></span></td>
-                    <td>
-                        <?php if ((string) $meeting['status'] === 'scheduled'): ?>
-                            <form method="post">
-                                <?= csrfField(); ?>
-                                <input type="hidden" name="cancel_customer_appointment" value="1">
-                                <input type="hidden" name="meeting_id" value="<?= (int) $meeting['id']; ?>">
-                                <button type="submit">Cancel</button>
-                            </form>
-                        <?php else: ?>
-                            -
+        <div class="grid cols-2" style="margin-top: 1rem;">
+            <div>
+                <h3>Claims</h3>
+                <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($accountClaims as $claim): ?>
+                            <tr>
+                                <td>#<?= (int) $claim['id']; ?></td>
+                                <td>PHP <?= number_format((float) $claim['claim_amount'], 2); ?></td>
+                                <td><span class="badge <?= badgeClass((string) $claim['claim_status']); ?>"><?= e(statusLabel((string) $claim['claim_status'])); ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <?php if (count($accountClaims) === 0): ?>
+                            <tr><td colspan="3" class="empty-state">No claims filed.</td></tr>
                         <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            <?php if (count($accountMeetings) === 0): ?>
-                <tr><td colspan="7">No appointments yet.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    </div>
-
-    <h3>Documents</h3>
-    <div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Policy</th>
-                <th>Claim</th>
-                <th>Type</th>
-                <th>Uploaded</th>
-                <th>Hard Copy</th>
-                <th>File</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($accountDocuments as $document): ?>
-                <tr>
-                    <td><?= (int) $document['id']; ?></td>
-                    <td><?= e((string) $document['policy_number']); ?></td>
-                    <td><?= $document['claim_id'] !== null ? '#' . (int) $document['claim_id'] : '-'; ?></td>
-                    <td><?= e((string) $document['document_type']); ?></td>
-                    <td><?= e((string) $document['date_uploaded']); ?></td>
-                    <td><?= (int) $document['is_hard_copy_received'] === 1 ? 'Received' : 'Pending'; ?></td>
-                    <td><a href="<?= e((string) $document['file_path']); ?>" target="_blank" rel="noopener noreferrer">View</a></td>
-                </tr>
-            <?php endforeach; ?>
-            <?php if (count($accountDocuments) === 0): ?>
-                <tr><td colspan="7">No documents yet.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            <div>
+                <h3>Upcoming Appointments</h3>
+                <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Purpose</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($accountMeetings as $meeting): ?>
+                            <tr>
+                                <td><?= date('M d, H:i', strtotime($meeting['meeting_at'])); ?></td>
+                                <td><?= e((string) $meeting['purpose']); ?></td>
+                                <td><span class="badge <?= badgeClass((string) $meeting['status']); ?>"><?= e(statusLabel((string) $meeting['status'])); ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <?php if (count($accountMeetings) === 0): ?>
+                            <tr><td colspan="3" class="empty-state">No appointments.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

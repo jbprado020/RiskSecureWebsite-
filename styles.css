@@ -836,15 +836,180 @@ tbody tr:hover {
     filter: brightness(1.04);
 }
 
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
+.welcome-hero {
+    background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    color: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 35px rgba(135, 17, 39, 0.2);
+    position: relative;
+    overflow: hidden;
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+.welcome-hero::after {
+    content: "";
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+}
+
+.welcome-hero h1 {
+    color: #ffffff;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px;
+}
+
+.kpi-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-header svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--primary);
+}
+
+.action-grid {
+    margin-top: 1.5rem;
+}
+
+.action-tile {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.action-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(135, 17, 39, 0.1);
+    border-color: var(--primary);
+}
+
+.action-icon {
+    background: var(--panel-soft);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    color: var(--primary);
+}
+
+.action-icon svg {
+    width: 30px;
+    height: 30px;
+}
+
+.action-tile h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.action-tile p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+}
+
+.form-drawer {
+    margin-top: 2rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.form-container {
+    background: #ffffff;
+    border-left: 4px solid var(--primary);
+    padding: 2rem;
+}
+
+.form-container h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.form-actions button {
+    flex: 1;
+}
+
+.btn-secondary {
+    background: #ffffff;
+    color: var(--ink);
+    border: 1px solid var(--border-strong);
+}
+
+.btn-secondary:hover {
+    background: var(--panel-soft);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.section-header {
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    margin-bottom: 0.25rem;
+}
+
+.section-header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1200px) {
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+    .welcome-hero h1 {
+        font-size: 1.8rem;
     }
 }
 @media (prefers-reduced-motion: reduce) {
