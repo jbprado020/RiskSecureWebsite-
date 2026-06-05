@@ -100,26 +100,12 @@ body::after {
     align-self: flex-start;
     width: 290px;
     min-height: 100vh;
-    padding: 1rem 0.9rem;
+    padding: 1.5rem 0.9rem;
     background: linear-gradient(180deg, rgba(111, 13, 31, 0.96), rgba(135, 17, 39, 0.94));
     color: #f6fbff;
     border-right: 1px solid rgba(255, 255, 255, 0.16);
     box-shadow: 18px 0 34px rgba(84, 10, 24, 0.16);
     overflow-y: auto;
-}
-
-.sidebar .brand {
-    padding: 0.5rem 0.4rem 1rem;
-    margin-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.sidebar .brand-title {
-    font-size: 1.22rem;
-}
-
-.sidebar .brand-subtitle {
-    opacity: 0.82;
 }
 
 .app-content {
@@ -134,7 +120,7 @@ body::after {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 0.6rem 0;
+    padding: 0.75rem 0;
     position: sticky;
     top: 0;
     z-index: 25;
@@ -146,11 +132,30 @@ body::after {
     align-items: center;
 }
 
+.top-bar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.top-bar-brand .brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+}
+
+.top-bar-brand .brand-title {
+    color: var(--primary);
+    font-size: 1.4rem;
+    margin: 0;
+}
+
 .top-bar-actions {
     display: flex;
     gap: 0.75rem;
     align-items: center;
-    margin-left: auto; /* Ensure actions stay on right even if toggle is hidden */
 }
 
 .top-bar-item {

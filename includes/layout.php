@@ -163,12 +163,6 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '<a class="skip-link" href="#main-content">Skip to content</a>';
     echo '<div class="app-shell">';
     echo '<aside class="sidebar">';
-    echo '<div class="brand">';
-    echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
-    echo '<div class="brand-copy">';
-    echo '<span class="brand-title">RiskSecure Insurance</span>';
-    echo '</div>';
-    echo '</div>';
     echo '<nav class="nav sidebar-nav" id="primary-navigation" aria-label="Primary navigation">';
 
     if (isStaffLoggedIn()) {
@@ -205,8 +199,7 @@ function renderHeader(string $title, bool $showBanner = true): void
 
         navLink('staff_logout.php', 'Staff Logout (' . statusLabel(staffRole()) . ')', $currentPage, 'logout');
     } elseif (isCustomerLoggedIn()) {
-        navLink('customer_portal.php', 'Customer Portal', $currentPage, 'person');
-        navLink('customer_logout.php', 'Customer Logout', $currentPage, 'logout');
+        navLink('customer_portal.php', 'Client Dashboard', $currentPage, 'dashboard');
     } else {
         navLink('staff_login.php', 'Staff Login', $currentPage, 'admin_panel_settings');
         navLink('customer_login.php', 'Customer Login', $currentPage, 'login');
@@ -227,6 +220,11 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '<header class="top-bar">';
     echo '<div class="container top-bar-inner">';
     
+    echo '<div class="top-bar-brand">';
+    echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
+    echo '<span class="brand-title">RiskSecure Insurance</span>';
+    echo '</div>';
+
     echo '<button class="sidebar-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation menu">';
     echo '<span class="sidebar-toggle-lines" aria-hidden="true"><span></span><span></span><span></span></span>';
     echo '<span class="sidebar-toggle-text">Menu</span>';
