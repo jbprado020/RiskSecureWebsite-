@@ -374,182 +374,164 @@ $documentsStmt = $pdo->prepare(
 $documentsStmt->execute([':client_id' => $clientId]);
 $accountDocuments = $documentsStmt->fetchAll();
 
+// KPI Calculations
+$activePoliciesCount = count(array_filter($accountPolicies, fn($p) => $p['status'] === 'active'));
+$pendingClaimsCount = count(array_filter($accountClaims, fn($c) => $c['claim_status'] === 'pending'));
+$totalActivePremium = array_reduce($accountQuotes, function($acc, $q) use ($accountPolicies) {
+    // Only count premium if it corresponds to an active policy (simplified for demo)
+    return $acc + (float)$q['premium_amount'];
+}, 0);
+
+$nextMeeting = null;
+foreach ($accountMeetings as $m) {
+    if ($m['status'] === 'scheduled' && strtotime($m['meeting_at']) > time()) {
+        if ($nextMeeting === null || strtotime($m['meeting_at']) < strtotime($nextMeeting['meeting_at'])) {
+            $nextMeeting = $m;
+        }
+    }
+}
+
 renderHeader('Customer Portal');
 ?>
 
-<section class="card">
-    <h2>Customer Self-Service Portal</h2>
-    <p>Welcome, <?= e($customerName); ?> (<?= e($customerEmail); ?>). <a href="customer_logout.php">Logout</a></p>
-
-    <?php if ($message !== ''): ?>
-        <div class="notice ok"><?= e($message); ?></div>
-    <?php endif; ?>
-    <?php if ($error !== ''): ?>
-        <?php renderNotice($error, 'error'); ?>
-    <?php endif; ?>
+<section class="grid cols-4">
+    <div class="card kpi">
+        <h3>Active Policies</h3>
+        <p><?= (int) $activePoliciesCount; ?></p>
+        <div class="kpi-note">Protecting what matters</div>
+    </div>
+    <div class="card kpi">
+        <h3>Pending Claims</h3>
+        <p><?= (int) $pendingClaimsCount; ?></p>
+        <div class="kpi-note">Currently in review</div>
+    </div>
+    <div class="card kpi">
+        <h3>Total Premium</h3>
+        <p>PHP <?= number_format($totalActivePremium, 2); ?></p>
+        <div class="kpi-note">Annual commitment</div>
+    </div>
+    <div class="card kpi">
+        <h3>Next Meeting</h3>
+        <p><?= $nextMeeting ? date('M d, H:i', strtotime($nextMeeting['meeting_at'])) : 'No schedule'; ?></p>
+        <div class="kpi-note"><?= $nextMeeting ? e((string)$nextMeeting['purpose']) : 'Book one below'; ?></div>
+    </div>
 </section>
 
-<section class="grid cols-2">
-    <article class="card">
-        <h2>Apply for Insurance</h2>
-        <form method="post" class="grid cols-2" data-validate="true">
-            <?= csrfField(); ?>
-            <input type="hidden" name="submit_application" value="1">
-            <div>
-                <label>Policy Type</label>
-                <select name="policy_type" required aria-label="Policy Type" aria-required="true">
-                    <option value="life">Life</option>
-                    <option value="non-life">Non-Life</option>
-                </select>
-            </div>
-            <div>
-                <label>Product Name</label>
-                <input name="product_name" placeholder="e.g. Family Life Shield" required aria-label="Product Name" aria-required="true" autocomplete="off">
-            </div>
-            <div>
-                <label>Coverage Amount (PHP)</label>
-                <input name="coverage_amount" type="number" step="0.01" min="1" required aria-label="Coverage Amount" aria-required="true" inputmode="decimal">
-            </div>
-            <div>
-                <label>Term (Months)</label>
-                <input name="term_months" type="number" min="1" value="12" required aria-label="Term Months" aria-required="true" inputmode="numeric">
-            </div>
-            <div>
-                <label>Risk Level</label>
-                <select name="risk_level" required aria-label="Risk Level" aria-required="true">
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
-            </div>
-            <div style="grid-column: 1 / -1;">
+<section class="card">
+    <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('dashboard'); ?> Quick Actions</span></h2>
+    <div class="grid cols-2">
+        <article class="card" style="background: var(--panel-soft);">
+            <h3><?= iconMarkup('request_quote'); ?> Apply for Insurance</h3>
+            <form method="post" class="grid" data-validate="true">
+                <?= csrfField(); ?>
+                <input type="hidden" name="submit_application" value="1">
+                <div>
+                    <label>Policy Type</label>
+                    <select name="policy_type" required>
+                        <option value="life">Life</option>
+                        <option value="non-life">Non-Life</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Product Name</label>
+                    <input name="product_name" placeholder="e.g. Life Shield" required>
+                </div>
+                <div>
+                    <label>Coverage (PHP)</label>
+                    <input name="coverage_amount" type="number" step="0.01" min="1" required>
+                </div>
                 <button type="submit">Submit Application</button>
-            </div>
-        </form>
-    </article>
+            </form>
+        </article>
 
-    <article class="card">
-        <h2>File a Claim</h2>
-        <form method="post" class="grid cols-2" data-validate="true">
-            <?= csrfField(); ?>
-            <input type="hidden" name="file_customer_claim" value="1">
-            <div>
-                <label>Policy Number</label>
-                <select name="policy_id" required aria-label="Policy Number" aria-required="true">
-                    <option value="">Select your policy</option>
-                    <?php foreach ($accountPolicies as $policy): ?>
-                        <option value="<?= (int) $policy['id']; ?>"><?= e((string) $policy['policy_number']); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <label>Incident Date</label>
-                <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required aria-label="Incident Date" aria-required="true">
-            </div>
-            <div>
-                <label>Claim Amount (PHP)</label>
-                <input type="number" step="0.01" min="1" name="claim_amount" required aria-label="Claim Amount" aria-required="true" inputmode="decimal">
-            </div>
-            <div style="grid-column: 1 / -1;">
-                <label>Description</label>
-                <textarea name="description" required aria-label="Description" aria-required="true"></textarea>
-            </div>
-            <div style="grid-column: 1 / -1;">
+        <article class="card" style="background: var(--panel-soft);">
+            <h3><?= iconMarkup('gavel'); ?> File a Claim</h3>
+            <form method="post" class="grid" data-validate="true">
+                <?= csrfField(); ?>
+                <input type="hidden" name="file_customer_claim" value="1">
+                <div>
+                    <label>Policy</label>
+                    <select name="policy_id" required>
+                        <option value="">Select policy</option>
+                        <?php foreach ($accountPolicies as $p): ?>
+                            <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div>
+                    <label>Claim Amount (PHP)</label>
+                    <input name="claim_amount" type="number" step="0.01" min="1" required>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label>Incident Date</label>
+                    <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required>
+                </div>
                 <button type="submit">Submit Claim</button>
-            </div>
-        </form>
-    </article>
-</section>
+            </form>
+        </article>
+    </div>
 
-<section class="grid cols-2">
-    <article class="card">
-        <h2>Schedule Appointment</h2>
-        <form method="post" class="grid cols-2" data-validate="true">
-            <?= csrfField(); ?>
-            <input type="hidden" name="schedule_customer_appointment" value="1">
-            <div>
-                <label>Date and Time</label>
-                <input type="datetime-local" name="meeting_at" required aria-label="Meeting Date and Time" aria-required="true">
-            </div>
-            <div>
-                <label>Duration (minutes)</label>
-                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required aria-label="Duration Minutes" aria-required="true" inputmode="numeric">
-            </div>
-            <div>
-                <label>Preferred Channel</label>
-                <select name="channel" required aria-label="Preferred Channel" aria-required="true">
-                    <option value="zoom">Zoom</option>
-                    <option value="phone">Phone</option>
-                    <option value="in-person">In-person</option>
-                </select>
-            </div>
-            <div>
-                <label>Assign Agent</label>
-                <select name="agent_id" required aria-label="Assign Agent" aria-required="true">
-                    <option value="">Select agent</option>
-                    <?php foreach ($availableAgents as $agent): ?>
-                        <option value="<?= (int) $agent['id']; ?>">
-                            <?= e((string) $agent['full_name']); ?> (<?= e(statusLabel((string) $agent['role'])); ?>)
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <label>Purpose</label>
-                <input name="purpose" placeholder="e.g. Claim follow-up" required aria-label="Purpose" aria-required="true" autocomplete="off">
-            </div>
-            <div style="grid-column: 1 / -1;">
-                <label>Notes</label>
-                <textarea name="notes" placeholder="Additional details for the meeting"></textarea>
-            </div>
-            <div style="grid-column: 1 / -1;">
-                <button type="submit">Schedule Appointment</button>
-            </div>
-        </form>
-    </article>
+    <div class="grid cols-2" style="margin-top: 1rem;">
+        <article class="card" style="background: var(--panel-soft);">
+            <h3><?= iconMarkup('event'); ?> Schedule Meeting</h3>
+            <form method="post" class="grid" data-validate="true">
+                <?= csrfField(); ?>
+                <input type="hidden" name="schedule_customer_appointment" value="1">
+                <div>
+                    <label>Date & Time</label>
+                    <input type="datetime-local" name="meeting_at" required>
+                </div>
+                <div>
+                    <label>Agent</label>
+                    <select name="agent_id" required>
+                        <option value="">Select agent</option>
+                        <?php foreach ($availableAgents as $a): ?>
+                            <option value="<?= (int)$a['id']; ?>"><?= e((string)$a['full_name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label>Purpose</label>
+                    <input name="purpose" placeholder="e.g. Policy Review" required>
+                </div>
+                <button type="submit">Book Appointment</button>
+            </form>
+        </article>
 
-    <article class="card">
-        <h2>Upload Documents</h2>
-        <form method="post" enctype="multipart/form-data" class="grid cols-2" data-validate="true">
-            <?= csrfField(); ?>
-            <input type="hidden" name="upload_customer_document" value="1">
-            <div>
-                <label>Policy</label>
-                <select name="policy_id" required aria-label="Policy" aria-required="true">
-                    <option value="">Select your policy</option>
-                    <?php foreach ($accountPolicies as $policy): ?>
-                        <option value="<?= (int) $policy['id']; ?>"><?= e((string) $policy['policy_number']); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <label>Claim (Optional)</label>
-                <select name="claim_id" aria-label="Claim (Optional)">
-                    <option value="">No specific claim</option>
-                    <?php foreach ($accountClaims as $claim): ?>
-                        <option value="<?= (int) $claim['id']; ?>">#<?= (int) $claim['id']; ?> - <?= e((string) $claim['policy_number']); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <label>Document Type</label>
-                <input name="document_type" placeholder="e.g. ORCR, Policy Form" required aria-label="Document Type" aria-required="true" autocomplete="off">
-            </div>
-            <div>
-                <label>File</label>
-                <input type="file" name="document_file" required aria-label="Document File" aria-required="true" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
-            </div>
-            <div style="grid-column: 1 / -1;">
-                <button type="submit">Upload Document</button>
-            </div>
-        </form>
-    </article>
+        <article class="card" style="background: var(--panel-soft);">
+            <h3><?= iconMarkup('folder_open'); ?> Upload Document</h3>
+            <form method="post" enctype="multipart/form-data" class="grid" data-validate="true">
+                <?= csrfField(); ?>
+                <input type="hidden" name="upload_customer_document" value="1">
+                <div>
+                    <label>Policy</label>
+                    <select name="policy_id" required>
+                        <option value="">Select policy</option>
+                        <?php foreach ($accountPolicies as $p): ?>
+                            <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div>
+                    <label>Doc Type</label>
+                    <input name="document_type" placeholder="e.g. ID, Receipt" required>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label>File</label>
+                    <input type="file" name="document_file" required accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                <button type="submit">Upload File</button>
+            </form>
+        </article>
+    </div>
 </section>
 
 <section class="card">
-    <h2>Your Account Status</h2>
+    <div class="section-heading">
+        <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('monitoring'); ?> Your Account Status</span></h2>
+    </div>
 
-    <h3>Quotes</h3>
+    <h3><?= iconMarkup('request_quote'); ?> Quotes</h3>
     <div class="table-wrap">
     <table>
         <thead>

@@ -100,10 +100,10 @@ function recordLoginAttempt(PDO $pdo, string $accountType, string $identifier, b
              ON DUPLICATE KEY UPDATE 
                 attempt_count = attempt_count + 1,
                 last_attempt = NOW(),
-                is_locked = IF(attempt_count + 1 >= :max_attempts, 1, 0),
+                is_locked = IF(attempt_count + 1 >= ' . $maxAttempts . ', 1, 0),
                 locked_until = IF(
-                    attempt_count + 1 >= :max_attempts,
-                    DATE_ADD(NOW(), INTERVAL :lockout_minutes MINUTE),
+                    attempt_count + 1 >= ' . $maxAttempts . ',
+                    DATE_ADD(NOW(), INTERVAL ' . $lockoutMinutes . ' MINUTE),
                     NULL
                 )'
         );
@@ -111,8 +111,6 @@ function recordLoginAttempt(PDO $pdo, string $accountType, string $identifier, b
             ':ip' => $ip,
             ':account_type' => $accountType,
             ':identifier' => $identifier,
-            ':max_attempts' => $maxAttempts,
-            ':lockout_minutes' => $lockoutMinutes,
         ]);
     }
 }

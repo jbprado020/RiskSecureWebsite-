@@ -166,7 +166,8 @@ function renderHeader(string $title): void
     echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
     echo '<div class="brand-copy">';
     echo '<span class="brand-title">RiskSecure Insurance</span>';
-    echo '<span class="brand-subtitle">Operations Workflow</span>';
+    $subtitle = isCustomerLoggedIn() ? 'Customer Portal' : 'Operations Workflow';
+    echo '<span class="brand-subtitle">' . e($subtitle) . '</span>';
     echo '</div>';
     echo '</div>';
     echo '<nav class="nav sidebar-nav" id="primary-navigation" aria-label="Primary navigation">';
