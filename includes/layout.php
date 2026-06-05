@@ -119,7 +119,7 @@ function canAccess(array $allowedRoles): bool
     return in_array(staffRole(), $allowedRoles, true);
 }
 
-function renderHeader(string $title): void
+function renderHeader(string $title, bool $showBanner = true): void
 {
     ensureSessionStarted();
     $currentPage = basename((string) ($_SERVER['PHP_SELF'] ?? ''));
@@ -223,21 +223,24 @@ function renderHeader(string $title): void
     echo '</button>';
     echo '<div class="sidebar-backdrop" hidden></div>';
     echo '<main class="container" id="main-content" tabindex="-1">';
-    echo '<section class="page-banner">';
-    echo '<p class="page-banner-kicker">' . iconMarkup('workspace_premium') . ' RiskSecure Operations Console</p>';
-    echo '<h1>' . e($title) . '</h1>';
 
-    if (isStaffLoggedIn()) {
-        $displayName = staffName() !== '' ? staffName() : staffEmail();
-        echo '<p class="page-banner-meta">Signed in as ' . e($displayName) . ' | Role: ' . e(statusLabel(staffRole())) . '</p>';
-    } elseif (isCustomerLoggedIn()) {
-        $displayName = customerName() !== '' ? customerName() : customerEmail();
-        echo '<p class="page-banner-meta">Signed in as ' . e($displayName) . ' | Customer Portal</p>';
-    } else {
-        echo '<p class="page-banner-meta">Unified insurance workflow for policy, claims, payments, renewals, meetings, and reporting.</p>';
+    if ($showBanner) {
+        echo '<section class="page-banner">';
+        echo '<p class="page-banner-kicker">' . iconMarkup('workspace_premium') . ' RiskSecure Operations Console</p>';
+        echo '<h1>' . e($title) . '</h1>';
+
+        if (isStaffLoggedIn()) {
+            $displayName = staffName() !== '' ? staffName() : staffEmail();
+            echo '<p class="page-banner-meta">Signed in as ' . e($displayName) . ' | Role: ' . e(statusLabel(staffRole())) . '</p>';
+        } elseif (isCustomerLoggedIn()) {
+            $displayName = customerName() !== '' ? customerName() : customerEmail();
+            echo '<p class="page-banner-meta">Signed in as ' . e($displayName) . ' | Customer Portal</p>';
+        } else {
+            echo '<p class="page-banner-meta">Unified insurance workflow for policy, claims, payments, renewals, meetings, and reporting.</p>';
+        }
+
+        echo '</section>';
     }
-
-    echo '</section>';
 }
 
 function renderFooter(): void
@@ -248,6 +251,7 @@ function renderFooter(): void
     echo '<div class="footer">Sample educational system for life/non-life insurance operations.</div>';
     echo '<script src="assets/js/sidebar.js"></script>';
     echo '<script src="assets/js/form-validate.js"></script>';
+    echo '<script src="assets/js/admin-forms.js"></script>';
     echo '</body>';
     echo '</html>';
 }

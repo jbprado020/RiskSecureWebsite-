@@ -391,7 +391,7 @@ foreach ($accountMeetings as $m) {
     }
 }
 
-renderHeader('Customer Portal');
+renderHeader('Customer Portal', false);
 ?>
 
 <div class="welcome-hero">
