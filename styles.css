@@ -637,8 +637,8 @@ h3 { font-size: 1rem; }
 .nav {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    padding-top: 0.2rem;
+    gap: 1.5rem;
+    padding-top: 2rem;
 }
 
 .nav a {
@@ -1156,7 +1156,7 @@ tbody tr:hover {
 .welcome-hero {
     background: linear-gradient(135deg, var(--primary), var(--primary-2));
     color: #ffffff;
-    padding: 2.5rem 2rem;
+    padding: 1.5rem 2rem;
     border-radius: 16px;
     margin-bottom: 2rem;
     box-shadow: 0 15px 35px rgba(135, 17, 39, 0.2);
