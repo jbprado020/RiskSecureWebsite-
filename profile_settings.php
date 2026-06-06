@@ -109,7 +109,7 @@ renderHeader($title);
 <section class="grid <?= $isCustomer ? 'cols-1' : 'cols-2'; ?>">
     <article class="card" id="credentials">
         <h2><?= iconMarkup('manage_accounts'); ?> <?= $isCustomer ? 'Account Information' : 'Edit Credentials'; ?></h2>
-        <form action="profile_settings.php" method="post" class="grid cols-2 profile-form" data-validate="true">
+        <form action="profile_settings.php" method="post" class="grid cols-2 profile-form" id="profileForm">
             <input type="hidden" name="update_profile" value="1">
             <div>
                 <label>Full Name</label>
@@ -181,11 +181,30 @@ renderHeader($title);
     </form>
 </section>
 
+<!-- Custom Confirmation Modal -->
+<div id="confirmModal" class="custom-modal-overlay" style="display: none;">
+    <div class="custom-modal">
+        <div class="custom-modal-icon">
+            <?= iconMarkup('manage_accounts'); ?>
+        </div>
+        <h3>Confirm Profile Update</h3>
+        <p>Are you sure you want to update your account information? This will overwrite your current details.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+            <button type="button" id="confirmBtn">Yes, Update</button>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const inputs = document.querySelectorAll('input[data-progress="true"]');
     const progressBar = document.getElementById('progress-bar');
     const progressPct = document.getElementById('progress-pct');
+    const profileForm = document.getElementById('profileForm');
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
 
     function updateProgress() {
         let filled = 0;
@@ -198,6 +217,28 @@ document.addEventListener('DOMContentLoaded', function() {
         progressBar.style.width = percentage + '%';
         progressPct.textContent = percentage + '%';
     }
+
+    if (profileForm) {
+        profileForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            confirmModal.style.display = 'flex';
+        });
+    }
+
+    confirmBtn.addEventListener('click', function() {
+        profileForm.submit();
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        confirmModal.style.display = 'none';
+    });
+
+    // Close modal if clicking overlay
+    confirmModal.addEventListener('click', function(e) {
+        if (e.target === confirmModal) {
+            confirmModal.style.display = 'none';
+        }
+    });
 
     inputs.forEach(input => {
         input.addEventListener('input', updateProgress);
