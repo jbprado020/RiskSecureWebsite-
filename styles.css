@@ -319,6 +319,24 @@ main {
     gap: 1.5rem;
 }
 
+/* Persistent Sidebar for Desktop */
+@media (min-width: 1025px) {
+    .nav-drawer {
+        transform: translateX(0);
+        width: 280px;
+        box-shadow: 1px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .app-content {
+        margin-left: 280px;
+    }
+    .drawer-close {
+        display: none;
+    }
+    .sidebar-backdrop {
+        display: none !important;
+    }
+}
+
 /* Mobile Adjustments */
 @media (max-width: 1080px) {
     .top-bar {

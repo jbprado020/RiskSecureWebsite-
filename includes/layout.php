@@ -206,6 +206,8 @@ function renderHeader(string $title, bool $showBanner = true): void
         navLink('staff_logout.php', 'Staff Logout', $currentPage, 'logout');
     } elseif (isCustomerLoggedIn()) {
         navLink('customer_portal.php', 'Client Dashboard', $currentPage, 'dashboard');
+        navLink('customer_payments.php', 'Payments & Billing', $currentPage, 'payments');
+        navLink('customer_support.php', 'Contact Support', $currentPage, 'notifications');
         navLink('customer_logout.php', 'Logout', $currentPage, 'logout');
     } else {
         navLink('staff_login.php', 'Staff Login', $currentPage, 'admin_panel_settings');
@@ -230,10 +232,6 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '<div class="container top-bar-inner">';
     
     echo '<div class="top-bar-left">';
-    echo '<button class="sidebar-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation menu">';
-    echo '<span class="sidebar-toggle-lines" aria-hidden="true"><span></span><span></span><span></span></span>';
-    echo '</button>';
-
     echo '<div class="top-bar-brand">';
     echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
     echo '<span class="brand-title">RiskSecure Insurance</span>';
