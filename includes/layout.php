@@ -166,7 +166,10 @@ function renderHeader(string $title, bool $showBanner = true): void
     // Main Navigation Drawer (hidden by default)
     echo '<aside class="nav-drawer" id="primary-navigation">';
     echo '<div class="drawer-header">';
-    echo '<span class="drawer-title">Main Menu</span>';
+    echo '<div class="top-bar-brand" style="color: #ffffff;">';
+    echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo" style="border-color: #ffffff; width: 32px; height: 32px;">';
+    echo '<span class="brand-title" style="color: #ffffff; font-size: 1.2rem;">RiskSecure Insurance</span>';
+    echo '</div>';
     echo '<button class="drawer-close" type="button" aria-label="Close menu">&times;</button>';
     echo '</div>';
     echo '<nav class="nav drawer-nav" aria-label="Primary navigation">';
@@ -232,10 +235,6 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '<div class="container top-bar-inner">';
     
     echo '<div class="top-bar-left">';
-    echo '<div class="top-bar-brand">';
-    echo '<img class="brand-logo" src="icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
-    echo '<span class="brand-title">RiskSecure Insurance</span>';
-    echo '</div>';
     echo '</div>';
 
     echo '<div class="top-bar-actions">';
