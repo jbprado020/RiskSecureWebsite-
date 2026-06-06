@@ -649,14 +649,14 @@ h3 { font-size: 1rem; }
     white-space: nowrap;
     color: #edf7ff;
     text-decoration: none;
-    font-size: 0.82rem;
+    font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: 0.01em;
     padding: 0.72rem 0.82rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.06);
-    transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    transition: background 0.18s ease, transform 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
     overflow: hidden;
 }
 
@@ -670,8 +670,8 @@ h3 { font-size: 1rem; }
 }
 
 .nav-icon {
-    width: 0.88rem;
-    height: 0.88rem;
+    width: 1rem;
+    height: 1rem;
     display: inline-block;
     flex: 0 0 auto;
     stroke-width: 1.75;
@@ -687,10 +687,9 @@ h3 { font-size: 1rem; }
 }
 
 .nav a:hover {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.1);
     transform: translateX(3px);
-    box-shadow: 0 10px 24px rgba(46, 7, 16, 0.22);
+    box-shadow: none;
 }
 
 .nav a:hover::before,
@@ -701,8 +700,7 @@ h3 { font-size: 1rem; }
 .nav a.active {
     background: rgba(255, 255, 255, 0.96);
     color: #6c0f22;
-    border-color: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 14px 30px rgba(46, 7, 16, 0.16);
+    box-shadow: none;
 }
 
 .nav a:focus-visible,
