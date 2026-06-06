@@ -328,12 +328,18 @@ body.sidebar-open .nav-drawer {
 .dropdown-item {
     display: flex;
     align-items: center;
+    gap: 0.75rem;
     padding: 0.65rem 1rem;
     color: var(--ink);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 600;
     transition: background 0.2s ease;
+}
+
+.dropdown-item .nav-icon {
+    width: 1.1rem;
+    height: 1.1rem;
 }
 
 .dropdown-item:hover {

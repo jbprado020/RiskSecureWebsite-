@@ -266,16 +266,16 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '</button>';
     echo '<div class="dropdown-menu" hidden>';
     echo '<div class="dropdown-header">' . e($displayName) . '</div>';
-    echo '<a href="profile_settings.php" class="dropdown-item">Edit Credentials</a>';
-    echo '<a href="profile_settings.php#contact" class="dropdown-item">Contact Information</a>';
-    echo '<a href="profile_settings.php#security" class="dropdown-item">Account Security</a>';
+    echo '<a href="profile_settings.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Edit Credentials</span></a>';
+    echo '<a href="profile_settings.php#contact" class="dropdown-item">' . iconMarkup('notifications') . '<span>Contact Information</span></a>';
+    echo '<a href="profile_settings.php#security" class="dropdown-item">' . iconMarkup('admin_panel_settings') . '<span>Account Security</span></a>';
     echo '<hr class="dropdown-divider">';
     if (isStaffLoggedIn()) {
-        echo '<a href="staff_logout.php" class="dropdown-item text-danger">Logout</a>';
+        echo '<a href="staff_logout.php" class="dropdown-item text-danger">' . iconMarkup('logout') . '<span>Logout</span></a>';
     } elseif (isCustomerLoggedIn()) {
-        echo '<a href="customer_logout.php" class="dropdown-item text-danger">Logout</a>';
+        echo '<a href="customer_logout.php" class="dropdown-item text-danger">' . iconMarkup('logout') . '<span>Logout</span></a>';
     } else {
-        echo '<a href="customer_login.php" class="dropdown-item">Login</a>';
+        echo '<a href="customer_login.php" class="dropdown-item">' . iconMarkup('login') . '<span>Login</span></a>';
     }
     echo '</div>';
     echo '</div>';
@@ -290,7 +290,10 @@ function renderHeader(string $title, bool $showBanner = true): void
     if ($showBanner) {
         echo '<section class="page-banner">';
         echo '<p class="page-banner-kicker">' . iconMarkup('workspace_premium') . ' RiskSecure Operations Console</p>';
-        echo '<h1>' . e($title) . '</h1>';
+        
+        if (in_array($title, ['Payments & Billings', 'Contact Support'], true)) {
+            echo '<h1>' . e($title) . '</h1>';
+        }
 
         if (isStaffLoggedIn()) {
             $displayName = staffName() !== '' ? staffName() : staffEmail();
