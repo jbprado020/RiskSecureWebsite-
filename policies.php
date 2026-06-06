@@ -136,6 +136,13 @@ $policies = $policiesP['data'];
 renderHeader('Policies');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Policy Administration</h1>
+        <p>Issue, monitor, and manage active insurance contracts.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>Issue Policy From Approved Quote</h2>
     <?php if ($message !== ''): ?>

@@ -266,7 +266,11 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '</button>';
     echo '<div class="dropdown-menu" hidden>';
     echo '<div class="dropdown-header">' . e($displayName) . '</div>';
-    echo '<a href="profile_settings.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Edit Credentials</span></a>';
+    if (isCustomerLoggedIn()) {
+        echo '<a href="profile_settings.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Accounts Center</span></a>';
+    } else {
+        echo '<a href="profile_settings.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Edit Credentials</span></a>';
+    }
     echo '<a href="profile_settings.php#contact" class="dropdown-item">' . iconMarkup('notifications') . '<span>Contact Information</span></a>';
     echo '<a href="profile_settings.php#security" class="dropdown-item">' . iconMarkup('admin_panel_settings') . '<span>Account Security</span></a>';
     echo '<hr class="dropdown-divider">';
@@ -286,27 +290,6 @@ function renderHeader(string $title, bool $showBanner = true): void
 
     echo '<div class="sidebar-backdrop" hidden></div>';
     echo '<main class="container" id="main-content" tabindex="-1">';
-
-    if ($showBanner) {
-        echo '<section class="page-banner">';
-        echo '<p class="page-banner-kicker">' . iconMarkup('workspace_premium') . ' RiskSecure Operations Console</p>';
-        
-        if (in_array($title, ['Payments & Billings', 'Contact Support'], true)) {
-            echo '<h1>' . e($title) . '</h1>';
-        }
-
-        if (isStaffLoggedIn()) {
-            $displayName = staffName() !== '' ? staffName() : staffEmail();
-            echo '<p class="page-banner-meta">Signed in as ' . e($displayName) . ' | Role: ' . e(statusLabel(staffRole())) . '</p>';
-        } elseif (isCustomerLoggedIn()) {
-            $displayName = customerName() !== '' ? customerName() : customerEmail();
-            echo '<p class="page-banner-meta">Signed in as ' . e($displayName) . ' | Customer Portal</p>';
-        } else {
-            echo '<p class="page-banner-meta">Unified insurance workflow for policy, claims, payments, renewals, meetings, and reporting.</p>';
-        }
-
-        echo '</section>';
-    }
 }
 
 function renderFooter(): void

@@ -96,6 +96,13 @@ $clients = $clientsP['data'];
 renderHeader('Clients');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Client Management</h1>
+        <p>Search, onboard, and maintain customer insurance profiles.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>Manage Client Profiles</h2>
     <?php if ($message !== ''): ?>

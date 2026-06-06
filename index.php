@@ -75,6 +75,17 @@ if ($canViewPayments) {
 
 renderHeader('Dashboard');
 
+$displayName = staffName() !== '' ? staffName() : staffEmail();
+?>
+
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Welcome back, <?= e($displayName); ?>!</h1>
+        <p>Operations Console | Signed in as <?= e(statusLabel(staffRole())); ?></p>
+    </div>
+</div>
+
+<?php
 $quickActions = [];
 
 if (canAccess(['admin', 'manager', 'underwriter'])) {

@@ -167,6 +167,13 @@ $documents = $documentsP['data'];
 renderHeader('Documents');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Document Repository</h1>
+        <p>Centralized access to policy files, claim evidence, and client records.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>Upload and Categorize Documents</h2>
     <p>Attach documents to client, policy, and optionally claim records.</p>

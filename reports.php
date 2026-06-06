@@ -290,6 +290,13 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 renderHeader('Reports');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Reports and Insights</h1>
+        <p>Review operational performance, financial summaries, and data trends.</p>
+    </div>
+</div>
+
 <section class="grid cols-3">
     <?php foreach ($kpiCards as $card): ?>
         <article class="card kpi">

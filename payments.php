@@ -75,6 +75,13 @@ $payments = $paymentsP['data'];
 renderHeader('Payments');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Payment Operations</h1>
+        <p>Track premiums, manage billing cycles, and record payment activity.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>Create Payment Schedule</h2>
     <?php if ($message !== ''): ?>

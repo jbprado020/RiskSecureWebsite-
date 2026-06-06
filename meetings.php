@@ -141,6 +141,13 @@ $calendarMeetings = $calendarStmt->fetchAll();
 renderHeader('Meetings');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Meeting Schedule</h1>
+        <p>Manage customer appointments, consultations, and follow-ups.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>Meeting Scheduler</h2>
     <p>Schedule, view, and update client appointments by assigned agent.</p>

@@ -200,6 +200,13 @@ $renewals = $renewalsP['data'];
 renderHeader('Renewals');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Renewal Tracking</h1>
+        <p>Monitor expiring policies and process renewal requests.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>Renewals and Expiry Monitoring</h2>
     <p>Monitor expiring policies, process renewals, and update renewal status.</p>

@@ -342,6 +342,13 @@ $claimPayments = $claimPaymentsP['data'];
 renderHeader('Claims');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Claims Processing</h1>
+        <p>Manage insurance claims, investigations, and settlements.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>File Claim</h2>
     <?php if ($message !== ''): ?>

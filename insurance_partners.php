@@ -187,8 +187,15 @@ $partners = $partnersP['data'];
 renderHeader('Insurance Partner Management');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Insurance Partners</h1>
+        <p>Maintain relationships with partner carriers and manage insurance product offerings.</p>
+    </div>
+</div>
+
 <section class="card">
-    <h2>Add Insurance Partner</h2>
+    <h2>Add New Insurance Partner</h2>
     
     <?php if ($message !== ''): ?>
         <div class="notice ok"><?= e($message); ?></div>

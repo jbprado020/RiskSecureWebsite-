@@ -96,6 +96,13 @@ $quotes = $quotesP['data'];
 renderHeader('Quotes');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Quote Management</h1>
+        <p>Review and process insurance applications and premium estimates.</p>
+    </div>
+</div>
+
 <section class="card">
     <h2>Create Quote</h2>
     <?php if ($message !== ''): ?>

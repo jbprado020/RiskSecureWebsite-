@@ -215,8 +215,15 @@ $staff = $staffP['data'];
 renderHeader('Staff Management');
 ?>
 
+<div class="welcome-hero">
+    <div class="hero-content">
+        <h1>Staff Management</h1>
+        <p>Manage internal user accounts, assign roles, and control system access.</p>
+    </div>
+</div>
+
 <section class="card">
-    <h2>Add Staff Member</h2>
+    <h2>Add Staff Account</h2>
     
     <?php if ($message !== ''): ?>
         <div class="notice ok"><?= e($message); ?></div>
