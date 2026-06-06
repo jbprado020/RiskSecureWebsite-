@@ -205,17 +205,24 @@ function renderHeader(string $title, bool $showBanner = true): void
         if (canAccess(['admin'])) {
             navLink('staff_management.php', 'Staff Mgmt', $currentPage, 'manage_accounts');
         }
-
-        navLink('staff_logout.php', 'Staff Logout', $currentPage, 'logout');
     } elseif (isCustomerLoggedIn()) {
         navLink('customer_portal.php', 'Client Dashboard', $currentPage, 'dashboard');
         navLink('customer_payments.php', 'Payments & Billing', $currentPage, 'payments');
         navLink('customer_support.php', 'Contact Support', $currentPage, 'notifications');
-        navLink('customer_logout.php', 'Logout', $currentPage, 'logout');
     } else {
         navLink('staff_login.php', 'Staff Login', $currentPage, 'admin_panel_settings');
         navLink('customer_login.php', 'Customer Login', $currentPage, 'login');
         navLink('customer_register.php', 'Customer Register', $currentPage, 'person_add');
+    }
+
+    if (isStaffLoggedIn() || isCustomerLoggedIn()) {
+        echo '<div class="nav-logout-wrapper">';
+        if (isStaffLoggedIn()) {
+            navLink('staff_logout.php', 'Staff Logout', $currentPage, 'logout');
+        } else {
+            navLink('customer_logout.php', 'Logout', $currentPage, 'logout');
+        }
+        echo '</div>';
     }
 
     echo '</nav>';
@@ -246,7 +253,10 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '</button>';
     echo '<div class="dropdown-menu" hidden>';
     echo '<div class="dropdown-header">Notifications</div>';
-    echo '<div class="dropdown-item">No new notifications</div>';
+    echo '<div class="dropdown-item">Welcome to the new portal!</div>';
+    echo '<div class="dropdown-item">Your policy was updated.</div>';
+    echo '<hr class="dropdown-divider">';
+    echo '<a href="#" class="dropdown-item">View All Notifications</a>';
     echo '</div>';
     echo '</div>';
     
@@ -256,8 +266,9 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '</button>';
     echo '<div class="dropdown-menu" hidden>';
     echo '<div class="dropdown-header">' . e($displayName) . '</div>';
-    echo '<a href="#" class="dropdown-item">My Profile</a>';
-    echo '<a href="#" class="dropdown-item">Settings</a>';
+    echo '<a href="profile_settings.php" class="dropdown-item">Edit Credentials</a>';
+    echo '<a href="profile_settings.php#contact" class="dropdown-item">Contact Information</a>';
+    echo '<a href="profile_settings.php#security" class="dropdown-item">Account Security</a>';
     echo '<hr class="dropdown-divider">';
     if (isStaffLoggedIn()) {
         echo '<a href="staff_logout.php" class="dropdown-item text-danger">Logout</a>';
