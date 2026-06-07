@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/layout.php';
-require_once __DIR__ . '/includes/validation.php';
-require_once __DIR__ . '/includes/pagination.php';
+require_once __DIR__ . '/../shared/config/db.php';
+require_once __DIR__ . '/../shared/includes/auth.php';
+require_once __DIR__ . '/security/gatekeeper.php';
+require_once __DIR__ . '/../shared/includes/layout.php';
+require_once __DIR__ . '/../shared/includes/validation.php';
+require_once __DIR__ . '/../shared/includes/pagination.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter', 'claims_officer']);
 

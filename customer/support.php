@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/includes/layout.php';
-require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/../shared/includes/layout.php';
+require_once __DIR__ . '/../shared/includes/auth.php';
+require_once __DIR__ . '/security/gatekeeper.php';
 
 requireCustomerLogin();
 

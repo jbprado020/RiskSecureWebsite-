@@ -10,7 +10,7 @@ try {
     $pdo = db();
 
     // Read index SQL file
-    $indexSql = file_get_contents(__DIR__ . '/database/add_indexes.sql');
+    $indexSql = file_get_contents(__DIR__ . '/../shared/database/add_indexes.sql');
 
     if (!$indexSql) {
         echo "Error: Could not read add_indexes.sql\n";

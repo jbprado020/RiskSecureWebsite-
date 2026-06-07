@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/layout.php';
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/rate_limit_helpers.php';
-require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/../../shared/config/db.php';
+require_once __DIR__ . '/../../shared/includes/layout.php';
+require_once __DIR__ . '/../../shared/includes/auth.php';
+require_once __DIR__ . '/../../shared/includes/rate_limit_helpers.php';
+require_once __DIR__ . '/../../shared/includes/audit_helpers.php';
 
 ensureSessionStarted();
 
 if (isCustomerLoggedIn()) {
-    header('Location: customer_portal.php');
+    header('Location: ../dashboard.php');
     exit;
 }
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'details' => 'Customer login successful.',
                 ]);
 
-                header('Location: customer_portal.php');
+                header('Location: ../dashboard.php');
                 exit;
             }
         }
@@ -107,7 +107,7 @@ renderHeader('Customer Login');
             <button type="submit">Login</button>
         </div>
     </form>
-    <p style="margin-top: 1rem;">No account yet? <a href="customer_register.php">Register here</a>.</p>
+    <p style="margin-top: 1rem;">No account yet? <a href="register.php">Register here</a>.</p>
 </section>
 
 <?php

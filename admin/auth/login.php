@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/layout.php';
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/rate_limit_helpers.php';
-require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/../../shared/config/db.php';
+require_once __DIR__ . '/../../shared/includes/layout.php';
+require_once __DIR__ . '/../../shared/includes/auth.php';
+require_once __DIR__ . '/../../shared/includes/rate_limit_helpers.php';
+require_once __DIR__ . '/../../shared/includes/audit_helpers.php';
 
 ensureSessionStarted();
 
 if (isStaffLoggedIn()) {
-    header('Location: index.php');
+    header('Location: ../dashboard.php');
     exit;
 }
 
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'details' => 'Staff login successful.',
                 ]);
 
-                header('Location: index.php');
+                header('Location: ../dashboard.php');
                 exit;
             }
         }

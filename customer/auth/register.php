@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/layout.php';
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/validation.php';
+require_once __DIR__ . '/../../shared/config/db.php';
+require_once __DIR__ . '/../../shared/includes/layout.php';
+require_once __DIR__ . '/../../shared/includes/auth.php';
+require_once __DIR__ . '/../../shared/includes/validation.php';
 
 ensureSessionStarted();
 
 if (isCustomerLoggedIn()) {
-    header('Location: customer_portal.php');
+    header('Location: ../dashboard.php');
     exit;
 }
 
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['customer_email'] = $email;
                 $_SESSION['customer_name'] = $fullName;
 
-                header('Location: customer_portal.php');
+                header('Location: ../dashboard.php');
                 exit;
             }
         } catch (Throwable $exception) {
@@ -156,7 +156,7 @@ renderHeader('Customer Register');
             <button type="submit">Register Account</button>
         </div>
     </form>
-    <p style="margin-top: 1rem;text-align: center;">Already registered? <a href="customer_login.php">Sign in here</a>.</p>
+    <p style="margin-top: 1rem;text-align: center;">Already registered? <a href="login.php">Sign in here</a>.</p>
 </section>
 
 <?php

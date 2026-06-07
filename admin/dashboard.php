@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../shared/config/db.php';
 require_once __DIR__ . '/../shared/includes/auth.php';
+require_once __DIR__ . '/security/gatekeeper.php';
 require_once __DIR__ . '/../shared/includes/layout.php';
 
 requireStaffRole(['admin', 'manager', 'underwriter', 'claims_officer', 'billing_officer']);

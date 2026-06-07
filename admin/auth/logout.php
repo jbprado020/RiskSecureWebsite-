@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/audit_helpers.php';
+require_once __DIR__ . '/../../shared/config/db.php';
+require_once __DIR__ . '/../../shared/includes/auth.php';
+require_once __DIR__ . '/../../shared/includes/audit_helpers.php';
 
 ensureSessionStarted();
 
@@ -34,5 +34,5 @@ unset($_SESSION['staff_id'], $_SESSION['staff_name'], $_SESSION['staff_email'], 
 
 session_destroy();
 
-header('Location: staff_login.php');
+header('Location: login.php');
 exit;

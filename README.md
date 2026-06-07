@@ -247,30 +247,22 @@
 
 ```
 RiskSecureWebsite/
-├── index.php              # Home page and routing
-├── Signup.php             # Customer registration
-├── config/
-│   └── db.php            # Database connection configuration
-├── auth/
-│   ├── authenticate.php  # Staff login handler
-│   ├── verify.php        # Customer login handler
-│   └── logout.php        # Logout handler
-├── handlers/
-│   └── save_registration.php  # Registration form handler
-├── pages/
-│   ├── login.php         # Staff login form
-│   ├── register.php      # Customer registration form
-│   ├── dashboard.php     # Main dashboard
-│   └── ForgotPassword.php # Password recovery
-├── assets/
-│   ├── css/              # Stylesheets
-│   └── js/               # JavaScript files
-├── database/
-│   ├── risk_secure_db.sql  # Database schema and seed data
-│   └── library_erd.drawio  # Database diagram
-├── includes/
-│   └── session.php       # Session management utilities
-└── README.md             # This file
+├── admin/                  # Staff-facing pages and logic
+│   ├── auth/               # login.php, logout.php
+│   ├── security/           # gatekeeper.php (role checks)
+│   ├── db/                 # Admin-specific DB logic
+│   └── [pages].php         # dashboard.php, claims.php, clients.php, etc.
+├── customer/               # Customer-facing pages and logic
+│   ├── auth/               # login.php, logout.php, register.php
+│   ├── security/           # gatekeeper.php (session checks)
+│   └── [pages].php         # dashboard.php, payments.php, support.php, etc.
+├── shared/                 # Common resources
+│   ├── config/             # db.php
+│   ├── includes/           # auth.php, db_helpers.php, layout.php, etc.
+│   ├── assets/             # Shared JS and Icons
+│   └── styling/            # styles.css
+├── uploads/                # File storage
+└── index.php               # Root entry (Router)
 ```
 
 ---
@@ -278,23 +270,25 @@ RiskSecureWebsite/
 ## Usage Guide
 
 ### Customer Workflow
-1. **Register**: Create account on Signup.php
-2. **Login**: Access customer portal
-3. **Request Quote**: Submit insurance requirement
-4. **View Policies**: Check active and expired policies
-5. **File Claim**: Submit claim with incident details
-6. **Upload Documents**: Attach supporting documents
-7. **Track Status**: Monitor claim progress
-8. **Schedule Meeting**: Book appointment with staff
+1. **Register**: Create account on `customer/auth/register.php`
+2. **Login**: Access customer portal via `customer/auth/login.php`
+3. **Dashboard**: Access `customer/dashboard.php`
+4. **Request Quote**: Submit insurance requirement
+5. **View Policies**: Check active and expired policies
+6. **File Claim**: Submit claim with incident details
+7. **Upload Documents**: Attach supporting documents
+8. **Track Status**: Monitor claim progress
+9. **Schedule Meeting**: Book appointment with staff
 
 ### Staff Workflow
-1. **Login**: Access staff portal with credentials
-2. **Review Queue**: Check pending quotes and claims
-3. **Underwriting**: Approve/reject quotes
-4. **Claims Review**: Process and decide on claims
-5. **Payments**: Record claim or premium payments
-6. **Reporting**: Generate financial reports
-7. **Renewals**: Manage policy renewal tasks
+1. **Login**: Access staff portal via `admin/auth/login.php`
+2. **Dashboard**: Access `admin/dashboard.php`
+3. **Review Queue**: Check pending quotes and claims
+4. **Underwriting**: Approve/reject quotes
+5. **Claims Review**: Process and decide on claims
+6. **Payments**: Record claim or premium payments
+7. **Reporting**: Generate financial reports
+8. **Renewals**: Manage policy renewal tasks
 
 ---
 
