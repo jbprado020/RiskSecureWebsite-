@@ -83,6 +83,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quote_status']
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_quote'])) {
+    requireCsrfToken();
+
+    $quoteId = (int) ($_POST['quote_id'] ?? 0);
+    $productName = trim($_POST['product_name'] ?? '');
+    $coverageAmount = (float) ($_POST['coverage_amount'] ?? 0);
+    $termMonths = (int) ($_POST['term_months'] ?? 12);
+    $riskLevel = (string) ($_POST['risk_level'] ?? 'medium');
+    $policyType = (string) ($_POST['policy_type'] ?? 'life');
+
+    if ($quoteId > 0 && $productName !== '' && $coverageAmount > 0 && $termMonths > 0) {
+        $premium = calculatePremium($coverageAmount, $policyType, $riskLevel, $termMonths);
+        $stmt = $pdo->prepare(
+            'UPDATE quotes 
+             SET product_name = :product_name, coverage_amount = :coverage_amount, term_months = :term_months, 
+                 risk_level = :risk_level, premium_amount = :premium_amount
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            ':product_name' => $productName,
+            ':coverage_amount' => $coverageAmount,
+            ':term_months' => $termMonths,
+            ':risk_level' => $riskLevel,
+            ':premium_amount' => $premium,
+            ':id' => $quoteId,
+        ]);
+        logAuditEvent($pdo, 'edit_quote', [
+            'actor_type' => 'staff',
+            'entity_type' => 'quotes',
+            'entity_id' => $quoteId,
+            'status' => 'success',
+            'details' => 'Edited quote ID ' . $quoteId . '. New premium: ' . number_format($premium, 2, '.', '') . '.',
+        ]);
+        $message = 'Quote updated successfully.';
+    } else {
+        $error = 'Invalid quote details for editing.';
+    }
+}
+
 $clients = $pdo->query('SELECT id, full_name FROM clients ORDER BY full_name')->fetchAll();
 $quotesP = paginatedQuery(
     $pdo,
@@ -177,21 +216,44 @@ renderHeader('Quotes');
             <tr>
                 <td><?= (int) $quote['id']; ?></td>
                 <td><?= e($quote['full_name']); ?></td>
-                <td><?= e($quote['product_name']); ?> (<?= e($quote['policy_type']); ?>)</td>
-                <td>PHP <?= number_format((float) $quote['coverage_amount'], 2); ?></td>
-                <td>PHP <?= number_format((float) $quote['premium_amount'], 2); ?></td>
-                <td><span class="badge <?= badgeClass((string) $quote['status']); ?>"><?= e(statusLabel((string) $quote['status'])); ?></span></td>
                 <td>
                     <?php if ($quote['status'] === 'pending'): ?>
-                        <form method="post" style="display:inline-flex; gap:0.4rem; align-items:center;">
+                        <form method="post" id="edit-form-<?= (int) $quote['id']; ?>" class="grid" style="gap: 0.5rem; display: contents;">
+                            <?= csrfField(); ?>
+                            <input type="hidden" name="edit_quote" value="1">
+                            <input type="hidden" name="quote_id" value="<?= (int) $quote['id']; ?>">
+                            <input type="hidden" name="policy_type" value="<?= e($quote['policy_type']); ?>">
+                            <td><input name="product_name" value="<?= e($quote['product_name']); ?>" required style="padding: 0.25rem; font-size: 0.85rem;"> (<?= e($quote['policy_type']); ?>)</td>
+                            <td>PHP <input name="coverage_amount" type="number" step="0.01" value="<?= (float) $quote['coverage_amount']; ?>" required style="padding: 0.25rem; font-size: 0.85rem; width: 100px;"></td>
+                            <td>
+                                PHP <?= number_format((float) $quote['premium_amount'], 2); ?>
+                                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">
+                                    Term: <input name="term_months" type="number" value="<?= (int) $quote['term_months']; ?>" required style="padding: 0.1rem; width: 40px; font-size: 0.75rem;"> mo
+                                    Risk: <select name="risk_level" style="padding: 0.1rem; font-size: 0.75rem; width: auto;">
+                                        <option value="low" <?= $quote['risk_level'] === 'low' ? 'selected' : ''; ?>>Low</option>
+                                        <option value="medium" <?= $quote['risk_level'] === 'medium' ? 'selected' : ''; ?>>Med</option>
+                                        <option value="high" <?= $quote['risk_level'] === 'high' ? 'selected' : ''; ?>>High</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td><span class="badge <?= badgeClass((string) $quote['status']); ?>"><?= e(statusLabel((string) $quote['status'])); ?></span></td>
+                            <td style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <button type="submit" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--primary-light);">Update Details</button>
+                        </form>
+                        <form method="post" style="display: contents;">
                             <?= csrfField(); ?>
                             <input type="hidden" name="update_quote_status" value="1">
                             <input type="hidden" name="quote_id" value="<?= (int) $quote['id']; ?>">
-                            <button type="submit" name="status" value="approved">Approve</button>
-                            <button type="submit" name="status" value="rejected">Reject</button>
+                            <button type="submit" name="status" value="approved" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--success);">Approve</button>
+                            <button type="submit" name="status" value="rejected" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--danger);">Reject</button>
                         </form>
+                            </td>
                     <?php else: ?>
-                        -
+                        <td><?= e($quote['product_name']); ?> (<?= e($quote['policy_type']); ?>)</td>
+                        <td>PHP <?= number_format((float) $quote['coverage_amount'], 2); ?></td>
+                        <td>PHP <?= number_format((float) $quote['premium_amount'], 2); ?></td>
+                        <td><span class="badge <?= badgeClass((string) $quote['status']); ?>"><?= e(statusLabel((string) $quote['status'])); ?></span></td>
+                        <td>-</td>
                     <?php endif; ?>
                 </td>
             </tr>

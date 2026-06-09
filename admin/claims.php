@@ -120,6 +120,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_claim'])) {
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_claim'])) {
+    requireCsrfToken();
+
+    $claimId = (int) ($_POST['claim_id'] ?? 0);
+    $claimAmount = (float) ($_POST['claim_amount'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
+
+    if ($claimId > 0 && $claimAmount > 0 && $description !== '') {
+        $stmt = $pdo->prepare(
+            'UPDATE claims 
+             SET claim_amount = :claim_amount, description = :description 
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            ':claim_amount' => $claimAmount,
+            ':description' => $description,
+            ':id' => $claimId,
+        ]);
+        logAuditEvent($pdo, 'edit_claim', [
+            'entity_type' => 'claims',
+            'entity_id' => $claimId,
+            'status' => 'success',
+            'details' => 'Edited claim amount and description for claim ID ' . $claimId . '.',
+        ]);
+        $message = 'Claim updated successfully.';
+    } else {
+        $error = 'Invalid claim details for editing.';
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_requirement'])) {
     requireCsrfToken();
 
@@ -413,8 +443,25 @@ renderHeader('Claims');
             <tr>
                 <td><?= (int) $claim['id']; ?></td>
                 <td><?= e($claim['policy_number']); ?></td>
-                <td>PHP <?= number_format((float) $claim['claim_amount'], 2); ?></td>
-                <td><?= e($claim['description']); ?></td>
+                <td>
+                    <?php if ($claim['claim_status'] === 'pending' || $claim['claim_status'] === 'under_review'): ?>
+                        <form method="post" style="display: contents;">
+                            <?= csrfField(); ?>
+                            <input type="hidden" name="edit_claim" value="1">
+                            <input type="hidden" name="claim_id" value="<?= (int) $claim['id']; ?>">
+                            PHP <input name="claim_amount" type="number" step="0.01" value="<?= (float) $claim['claim_amount']; ?>" required style="padding: 0.25rem; font-size: 0.85rem; width: 110px;">
+                </td>
+                <td>
+                            <textarea name="description" required style="padding: 0.25rem; font-size: 0.85rem; min-height: 50px;"><?= e($claim['description']); ?></textarea>
+                            <button type="submit" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; background: var(--primary-light); margin-top: 0.25rem;">Update Details</button>
+                        </form>
+                    <?php else: ?>
+                        PHP <?= number_format((float) $claim['claim_amount'], 2); ?>
+                </td>
+                <td>
+                        <?= e($claim['description']); ?>
+                    <?php endif; ?>
+                </td>
                 <td><span class="badge <?= badgeClass((string) $claim['claim_status']); ?>"><?= e(statusLabel((string) $claim['claim_status'])); ?></span></td>
                 <td><?= (int) $claim['requirements_complete']; ?>/<?= (int) $claim['requirements_total']; ?></td>
                 <td><?= e((string) ($claim['decision_notes'] ?? '-')); ?></td>
