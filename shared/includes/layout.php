@@ -266,6 +266,9 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '<div class="container top-bar-inner">';
     
     echo '<div class="top-bar-left">';
+    echo '<button class="sidebar-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">';
+    echo '<div class="sidebar-toggle-lines"><span></span><span></span><span></span></div>';
+    echo '</button>';
     echo '</div>';
 
     echo '<div class="top-bar-actions">';
