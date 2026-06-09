@@ -270,43 +270,45 @@ function renderHeader(string $title, bool $showBanner = true): void
 
     echo '<div class="top-bar-actions">';
     
-    echo '<div class="dropdown top-bar-item" id="notif-dropdown">';
-    echo '<button class="top-bar-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">';
-    echo iconMarkup('notifications');
-    echo '<span class="badge-dot"></span>';
-    echo '</button>';
-    echo '<div class="dropdown-menu" hidden>';
-    echo '<div class="dropdown-header">Notifications</div>';
-    echo '<div class="dropdown-item">Welcome to the new portal!</div>';
-    echo '<div class="dropdown-item">Your policy was updated.</div>';
-    echo '<hr class="dropdown-divider">';
-    echo '<a href="#" class="dropdown-item">View All Notifications</a>';
-    echo '</div>';
-    echo '</div>';
-    
-    echo '<div class="dropdown top-bar-item" id="profile-dropdown">';
-    echo '<button class="top-bar-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="User Profile">';
-    echo iconMarkup('person');
-    echo '</button>';
-    echo '<div class="dropdown-menu" hidden>';
-    echo '<div class="dropdown-header">' . e($displayName) . '</div>';
-    if (isCustomerLoggedIn()) {
-        echo '<a href="' . $relPath . 'customer/profile.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Accounts Center</span></a>';
-    } else {
-        echo '<a href="' . $relPath . 'admin/profile.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Edit Credentials</span></a>';
+    if (isStaffLoggedIn() || isCustomerLoggedIn()) {
+        echo '<div class="dropdown top-bar-item" id="notif-dropdown">';
+        echo '<button class="top-bar-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">';
+        echo iconMarkup('notifications');
+        echo '<span class="badge-dot"></span>';
+        echo '</button>';
+        echo '<div class="dropdown-menu" hidden>';
+        echo '<div class="dropdown-header">Notifications</div>';
+        echo '<div class="dropdown-item">Welcome to the new portal!</div>';
+        echo '<div class="dropdown-item">Your policy was updated.</div>';
+        echo '<hr class="dropdown-divider">';
+        echo '<a href="#" class="dropdown-item">View All Notifications</a>';
+        echo '</div>';
+        echo '</div>';
+        
+        echo '<div class="dropdown top-bar-item" id="profile-dropdown">';
+        echo '<button class="top-bar-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="User Profile">';
+        echo iconMarkup('person');
+        echo '</button>';
+        echo '<div class="dropdown-menu" hidden>';
+        echo '<div class="dropdown-header">' . e($displayName) . '</div>';
+        if (isCustomerLoggedIn()) {
+            echo '<a href="' . $relPath . 'customer/profile.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Accounts Center</span></a>';
+        } else {
+            echo '<a href="' . $relPath . 'admin/profile.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Edit Credentials</span></a>';
+        }
+        echo '<a href="' . $relPath . (isCustomerLoggedIn() ? 'customer' : 'admin') . '/profile.php#contact" class="dropdown-item">' . iconMarkup('notifications') . '<span>Contact Information</span></a>';
+        echo '<a href="' . $relPath . (isCustomerLoggedIn() ? 'customer' : 'admin') . '/profile.php#security" class="dropdown-item">' . iconMarkup('admin_panel_settings') . '<span>Account Security</span></a>';
+        echo '<hr class="dropdown-divider">';
+        if (isStaffLoggedIn()) {
+            echo '<a href="' . $relPath . 'admin/auth/logout.php" class="dropdown-item text-danger">' . iconMarkup('logout') . '<span>Logout</span></a>';
+        } elseif (isCustomerLoggedIn()) {
+            echo '<a href="' . $relPath . 'customer/auth/logout.php" class="dropdown-item text-danger">' . iconMarkup('logout') . '<span>Logout</span></a>';
+        } else {
+            echo '<a href="' . $relPath . 'customer/auth/login.php" class="dropdown-item">' . iconMarkup('login') . '<span>Login</span></a>';
+        }
+        echo '</div>';
+        echo '</div>';
     }
-    echo '<a href="' . $relPath . (isCustomerLoggedIn() ? 'customer' : 'admin') . '/profile.php#contact" class="dropdown-item">' . iconMarkup('notifications') . '<span>Contact Information</span></a>';
-    echo '<a href="' . $relPath . (isCustomerLoggedIn() ? 'customer' : 'admin') . '/profile.php#security" class="dropdown-item">' . iconMarkup('admin_panel_settings') . '<span>Account Security</span></a>';
-    echo '<hr class="dropdown-divider">';
-    if (isStaffLoggedIn()) {
-        echo '<a href="' . $relPath . 'admin/auth/logout.php" class="dropdown-item text-danger">' . iconMarkup('logout') . '<span>Logout</span></a>';
-    } elseif (isCustomerLoggedIn()) {
-        echo '<a href="' . $relPath . 'customer/auth/logout.php" class="dropdown-item text-danger">' . iconMarkup('logout') . '<span>Logout</span></a>';
-    } else {
-        echo '<a href="' . $relPath . 'customer/auth/login.php" class="dropdown-item">' . iconMarkup('login') . '<span>Login</span></a>';
-    }
-    echo '</div>';
-    echo '</div>';
     
     echo '</div>';
     echo '</div>';
