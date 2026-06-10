@@ -116,25 +116,25 @@ renderHeader('Clients');
     <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="create_client" value="1">
-        <div>
-            <label>Full Name</label>
-            <input name="full_name" required aria-label="Full Name" aria-required="true" autocomplete="name">
+        <div class="form-field">
+            <input name="full_name" id="full_name" required aria-required="true" autocomplete="name" placeholder=" ">
+            <label for="full_name">Full Name</label>
         </div>
-        <div>
-            <label>Email</label>
-            <input name="email" type="email" required aria-label="Email" aria-required="true" autocomplete="email">
+        <div class="form-field">
+            <input name="email" id="email" type="email" required aria-required="true" autocomplete="email" placeholder=" ">
+            <label for="email">Email</label>
         </div>
-        <div>
-            <label>Phone</label>
-            <input name="phone" required aria-label="Phone" aria-required="true" autocomplete="tel">
+        <div class="form-field">
+            <input name="phone" id="phone" required aria-required="true" autocomplete="tel" placeholder=" ">
+            <label for="phone">Phone</label>
         </div>
-        <div>
-            <label>Date of Birth</label>
-            <input name="date_of_birth" type="date" required aria-label="Date of Birth" aria-required="true" autocomplete="bday">
+        <div class="form-field">
+            <input name="date_of_birth" id="date_of_birth" type="date" required aria-required="true" autocomplete="bday" placeholder=" ">
+            <label for="date_of_birth">Date of Birth</label>
         </div>
-        <div style="grid-column: 1 / -1;">
-            <label>Address</label>
-            <textarea name="address" required aria-label="Address" aria-required="true" autocomplete="street-address"></textarea>
+        <div class="form-field" style="grid-column: 1 / -1;">
+            <textarea name="address" id="address" required aria-required="true" autocomplete="street-address" placeholder=" "></textarea>
+            <label for="address">Address</label>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Save Client</button>

@@ -115,7 +115,7 @@ renderHeader('Customer Register');
 ?>
 
 <section class="card" style="max-width: 760px; margin: 0 auto 1rem;">
-    <h2>Create Customer Account</h2>
+    <h2 style="text-align: center;">Create Customer Account</h2>
     <p>Use this once, then use Customer Login for next visits.</p>
 
     <?php if ($error !== ''): ?>
@@ -124,35 +124,35 @@ renderHeader('Customer Register');
 
     <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
-        <div>
-            <label>Full Name</label>
-            <input name="full_name" required autocomplete="name">
+        <div class="form-field">
+            <input name="full_name" id="full_name" required autocomplete="name" placeholder=" ">
+            <label for="full_name">Full Name</label>
         </div>
-        <div>
-            <label>Email</label>
-            <input type="email" name="email" required autocomplete="email">
+        <div class="form-field">
+            <input type="email" name="email" id="email" required autocomplete="email" placeholder=" ">
+            <label for="email">Email Address</label>
         </div>
-        <div>
-            <label>Phone</label>
-            <input name="phone" required autocomplete="tel">
+        <div class="form-field">
+            <input name="phone" id="phone" required autocomplete="tel" placeholder=" ">
+            <label for="phone">Phone Number</label>
         </div>
-        <div>
-            <label>Date of Birth</label>
-            <input type="date" name="date_of_birth" required autocomplete="bday">
+        <div class="form-field">
+            <input type="date" name="date_of_birth" id="date_of_birth" required autocomplete="bday" placeholder=" ">
+            <label for="date_of_birth">Date of Birth</label>
         </div>
-        <div style="grid-column: 1 / -1;">
-            <label>Address</label>
-            <textarea name="address" required autocomplete="street-address"></textarea>
+        <div class="form-field" style="grid-column: 1 / -1;">
+            <textarea name="address" id="address" required autocomplete="street-address" placeholder=" "></textarea>
+            <label for="address">Residential Address</label>
         </div>
-        <div>
-            <label>Password</label>
-            <input type="password" name="password" minlength="12" required autocomplete="new-password" aria-label="Password" aria-required="true">
+        <div class="form-field">
+            <input type="password" name="password" id="password" minlength="12" required autocomplete="new-password" aria-label="Password" aria-required="true" placeholder=" ">
+            <label for="password">Password</label>
         </div>
-        <div>
-            <label>Confirm Password</label>
-            <input type="password" name="confirm_password" minlength="12" required data-confirm-target="password" autocomplete="new-password" aria-label="Confirm Password" aria-required="true">
+        <div class="form-field">
+            <input type="password" name="confirm_password" id="confirm_password" minlength="12" required data-confirm-target="password" autocomplete="new-password" aria-label="Confirm Password" aria-required="true" placeholder=" ">
+            <label for="confirm_password">Confirm Password</label>
         </div>
-        <div style="grid-column: 1 / -1;">
+        <div style="grid-column: 1 / -1;" style="text-align: center;">
             <button type="submit">Register Account</button>
         </div>
     </form>

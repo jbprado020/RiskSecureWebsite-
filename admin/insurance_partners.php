@@ -210,25 +210,25 @@ renderHeader('Insurance Partner Management');
         <?= csrfField(); ?>
         <input type="hidden" name="create_partner" value="1">
         
-        <div>
-            <label>Company Name</label>
-            <input name="company_name" required placeholder="e.g. AIA Philippines" autocomplete="organization">
+        <div class="form-field">
+            <input name="company_name" id="company_name_add" required placeholder=" " autocomplete="organization">
+            <label for="company_name_add">Company Name</label>
         </div>
-        <div>
-            <label>Insurance Type</label>
-            <select name="insurance_type" required>
+        <div class="form-field">
+            <select name="insurance_type" id="insurance_type_add" required>
                 <option value="life">Life Insurance</option>
                 <option value="non-life">Non-Life Insurance</option>
                 <option value="both">Life & Non-Life</option>
             </select>
+            <label for="insurance_type_add">Insurance Type</label>
         </div>
-        <div>
-            <label>Contact Person</label>
-            <input name="contact_person" required placeholder="e.g. John Smith" autocomplete="name">
+        <div class="form-field">
+            <input name="contact_person" id="contact_person_add" required placeholder=" " autocomplete="name">
+            <label for="contact_person_add">Contact Person</label>
         </div>
-        <div>
-            <label>Contact Email</label>
-            <input name="contact_email" type="email" required placeholder="liaison@partner.local" autocomplete="email">
+        <div class="form-field">
+            <input name="contact_email" id="contact_email_add" type="email" required placeholder=" " autocomplete="email">
+            <label for="contact_email_add">Contact Email</label>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Add Insurance Partner</button>
@@ -280,25 +280,25 @@ renderHeader('Insurance Partner Management');
                             <input type="hidden" name="update_partner" value="1">
                             <input type="hidden" name="partner_id" value="<?= (int) $partner['id']; ?>">
                             
-                            <div>
-                                <label>Company Name</label>
-                                <input name="company_name" required value="<?= e($partner['company_name']); ?>" autocomplete="organization">
+                            <div class="form-field">
+                                <input name="company_name" id="company_name_edit_<?= (int) $partner['id']; ?>" required value="<?= e($partner['company_name']); ?>" placeholder=" " autocomplete="organization">
+                                <label for="company_name_edit_<?= (int) $partner['id']; ?>">Company Name</label>
                             </div>
-                            <div>
-                                <label>Insurance Type</label>
-                                <select name="insurance_type" required>
+                            <div class="form-field">
+                                <select name="insurance_type" id="insurance_type_edit_<?= (int) $partner['id']; ?>" required>
                                     <option value="life" <?= $partner['insurance_type'] === 'life' ? 'selected' : ''; ?>>Life Insurance</option>
                                     <option value="non-life" <?= $partner['insurance_type'] === 'non-life' ? 'selected' : ''; ?>>Non-Life Insurance</option>
                                     <option value="both" <?= $partner['insurance_type'] === 'both' ? 'selected' : ''; ?>>Life & Non-Life</option>
                                 </select>
+                                <label for="insurance_type_edit_<?= (int) $partner['id']; ?>">Insurance Type</label>
                             </div>
-                            <div>
-                                <label>Contact Person</label>
-                                <input name="contact_person" required value="<?= e($partner['contact_person']); ?>" autocomplete="name">
+                            <div class="form-field">
+                                <input name="contact_person" id="contact_person_edit_<?= (int) $partner['id']; ?>" required value="<?= e($partner['contact_person']); ?>" placeholder=" " autocomplete="name">
+                                <label for="contact_person_edit_<?= (int) $partner['id']; ?>">Contact Person</label>
                             </div>
-                            <div>
-                                <label>Contact Email</label>
-                                <input name="contact_email" type="email" required value="<?= e($partner['contact_email']); ?>" autocomplete="email">
+                            <div class="form-field">
+                                <input name="contact_email" id="contact_email_edit_<?= (int) $partner['id']; ?>" type="email" required value="<?= e($partner['contact_email']); ?>" placeholder=" " autocomplete="email">
+                                <label for="contact_email_edit_<?= (int) $partner['id']; ?>">Contact Email</label>
                             </div>
                             
                             <div class="form-actions">

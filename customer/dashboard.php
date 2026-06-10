@@ -481,34 +481,34 @@ renderHeader('Customer Portal', false);
                 <?= csrfField(); ?>
                 <input type="hidden" name="submit_application" value="1">
                 <div class="grid cols-2">
-                    <div>
-                        <label>Policy Type</label>
-                        <select name="policy_type" required>
+                    <div class="form-field">
+                        <select name="policy_type" id="apply_policy_type" required>
                             <option value="life">Life</option>
                             <option value="non-life">Non-Life</option>
                         </select>
+                        <label for="apply_policy_type">Policy Type</label>
                     </div>
-                    <div>
-                        <label>Product Name</label>
-                        <input name="product_name" placeholder="e.g. Life Shield" required>
+                    <div class="form-field">
+                        <input name="product_name" id="apply_product_name" placeholder=" " required>
+                        <label for="apply_product_name">Product Name</label>
                     </div>
                 </div>
                 <div class="grid cols-3">
-                    <div>
-                        <label>Coverage (PHP)</label>
-                        <input name="coverage_amount" type="number" step="0.01" min="1" required>
+                    <div class="form-field">
+                        <input name="coverage_amount" id="apply_coverage_amount" type="number" step="0.01" min="1" required placeholder=" ">
+                        <label for="apply_coverage_amount">Coverage (PHP)</label>
                     </div>
-                    <div>
-                        <label>Term (Months)</label>
-                        <input name="term_months" type="number" min="1" value="12" required>
+                    <div class="form-field">
+                        <input name="term_months" id="apply_term_months" type="number" min="1" value="12" required placeholder=" ">
+                        <label for="apply_term_months">Term (Months)</label>
                     </div>
-                    <div>
-                        <label>Risk Level</label>
-                        <select name="risk_level" required>
+                    <div class="form-field">
+                        <select name="risk_level" id="apply_risk_level" required>
                             <option value="low">Low</option>
                             <option value="medium" selected>Medium</option>
                             <option value="high">High</option>
                         </select>
+                        <label for="apply_risk_level">Risk Level</label>
                     </div>
                 </div>
                 <div class="form-actions">
@@ -526,28 +526,28 @@ renderHeader('Customer Portal', false);
                 <?= csrfField(); ?>
                 <input type="hidden" name="file_customer_claim" value="1">
                 <div class="grid cols-2">
-                    <div>
-                        <label>Select Policy</label>
-                        <select name="policy_id" required>
+                    <div class="form-field">
+                        <select name="policy_id" id="claim_policy_id" required>
                             <option value="">Choose policy</option>
                             <?php foreach ($accountPolicies as $p): ?>
                                 <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
                             <?php endforeach; ?>
                         </select>
+                        <label for="claim_policy_id">Select Policy</label>
                     </div>
-                    <div>
-                        <label>Claim Amount (PHP)</label>
-                        <input name="claim_amount" type="number" step="0.01" min="1" required>
+                    <div class="form-field">
+                        <input name="claim_amount" id="claim_claim_amount" type="number" step="0.01" min="1" required placeholder=" ">
+                        <label for="claim_claim_amount">Claim Amount (PHP)</label>
                     </div>
                 </div>
                 <div class="grid cols-2">
-                    <div>
-                        <label>Incident Date</label>
-                        <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required>
+                    <div class="form-field">
+                        <input type="date" name="incident_date" id="claim_incident_date" value="<?= date('Y-m-d'); ?>" required placeholder=" ">
+                        <label for="claim_incident_date">Incident Date</label>
                     </div>
-                    <div>
-                        <label>Description</label>
-                        <input name="description" placeholder="Brief details of the incident" required>
+                    <div class="form-field">
+                        <input name="description" id="claim_description" placeholder=" " required>
+                        <label for="claim_description">Description</label>
                     </div>
                 </div>
                 <div class="form-actions">
@@ -565,32 +565,32 @@ renderHeader('Customer Portal', false);
                 <?= csrfField(); ?>
                 <input type="hidden" name="schedule_customer_appointment" value="1">
                 <div class="grid cols-2">
-                    <div>
-                        <label>Date & Time</label>
-                        <input type="datetime-local" name="meeting_at" required>
+                    <div class="form-field">
+                        <input type="datetime-local" name="meeting_at" id="meet_meeting_at" required placeholder=" ">
+                        <label for="meet_meeting_at">Date & Time</label>
                     </div>
-                    <div>
-                        <label>Preferred Agent</label>
-                        <select name="agent_id" required>
+                    <div class="form-field">
+                        <select name="agent_id" id="meet_agent_id" required>
                             <option value="">Select agent</option>
                             <?php foreach ($availableAgents as $a): ?>
                                 <option value="<?= (int)$a['id']; ?>"><?= e((string)$a['full_name']); ?></option>
                             <?php endforeach; ?>
                         </select>
+                        <label for="meet_agent_id">Preferred Agent</label>
                     </div>
                 </div>
                 <div class="grid cols-2">
-                    <div>
-                        <label>Meeting Channel</label>
-                        <select name="channel" required>
+                    <div class="form-field">
+                        <select name="channel" id="meet_channel" required>
                             <option value="zoom">Zoom / Online</option>
                             <option value="phone">Phone Call</option>
                             <option value="in-person">In-Person</option>
                         </select>
+                        <label for="meet_channel">Meeting Channel</label>
                     </div>
-                    <div>
-                        <label>Purpose</label>
-                        <input name="purpose" placeholder="e.g. Policy Review" required>
+                    <div class="form-field">
+                        <input name="purpose" id="meet_purpose" placeholder=" " required>
+                        <label for="meet_purpose">Purpose</label>
                     </div>
                 </div>
                 <div class="form-actions">
@@ -608,23 +608,23 @@ renderHeader('Customer Portal', false);
                 <?= csrfField(); ?>
                 <input type="hidden" name="upload_customer_document" value="1">
                 <div class="grid cols-2">
-                    <div>
-                        <label>Select Policy</label>
-                        <select name="policy_id" required>
+                    <div class="form-field">
+                        <select name="policy_id" id="upload_policy_id" required>
                             <option value="">Choose policy</option>
                             <?php foreach ($accountPolicies as $p): ?>
                                 <option value="<?= (int)$p['id']; ?>"><?= e((string)$p['policy_number']); ?></option>
                             <?php endforeach; ?>
                         </select>
+                        <label for="upload_policy_id">Select Policy</label>
                     </div>
-                    <div>
-                        <label>Document Type</label>
-                        <input name="document_type" placeholder="e.g. ID, Receipt, Medical Report" required>
+                    <div class="form-field">
+                        <input name="document_type" id="upload_document_type" placeholder=" " required>
+                        <label for="upload_document_type">Document Type</label>
                     </div>
                 </div>
-                <div>
-                    <label>File Upload (PDF, JPG, PNG)</label>
-                    <input type="file" name="document_file" required accept=".pdf,.jpg,.jpeg,.png">
+                <div class="form-field">
+                    <input type="file" name="document_file" id="upload_document_file" required accept=".pdf,.jpg,.jpeg,.png" placeholder=" ">
+                    <label for="upload_document_file">File Upload (PDF, JPG, PNG)</label>
                 </div>
                 <div class="form-actions">
                     <button type="submit">Upload Document</button>

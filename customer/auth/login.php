@@ -95,13 +95,13 @@ renderHeader('Customer Login');
 
     <form method="post" class="grid" data-validate="true">
         <?= csrfField(); ?>
-        <div>
-            <label>Email</label>
-            <input type="email" name="email" required autocomplete="email">
+        <div class="form-field">
+            <input type="email" name="email" id="email" required autocomplete="email" placeholder=" ">
+            <label for="email">Email Address</label>
         </div>
-        <div>
-            <label>Password</label>
-            <input type="password" name="password" required autocomplete="current-password">
+        <div class="form-field">
+            <input type="password" name="password" id="password" required autocomplete="current-password" placeholder=" ">
+            <label for="password">Password</label>
         </div>
         <div>
             <button type="submit">Login</button>

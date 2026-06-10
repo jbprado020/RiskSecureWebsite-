@@ -347,9 +347,14 @@ main {
 }
 
 /* Modern Form Elements */
+.form-field {
+    position: relative;
+    width: 100%;
+}
+
 input, select, textarea {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 1.25rem 1rem 0.5rem;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-sm);
     background: #ffffff;
@@ -358,10 +363,40 @@ input, select, textarea {
     transition: all 0.2s ease;
 }
 
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 4px hsla(var(--h), var(--s), var(--l), 0.1);
+}
+
+.form-field label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: var(--muted);
+    transition: all 0.2s ease;
+    pointer-events: none;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.form-field input:focus ~ label,
+.form-field input:not(:placeholder-shown) ~ label,
+.form-field textarea:focus ~ label,
+.form-field textarea:not(:placeholder-shown) ~ label,
+.form-field select:focus ~ label,
+.form-field select:not([value=""]) ~ label {
+    top: 0.45rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 button {

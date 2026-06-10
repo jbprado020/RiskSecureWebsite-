@@ -167,18 +167,17 @@ renderHeader('Meetings');
         <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="create_meeting" value="1">
-            <div>
-                <label>Client (optional)</label>
-                <select name="client_id" aria-label="Client (optional)">
+            <div class="form-field">
+                <select name="client_id" id="client_id_add">
                     <option value="">No specific client</option>
                     <?php foreach ($clients as $client): ?>
                         <option value="<?= (int) $client['id']; ?>"><?= e((string) $client['full_name']); ?></option>
                     <?php endforeach; ?>
                 </select>
+                <label for="client_id_add">Client (optional)</label>
             </div>
-            <div>
-                <label>Assigned Agent</label>
-                <select name="agent_id" required aria-label="Assigned Agent" aria-required="true">
+            <div class="form-field">
+                <select name="agent_id" id="agent_id_add" required>
                     <option value="">Select agent</option>
                     <?php foreach ($agents as $agent): ?>
                         <option value="<?= (int) $agent['id']; ?>">
@@ -186,30 +185,31 @@ renderHeader('Meetings');
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <label for="agent_id_add">Assigned Agent</label>
             </div>
-            <div>
-                <label>Date and Time</label>
-                <input type="datetime-local" name="meeting_at" required aria-label="Meeting Date and Time" aria-required="true">
+            <div class="form-field">
+                <input type="datetime-local" name="meeting_at" id="meeting_at_add" required placeholder=" ">
+                <label for="meeting_at_add">Date and Time</label>
             </div>
-            <div>
-                <label>Duration (minutes)</label>
-                <input type="number" name="duration_minutes" min="5" max="480" step="5" value="30" required aria-label="Duration Minutes" aria-required="true">
+            <div class="form-field">
+                <input type="number" name="duration_minutes" id="duration_minutes_add" min="5" max="480" step="5" value="30" required placeholder=" ">
+                <label for="duration_minutes_add">Duration (minutes)</label>
             </div>
-            <div>
-                <label>Channel</label>
-                <select name="channel" required aria-label="Meeting Channel" aria-required="true">
+            <div class="form-field">
+                <select name="channel" id="channel_add" required>
                     <option value="zoom">Zoom</option>
                     <option value="phone">Phone</option>
                     <option value="in-person">In-person</option>
                 </select>
+                <label for="channel_add">Channel</label>
             </div>
-            <div style="grid-column: 1 / -1;">
-                <label>Purpose</label>
-                <input name="purpose" placeholder="e.g. Renewal discussion" required aria-label="Purpose" aria-required="true">
+            <div class="form-field" style="grid-column: 1 / -1;">
+                <input name="purpose" id="purpose_add" placeholder=" " required>
+                <label for="purpose_add">Purpose</label>
             </div>
-            <div style="grid-column: 1 / -1;">
-                <label>Notes</label>
-                <textarea name="notes" placeholder="e.g. Send invite link and checklist" aria-label="Notes"></textarea>
+            <div class="form-field" style="grid-column: 1 / -1;">
+                <textarea name="notes" id="notes_add" placeholder=" "></textarea>
+                <label for="notes_add">Notes</label>
             </div>
             <div style="grid-column: 1 / -1;">
                 <button type="submit">Schedule Meeting</button>
@@ -220,9 +220,9 @@ renderHeader('Meetings');
     <article class="card">
         <h2>Calendar View</h2>
         <form method="get" class="form-row">
-            <div style="flex:1;">
-                <label>Month</label>
-                <input type="month" name="month" value="<?= e($selectedMonth); ?>" aria-label="Month">
+            <div class="form-field" style="flex:1;">
+                <input type="month" name="month" id="month_filter" value="<?= e($selectedMonth); ?>" placeholder=" ">
+                <label for="month_filter">Month</label>
             </div>
             <div style="flex:0 0 auto;">
                 <button type="submit">Load</button>

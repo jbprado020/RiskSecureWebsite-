@@ -98,21 +98,21 @@ renderHeader($title);
     <h2><?= iconMarkup('manage_accounts'); ?> Account Information</h2>
     <form action="profile.php" method="post" class="grid cols-2 profile-form" id="profileForm">
         <input type="hidden" name="update_profile" value="1">
-        <div>
-            <label>Full Name</label>
-            <input type="text" name="full_name" value="<?= e($name); ?>" required data-progress="true">
+        <div class="form-field">
+            <input type="text" name="full_name" id="full_name" value="<?= e($name); ?>" required data-progress="true" placeholder=" ">
+            <label for="full_name">Full Name</label>
         </div>
-        <div>
-            <label>Email Address</label>
-            <input type="email" name="email" value="<?= e($email); ?>" required data-progress="true">
+        <div class="form-field">
+            <input type="email" name="email" id="email" value="<?= e($email); ?>" required data-progress="true" placeholder=" ">
+            <label for="email">Email Address</label>
         </div>
-        <div>
-            <label>Phone Number</label>
-            <input type="tel" name="phone" value="<?= e($phone); ?>" placeholder="+63 9xx xxx xxxx" data-progress="true">
+        <div class="form-field">
+            <input type="tel" name="phone" id="phone" value="<?= e($phone); ?>" placeholder=" " data-progress="true">
+            <label for="phone">Phone Number</label>
         </div>
-        <div>
-            <label>Mailing Address</label>
-            <input type="text" name="address" value="<?= e($address); ?>" placeholder="House No., Street, City" data-progress="true">
+        <div class="form-field">
+            <input type="text" name="address" id="address" value="<?= e($address); ?>" placeholder=" " data-progress="true">
+            <label for="address">Mailing Address</label>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Update Information</button>
@@ -123,17 +123,17 @@ renderHeader($title);
 <section class="card" id="security">
     <h2><?= iconMarkup('admin_panel_settings'); ?> Account Security</h2>
     <form action="#" method="post" class="grid cols-3" data-validate="true">
-        <div>
-            <label>Current Password</label>
-            <input type="password" name="current_password" required>
+        <div class="form-field">
+            <input type="password" name="current_password" id="current_password" required placeholder=" ">
+            <label for="current_password">Current Password</label>
         </div>
-        <div>
-            <label>New Password</label>
-            <input type="password" name="new_password" required>
+        <div class="form-field">
+            <input type="password" name="new_password" id="new_password" required placeholder=" ">
+            <label for="new_password">New Password</label>
         </div>
-        <div>
-            <label>Confirm New Password</label>
-            <input type="password" name="confirm_password" required>
+        <div class="form-field">
+            <input type="password" name="confirm_password" id="confirm_password" required placeholder=" ">
+            <label for="confirm_password">Confirm New Password</label>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit" class="btn-secondary">Change Password</button>

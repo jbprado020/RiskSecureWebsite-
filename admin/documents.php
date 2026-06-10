@@ -189,18 +189,17 @@ renderHeader('Documents');
     <form method="post" enctype="multipart/form-data" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="upload_document" value="1">
-        <div>
-            <label>Client</label>
-            <select name="client_id" required aria-label="Client" aria-required="true">
+        <div class="form-field">
+            <select name="client_id" id="client_id" required aria-required="true">
                 <option value="">Select client</option>
                 <?php foreach ($clients as $client): ?>
                     <option value="<?= (int) $client['id']; ?>"><?= e((string) $client['full_name']); ?></option>
                 <?php endforeach; ?>
             </select>
+            <label for="client_id">Client</label>
         </div>
-        <div>
-            <label>Policy</label>
-            <select name="policy_id" required aria-label="Policy" aria-required="true">
+        <div class="form-field">
+            <select name="policy_id" id="policy_id" required aria-required="true">
                 <option value="">Select policy</option>
                 <?php foreach ($policies as $policy): ?>
                     <option value="<?= (int) $policy['id']; ?>">
@@ -208,10 +207,10 @@ renderHeader('Documents');
                     </option>
                 <?php endforeach; ?>
             </select>
+            <label for="policy_id">Policy</label>
         </div>
-        <div>
-            <label>Claim (Optional)</label>
-            <select name="claim_id" aria-label="Claim (Optional)">
+        <div class="form-field">
+            <select name="claim_id" id="claim_id">
                 <option value="">No specific claim</option>
                 <?php foreach ($claims as $claim): ?>
                     <option value="<?= (int) $claim['id']; ?>">
@@ -219,14 +218,15 @@ renderHeader('Documents');
                     </option>
                 <?php endforeach; ?>
             </select>
+            <label for="claim_id">Claim (Optional)</label>
         </div>
-        <div>
-            <label>Document Type</label>
-            <input name="document_type" placeholder="e.g. ORCR, Policy Form, Valid ID" required aria-label="Document Type" aria-required="true">
+        <div class="form-field">
+            <input name="document_type" id="document_type" placeholder=" " required aria-required="true">
+            <label for="document_type">Document Type</label>
         </div>
-        <div>
-            <label>File</label>
-            <input type="file" name="document_file" required aria-label="Document File" aria-required="true">
+        <div class="form-field">
+            <input type="file" name="document_file" id="document_file" required aria-required="true" placeholder=" ">
+            <label for="document_file">File</label>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Upload Document</button>

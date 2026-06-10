@@ -43,14 +43,14 @@ renderHeader($title);
         <h2><?= iconMarkup('manage_accounts'); ?> Account Information</h2>
         <form action="profile.php" method="post" class="grid cols-2 profile-form">
             <input type="hidden" name="update_profile" value="1">
-            <div>
-                <label>Full Name</label>
-                <input type="text" name="full_name" value="<?= e($name); ?>" readonly disabled>
+            <div class="form-field">
+                <input type="text" name="full_name" id="full_name_profile" value="<?= e($name); ?>" readonly disabled placeholder=" ">
+                <label for="full_name_profile">Full Name</label>
                 <small>Contact your administrator to change your name.</small>
             </div>
-            <div>
-                <label>Email Address</label>
-                <input type="email" name="email" value="<?= e($email); ?>" readonly disabled>
+            <div class="form-field">
+                <input type="email" name="email" id="email_profile" value="<?= e($email); ?>" readonly disabled placeholder=" ">
+                <label for="email_profile">Email Address</label>
                 <small>Contact your administrator to change your email.</small>
             </div>
             <div style="grid-column: 1 / -1;">
@@ -62,17 +62,17 @@ renderHeader($title);
     <article class="card" id="security">
         <h2><?= iconMarkup('admin_panel_settings'); ?> Account Security</h2>
         <form action="#" method="post" class="grid" data-validate="true">
-            <div>
-                <label>Current Password</label>
-                <input type="password" name="current_password" required>
+            <div class="form-field">
+                <input type="password" name="current_password" id="current_password_security" required placeholder=" ">
+                <label for="current_password_security">Current Password</label>
             </div>
-            <div>
-                <label>New Password</label>
-                <input type="password" name="new_password" required>
+            <div class="form-field">
+                <input type="password" name="new_password" id="new_password_security" required placeholder=" ">
+                <label for="new_password_security">New Password</label>
             </div>
-            <div>
-                <label>Confirm New Password</label>
-                <input type="password" name="confirm_password" required>
+            <div class="form-field">
+                <input type="password" name="confirm_password" id="confirm_password_security" required placeholder=" ">
+                <label for="confirm_password_security">Confirm New Password</label>
             </div>
             <div>
                 <button type="submit">Change Password</button>

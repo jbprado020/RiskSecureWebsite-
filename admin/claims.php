@@ -392,9 +392,8 @@ renderHeader('Claims');
     <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="create_claim" value="1">
-        <div>
-            <label>Policy</label>
-            <select name="policy_id" required aria-label="Policy" aria-required="true">
+        <div class="form-field">
+            <select name="policy_id" id="file_policy_id" required aria-required="true">
                 <option value="">Select active policy</option>
                 <?php foreach ($activePolicies as $policy): ?>
                     <option value="<?= (int) $policy['id']; ?>">
@@ -402,18 +401,19 @@ renderHeader('Claims');
                     </option>
                 <?php endforeach; ?>
             </select>
+            <label for="file_policy_id">Policy</label>
         </div>
-        <div>
-            <label>Incident Date</label>
-            <input type="date" name="incident_date" value="<?= date('Y-m-d'); ?>" required aria-label="Incident Date" aria-required="true">
+        <div class="form-field">
+            <input type="date" name="incident_date" id="file_incident_date" value="<?= date('Y-m-d'); ?>" required aria-required="true" placeholder=" ">
+            <label for="file_incident_date">Incident Date</label>
         </div>
-        <div>
-            <label>Claim Amount (PHP)</label>
-            <input type="number" step="0.01" min="1" name="claim_amount" required aria-label="Claim Amount" aria-required="true">
+        <div class="form-field">
+            <input type="number" step="0.01" min="1" name="claim_amount" id="file_claim_amount" required aria-required="true" placeholder=" ">
+            <label for="file_claim_amount">Claim Amount (PHP)</label>
         </div>
-        <div style="grid-column: 1 / -1;">
-            <label>Description</label>
-            <textarea name="description" required aria-label="Description" aria-required="true"></textarea>
+        <div class="form-field" style="grid-column: 1 / -1;">
+            <textarea name="description" id="file_description" required aria-required="true" placeholder=" "></textarea>
+            <label for="file_description">Description</label>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Submit Claim</button>
@@ -501,9 +501,8 @@ renderHeader('Claims');
     <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="add_requirement" value="1">
-        <div>
-            <label>Claim</label>
-            <select name="claim_id" required aria-label="Claim" aria-required="true">
+        <div class="form-field">
+            <select name="claim_id" id="req_claim_id" required aria-required="true">
                 <option value="">Select claim</option>
                 <?php foreach ($claims as $claim): ?>
                     <option value="<?= (int) $claim['id']; ?>">
@@ -511,10 +510,11 @@ renderHeader('Claims');
                     </option>
                 <?php endforeach; ?>
             </select>
+            <label for="req_claim_id">Claim</label>
         </div>
-        <div>
-            <label>Requirement Name</label>
-            <input name="requirement_name" placeholder="e.g. ORCR, Police Report" required aria-label="Requirement Name" aria-required="true">
+        <div class="form-field">
+            <input name="requirement_name" id="req_requirement_name" placeholder=" " required aria-required="true">
+            <label for="req_requirement_name">Requirement Name</label>
         </div>
         <div>
             <label class="checkbox-inline checkbox-inline-top">
@@ -587,9 +587,8 @@ renderHeader('Claims');
         <form method="post" class="grid cols-2" data-validate="true">
             <?= csrfField(); ?>
             <input type="hidden" name="record_claim_payment" value="1">
-            <div>
-                <label>Approved Claim</label>
-                <select name="claim_id" required aria-label="Approved Claim" aria-required="true">
+            <div class="form-field">
+                <select name="claim_id" id="pay_claim_id" required aria-required="true">
                     <option value="">Select claim</option>
                     <?php foreach ($approvedClaimsForPayment as $approvedClaim): ?>
                         <option value="<?= (int) $approvedClaim['id']; ?>">
@@ -597,18 +596,19 @@ renderHeader('Claims');
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <label for="pay_claim_id">Approved Claim</label>
             </div>
-            <div>
-                <label>Amount (PHP)</label>
-                <input type="number" min="1" step="0.01" name="amount" required aria-label="Amount" aria-required="true">
+            <div class="form-field">
+                <input type="number" min="1" step="0.01" name="amount" id="pay_amount" required aria-required="true" placeholder=" ">
+                <label for="pay_amount">Amount (PHP)</label>
             </div>
-            <div>
-                <label>Paid Date</label>
-                <input type="date" name="paid_date" value="<?= date('Y-m-d'); ?>" required aria-label="Paid Date" aria-required="true">
+            <div class="form-field">
+                <input type="date" name="paid_date" id="pay_paid_date" value="<?= date('Y-m-d'); ?>" required aria-required="true" placeholder=" ">
+                <label for="pay_paid_date">Paid Date</label>
             </div>
-            <div>
-                <label>Reference No.</label>
-                <input name="reference_no" placeholder="e.g. CLM-PAY-2026-0003" required aria-label="Reference Number" aria-required="true">
+            <div class="form-field">
+                <input name="reference_no" id="pay_reference_no" placeholder=" " required aria-required="true">
+                <label for="pay_reference_no">Reference No.</label>
             </div>
             <div style="grid-column: 1 / -1;">
                 <button type="submit">Record Claim Payment</button>

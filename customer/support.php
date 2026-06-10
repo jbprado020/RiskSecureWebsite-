@@ -25,19 +25,19 @@ renderHeader('Contact Support');
     <article class="card">
         <h2>Send us a Message</h2>
         <form action="#" method="post" class="grid" data-validate="true">
-            <div>
-                <label>Subject</label>
-                <select name="subject" required>
+            <div class="form-field">
+                <select name="subject" id="subject" required>
                     <option value="policy">Policy Inquiry</option>
                     <option value="claim">Claim Assistance</option>
                     <option value="billing">Billing & Payments</option>
                     <option value="technical">Technical Support</option>
                     <option value="other">Other</option>
                 </select>
+                <label for="subject">Subject</label>
             </div>
-            <div>
-                <label>Message</label>
-                <textarea name="message" placeholder="Describe your concern in detail..." required></textarea>
+            <div class="form-field">
+                <textarea name="message" id="message" placeholder=" " required></textarea>
+                <label for="message">Message</label>
             </div>
             <div>
                 <button type="submit">Send Message</button>

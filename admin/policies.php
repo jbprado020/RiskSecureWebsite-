@@ -156,9 +156,8 @@ renderHeader('Policies');
     <form method="post" class="grid cols-2" data-validate="true">
         <?= csrfField(); ?>
         <input type="hidden" name="issue_policy" value="1">
-        <div>
-            <label>Approved Quote</label>
-            <select name="quote_id" required aria-label="Approved Quote" aria-required="true">
+        <div class="form-field">
+            <select name="quote_id" id="quote_id_issue" required>
                 <option value="">Select approved quote</option>
                 <?php foreach ($approvedQuotes as $quote): ?>
                     <option value="<?= (int) $quote['id']; ?>">
@@ -166,10 +165,10 @@ renderHeader('Policies');
                     </option>
                 <?php endforeach; ?>
             </select>
+            <label for="quote_id_issue">Approved Quote</label>
         </div>
-        <div>
-            <label>Insurance Partner</label>
-            <select name="partner_id" required aria-label="Insurance Partner" aria-required="true">
+        <div class="form-field">
+            <select name="partner_id" id="partner_id_issue" required>
                 <option value="">Select partner</option>
                 <?php foreach ($partners as $partner): ?>
                     <option value="<?= (int) $partner['id']; ?>">
@@ -177,10 +176,11 @@ renderHeader('Policies');
                     </option>
                 <?php endforeach; ?>
             </select>
+            <label for="partner_id_issue">Insurance Partner</label>
         </div>
-        <div>
-            <label>Policy Start Date</label>
-            <input type="date" name="start_date" value="<?= date('Y-m-d'); ?>" required aria-label="Policy Start Date" aria-required="true">
+        <div class="form-field">
+            <input type="date" name="start_date" id="start_date_issue" value="<?= date('Y-m-d'); ?>" required placeholder=" ">
+            <label for="start_date_issue">Policy Start Date</label>
         </div>
         <div style="grid-column: 1 / -1;">
             <button type="submit">Issue Policy</button>
