@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 renderHeader('Staff Login');
 ?>
 
-<section class="card" style="max-width: 560px; margin: 0 auto 1rem;">
+<section class="card login-form-container" style="max-width: 560px; margin: 0 auto 1rem;">
     <h2>Staff Login</h2>
     <p>Use your staff account to access back-office operations.</p>
 

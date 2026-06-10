@@ -191,6 +191,20 @@ body.sidebar-open .nav-drawer {
     font-weight: 700;
     font-size: 1.1rem;
     letter-spacing: -0.01em;
+    white-space: nowrap;
+}
+
+.login-form-container h2,
+.login-form-container p:first-of-type {
+    text-align: center;
+}
+
+.login-form-container .grid {
+    justify-items: stretch;
+}
+
+.login-form-container button {
+    width: 100%;
 }
 
 @media (min-width: 1025px) {

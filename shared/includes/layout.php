@@ -194,7 +194,6 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '<img class="brand-logo" src="' . $relPath . 'shared/assets/icon/649536819_912363384772670_6676616353184671990_n.jpg" alt="RiskSecure logo">';
     echo '<span class="brand-title">RiskSecure Insurance</span>';
     echo '</div>';
-    echo '<button class="drawer-close" type="button" aria-label="Close menu">&times;</button>';
     echo '</div>';
     echo '<nav class="nav drawer-nav" aria-label="Primary navigation">';
 
