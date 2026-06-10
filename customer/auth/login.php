@@ -107,7 +107,7 @@ renderHeader('Customer Login');
             <button type="submit">Login</button>
         </div>
     </form>
-    <p style="margin-top: 1rem;">No account yet? <a href="register.php">Register here</a>.</p>
+    <p style="margin-top: 1rem; text-align: center;">No account yet? <a href="register.php">Register here</a>.</p>
 </section>
 
 <?php

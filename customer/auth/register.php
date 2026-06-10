@@ -156,7 +156,7 @@ renderHeader('Customer Register');
             <button type="submit">Register Account</button>
         </div>
     </form>
-    <p style="margin-top: 1rem;text-align: center;">Already registered? <a href="login.php">Sign in here</a>.</p>
+    <p style="margin-top: 1rem; text-align: center;">Already registered? <a href="login.php">Sign in here</a>.</p>
 </section>
 
 <?php
