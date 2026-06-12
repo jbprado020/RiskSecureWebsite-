@@ -95,11 +95,23 @@ function iconMarkup(string $name): string
         'workspace_premium' => '<path d="M12 3l7 4-1.4 7.5L12 21 6.4 14.5 5 7z"></path><path d="M12 8l1.2 2.4 2.7.4-2 1.9.5 2.7L12 13.8 9.6 15.4l.5-2.7-2-1.9 2.7-.4z"></path>',
         'notifications' => '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path>',
         'logout_default' => '<path d="M10 5H4v14h6"></path><path d="M13 12H4"></path><path d="M16 9l4 3-4 3"></path>',
+        'hub' => '<circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="19" r="2"></circle><circle cx="5" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>',
+        'assignment' => '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>',
+        'account_balance' => '<path d="M3 22h18M5 22V10M19 22V10M12 2v6M3 10h18M7 10v12M17 10v12M12 10v12"></path>',
+        'analytics' => '<path d="M12 20V10M18 20V4M6 20v-4"></path>',
     ];
 
     $path = $icons[$name] ?? $icons['logout_default'];
 
     return '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' . $path . '</svg>';
+}
+
+function navCategory(string $label, string $icon): void
+{
+    echo '<div class="nav-category">';
+    echo iconMarkup($icon);
+    echo '<span>' . e($label) . '</span>';
+    echo '</div>';
 }
 
 function navLink(string $href, string $label, string $currentPage, string $icon = 'radio_button_unchecked'): void
@@ -201,6 +213,7 @@ function renderHeader(string $title, bool $showBanner = true): void
         navLink($relPath . 'admin/dashboard.php', 'Dashboard', $currentPage, 'dashboard');
 
         if (canAccess(['admin', 'manager', 'underwriter'])) {
+            navCategory('Operations', 'hub');
             navLink($relPath . 'admin/clients.php', 'Clients', $currentPage, 'group');
             navLink($relPath . 'admin/quotes.php', 'Quotes', $currentPage, 'request_quote');
             navLink($relPath . 'admin/policies.php', 'Policies', $currentPage, 'policy');
@@ -208,24 +221,29 @@ function renderHeader(string $title, bool $showBanner = true): void
         }
 
         if (canAccess(['admin', 'manager', 'underwriter', 'claims_officer'])) {
+            navCategory('Cases', 'assignment');
             navLink($relPath . 'admin/claims.php', 'Claims', $currentPage, 'gavel');
             navLink($relPath . 'admin/documents.php', 'Documents', $currentPage, 'folder_open');
             navLink($relPath . 'admin/meetings.php', 'Meetings', $currentPage, 'event');
         }
 
         if (canAccess(['admin', 'manager', 'billing_officer'])) {
+            navCategory('Finance', 'account_balance');
             navLink($relPath . 'admin/payments.php', 'Payments', $currentPage, 'payments');
         }
 
         if (canAccess(['admin', 'manager', 'underwriter', 'claims_officer', 'billing_officer'])) {
+            navCategory('Analytics', 'analytics');
             navLink($relPath . 'admin/reports.php', 'Reports', $currentPage, 'monitoring');
         }
 
         if (canAccess(['admin', 'manager'])) {
+            navCategory('Relationships', 'business');
             navLink($relPath . 'admin/insurance_partners.php', 'Partners', $currentPage, 'business');
         }
 
         if (canAccess(['admin'])) {
+            navCategory('System', 'admin_panel_settings');
             navLink($relPath . 'admin/staff_management.php', 'Staff Mgmt', $currentPage, 'manage_accounts');
         }
     } elseif (isCustomerLoggedIn()) {

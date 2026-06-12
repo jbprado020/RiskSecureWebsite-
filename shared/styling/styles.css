@@ -288,6 +288,25 @@ body.sidebar-open .nav-drawer {
     box-shadow: var(--shadow-md);
 }
 
+.nav-category {
+    padding: 1.25rem 1rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: hsla(0, 0%, 100%, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    user-select: none;
+}
+
+.nav-category .nav-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    opacity: 0.6;
+}
+
 .nav-icon {
     width: 1.25rem;
     height: 1.25rem;
@@ -297,9 +316,35 @@ body.sidebar-open .nav-drawer {
 }
 
 .drawer-footer {
-    padding: 1rem;
+    padding: 1.25rem 1rem;
     border-top: 1px solid hsla(0, 0%, 100%, 0.1);
     margin-top: auto;
+}
+
+.drawer-footer a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    color: #ffffff;
+    background: hsla(0, 0%, 100%, 0.08);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+}
+
+.drawer-footer a:hover {
+    background: hsla(0, 0%, 100%, 0.15);
+    border-color: hsla(0, 0%, 100%, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.drawer-footer a .nav-icon {
+    opacity: 0.9;
 }
 
 .btn-full {
@@ -448,6 +493,20 @@ button:active {
 }
 
 /* Top Bar Buttons & Actions */
+#notif-dropdown .top-bar-btn,
+#profile-dropdown .top-bar-btn {
+    color: var(--primary);
+    border-color: var(--border-strong);
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+}
+
+#notif-dropdown .top-bar-btn:hover,
+#profile-dropdown .top-bar-btn:hover {
+    background: var(--primary-soft);
+    transform: translateY(-1px);
+}
+
 .top-bar-btn {
     background: transparent;
     border: 1px solid var(--border);
@@ -671,6 +730,19 @@ tr:hover td { background: var(--bg-alt); }
 .admin-action h3 {
     font-size: 1.25rem;
     margin: 0;
+    color: var(--primary);
+}
+
+.action-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.action-header .nav-icon {
+    width: 1.5rem;
+    height: 1.5rem;
     color: var(--primary);
 }
 

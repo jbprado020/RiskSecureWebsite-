@@ -95,24 +95,28 @@ if (canAccess(['admin', 'manager', 'underwriter'])) {
         'description' => 'Create and maintain customer profiles.',
         'href' => 'clients.php',
         'cta' => 'Open Clients',
+        'icon' => 'group',
     ];
     $quickActions[] = [
         'title' => 'Quote Management',
         'description' => 'Create, review, and approve insurance quotes.',
         'href' => 'quotes.php',
         'cta' => 'Open Quotes',
+        'icon' => 'request_quote',
     ];
     $quickActions[] = [
         'title' => 'Policy Issuance',
         'description' => 'Issue policies from approved quotes.',
         'href' => 'policies.php',
         'cta' => 'Open Policies',
+        'icon' => 'policy',
     ];
     $quickActions[] = [
         'title' => 'Renewal Tracking',
         'description' => 'Monitor and process upcoming renewals.',
         'href' => 'renewals.php',
         'cta' => 'Open Renewals',
+        'icon' => 'cycle',
     ];
 }
 
@@ -122,18 +126,21 @@ if (canAccess(['admin', 'manager', 'underwriter', 'claims_officer'])) {
         'description' => 'Review claims and complete decision workflow.',
         'href' => 'claims.php',
         'cta' => 'Open Claims',
+        'icon' => 'gavel',
     ];
     $quickActions[] = [
         'title' => 'Document Review',
         'description' => 'Inspect uploaded policy and claim documents.',
         'href' => 'documents.php',
         'cta' => 'Open Documents',
+        'icon' => 'folder_open',
     ];
     $quickActions[] = [
         'title' => 'Meeting Schedule',
         'description' => 'Manage customer appointments and follow-ups.',
         'href' => 'meetings.php',
         'cta' => 'Open Meetings',
+        'icon' => 'event',
     ];
 }
 
@@ -143,6 +150,7 @@ if (canAccess(['admin', 'manager', 'billing_officer'])) {
         'description' => 'Track premiums and record payment activity.',
         'href' => 'payments.php',
         'cta' => 'Open Payments',
+        'icon' => 'payments',
     ];
 }
 
@@ -152,6 +160,7 @@ if (canAccess(['admin', 'manager', 'underwriter', 'claims_officer', 'billing_off
         'description' => 'Review operational and financial summaries.',
         'href' => 'reports.php',
         'cta' => 'Open Reports',
+        'icon' => 'monitoring',
     ];
 }
 
@@ -161,6 +170,7 @@ if (canAccess(['admin', 'manager'])) {
         'description' => 'Maintain partner companies and contacts.',
         'href' => 'insurance_partners.php',
         'cta' => 'Open Partners',
+        'icon' => 'business',
     ];
 }
 
@@ -170,6 +180,7 @@ if (canAccess(['admin'])) {
         'description' => 'Manage staff accounts, roles, and access.',
         'href' => 'staff_management.php',
         'cta' => 'Open Staff Mgmt',
+        'icon' => 'manage_accounts',
     ];
 }
 ?>
@@ -187,7 +198,10 @@ if (canAccess(['admin'])) {
 <section class="grid cols-2">
     <?php foreach ($quickActions as $action): ?>
     <article class="card admin-action">
-        <h3><?= e($action['title']); ?></h3>
+        <div class="action-header">
+            <?= iconMarkup($action['icon']); ?>
+            <h3><?= e($action['title']); ?></h3>
+        </div>
         <p><?= e($action['description']); ?></p>
         <a href="<?= e($action['href']); ?>" class="btn-action"><?= e($action['cta']); ?> -&gt;</a>
     </article>
