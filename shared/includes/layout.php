@@ -238,8 +238,10 @@ function renderHeader(string $title, bool $showBanner = true): void
         navLink($relPath . 'customer/auth/register.php', 'Customer Register', $currentPage, 'person_add');
     }
 
+    echo '</nav>';
+
     if (isStaffLoggedIn() || isCustomerLoggedIn()) {
-        echo '<div class="nav-logout-wrapper">';
+        echo '<div class="drawer-footer">';
         if (isStaffLoggedIn()) {
             navLink($relPath . 'admin/auth/logout.php', 'Staff Logout', $currentPage, 'logout');
         } else {
@@ -248,7 +250,6 @@ function renderHeader(string $title, bool $showBanner = true): void
         echo '</div>';
     }
 
-    echo '</nav>';
     echo '</aside>';
     echo '<div class="sidebar-backdrop" hidden></div>';
 

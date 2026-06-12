@@ -152,8 +152,8 @@ renderHeader('Customer Register');
             <input type="password" name="confirm_password" id="confirm_password" minlength="12" required data-confirm-target="password" autocomplete="new-password" aria-label="Confirm Password" aria-required="true" placeholder=" ">
             <label for="confirm_password">Confirm Password</label>
         </div>
-        <div style="grid-column: 1 / -1;" style="text-align: center;">
-            <button type="submit">Register Account</button>
+        <div style="grid-column: 1 / -1; text-align: center;">
+            <button type="submit" class="btn-full">Register Account</button>
         </div>
     </form>
     <p style="margin-top: 1rem; text-align: center;">Already registered? <a href="login.php">Sign in here</a>.</p>

@@ -291,6 +291,19 @@ body.sidebar-open .nav-drawer {
 .nav-icon {
     width: 1.25rem;
     height: 1.25rem;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.drawer-footer {
+    padding: 1rem;
+    border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+    margin-top: auto;
+}
+
+.btn-full {
+    width: 100% !important;
 }
 
 /* Page Content Area */
