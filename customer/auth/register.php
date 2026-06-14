@@ -111,10 +111,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-renderHeader('Customer Register');
+renderHeader('Customer Register', true, 'container auth-main');
 ?>
 
-<section class="card" style="max-width: 760px; margin: 0 auto 1rem;">
+<section class="card login-form-container" style="max-width: 760px; margin: 0 auto 1rem;">
     <h2 style="text-align: center;">Create Customer Account</h2>
     <p>Use this once, then use Customer Login for next visits.</p>
 

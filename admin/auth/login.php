@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-renderHeader('Staff Login');
+renderHeader('Staff Login', true, 'container auth-main');
 ?>
 
 <section class="card login-form-container" style="max-width: 560px; margin: 0 auto 1rem;">

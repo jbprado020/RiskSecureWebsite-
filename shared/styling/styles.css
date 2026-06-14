@@ -207,6 +207,18 @@ body.sidebar-open .nav-drawer {
     width: 100%;
 }
 
+/* Auth pages centering */
+main.auth-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: calc(100vh - 160px);
+}
+
 @media (min-width: 1025px) {
     .nav-drawer {
         transform: translateX(0);

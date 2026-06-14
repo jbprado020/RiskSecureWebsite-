@@ -155,7 +155,7 @@ function getRelativePath(): string
     return '../';
 }
 
-function renderHeader(string $title, bool $showBanner = true): void
+function renderHeader(string $title, bool $showBanner = true, string $containerClass = 'container'): void
 {
     ensureSessionStarted();
     $currentPage = basename((string) ($_SERVER['PHP_SELF'] ?? ''));
@@ -340,7 +340,7 @@ function renderHeader(string $title, bool $showBanner = true): void
     echo '</header>';
 
     echo '<div class="sidebar-backdrop" hidden></div>';
-    echo '<main class="container" id="main-content" tabindex="-1">';
+    echo '<main class="' . e($containerClass) . '" id="main-content" tabindex="-1">';
 }
 
 function renderFooter(): void
