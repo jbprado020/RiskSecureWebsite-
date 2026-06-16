@@ -36,62 +36,62 @@ renderHeader('Contact Support');
                 <label for="subject">Subject</label>
             </div>
             <div class="form-field">
-                <textarea name="message" id="message" placeholder=" " required></textarea>
+                <textarea name="message" id="message" style="min-height: 80px;" placeholder=" " required></textarea>
                 <label for="message">Message</label>
             </div>
             <div>
-                <button type="submit">Send Message</button>
+                <button type="submit" class="btn-full">Send Message</button>
             </div>
         </form>
     </article>
 
     <article class="card" id="agent">
-        <h2>Direct Contact Info</h2>
-        <div class="contact-methods">
-            <div style="margin-bottom: 1.5rem;">
-                <h3><?= iconMarkup('group'); ?> Your Assigned Agent</h3>
+        <h2>Support & Agent Info</h2>
+        <div class="contact-methods grid cols-2" style="gap: 1rem;">
+            <div>
+                <h3><?= iconMarkup('group'); ?> Your Agent</h3>
                 <p><strong>Maria Santos</strong></p>
-                <p>Senior Insurance Consultant</p>
-                <p>Email: <a href="mailto:m.santos@risksecure.com">m.santos@risksecure.com</a></p>
-                <div style="margin-top: 0.5rem;">
-                    <button class="btn-action" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Book a Meeting</button>
-                </div>
-            </div>
-            <div style="margin-bottom: 1.5rem;">
-                <h3><?= iconMarkup('notifications'); ?> Support Hotline</h3>
-                <p>Call us at <strong>+63 (2) 8888-SECURE</strong></p>
-                <p>Available Mon-Fri, 8:00 AM - 6:00 PM</p>
-            </div>
-            <div style="margin-bottom: 1.5rem;">
-                <h3><?= iconMarkup('person'); ?> Email Support</h3>
-                <p>Send an email to <a href="mailto:support@risksecure.com">support@risksecure.com</a></p>
+                <p><small>Senior Consultant</small></p>
+                <p><small><a href="mailto:m.santos@risksecure.com">m.santos@risksecure.com</a></small></p>
             </div>
             <div>
-                <h3><?= iconMarkup('event'); ?> Visit Our Office</h3>
-                <p>123 RiskSecure Plaza, Makati City, Philippines</p>
+                <h3><?= iconMarkup('notifications'); ?> Hotline</h3>
+                <p><strong>+63 (2) 8888-SECURE</strong></p>
+                <p><small>Mon-Fri, 8AM - 6PM</small></p>
             </div>
+            <div>
+                <h3><?= iconMarkup('person'); ?> Email</h3>
+                <p><small><a href="mailto:support@risksecure.com">support@risksecure.com</a></small></p>
+            </div>
+            <div>
+                <h3><?= iconMarkup('event'); ?> Office</h3>
+                <p><small>Makati City, Philippines</small></p>
+            </div>
+        </div>
+        <div style="margin-top: 1rem;">
+            <button class="btn-action" style="width: 100%; padding: 0.5rem;">Book a Meeting</button>
         </div>
     </article>
 </section>
 
-<section class="card" id="faq" style="margin-top: 2rem;">
-    <h2><?= iconMarkup('notifications'); ?> Frequently Asked Questions</h2>
-    <div class="grid cols-2">
+<section class="card" id="faq" style="margin-top: 1.5rem;">
+    <h2><?= iconMarkup('notifications'); ?> Quick FAQ</h2>
+    <div class="grid cols-2" style="gap: 1.5rem;">
         <div class="faq-item">
-            <p><strong>How do I renew my policy?</strong></p>
-            <p class="text-muted">You can renew your policy through the dashboard 30 days before expiration.</p>
+            <p><strong>How do I renew?</strong></p>
+            <p class="text-muted"><small>Renew via dashboard 30 days before expiration.</small></p>
         </div>
         <div class="faq-item">
-            <p><strong>When will my claim be processed?</strong></p>
-            <p class="text-muted">Standard claims are processed within 5-7 business days after all documents are received.</p>
+            <p><strong>Claim time?</strong></p>
+            <p class="text-muted"><small>Standard claims take 5-7 business days.</small></p>
         </div>
         <div class="faq-item">
-            <p><strong>Can I change my coverage mid-term?</strong></p>
-            <p class="text-muted">Yes, please contact your agent to discuss coverage adjustments.</p>
+            <p><strong>Coverage changes?</strong></p>
+            <p class="text-muted"><small>Contact your agent to adjust coverage.</small></p>
         </div>
         <div class="faq-item">
-            <p><strong>What happens if I miss a payment?</strong></p>
-            <p class="text-muted">There is a 15-day grace period for most policies before coverage is suspended.</p>
+            <p><strong>Missed payment?</strong></p>
+            <p class="text-muted"><small>15-day grace period before suspension.</small></p>
         </div>
     </div>
 </section>

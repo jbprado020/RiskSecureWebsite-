@@ -496,6 +496,20 @@ button:active {
     gap: 1.5rem;
 }
 
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+    .cols-2, .cols-3, .cols-4 { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 901px) {
+    .cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .cols-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
 /* Toggle Switch */
 .toggle-switch {
     position: relative;

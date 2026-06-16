@@ -451,7 +451,7 @@ renderHeader('Customer Portal', false);
             <button type="button" class="btn-action" data-toggle="edit-form" data-target="form-apply">Get Started</button>
         </article>
 
-        <article class="card action-tile" id="file-claim">
+        <article class="card action-tile">
             <div class="action-icon"><?= iconMarkup('gavel'); ?></div>
             <h3>File a Claim</h3>
             <p>Report an incident and start your claim process.</p>
@@ -640,168 +640,168 @@ renderHeader('Customer Portal', false);
         <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('monitoring'); ?> Your Account Portfolio</span></h2>
     </div>
 
-    <div class="tab-container">
-        <h3>Recent Quotes</h3>
-        <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Product</th>
-                    <th>Coverage</th>
-                    <th>Premium</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($accountQuotes as $quote): ?>
+    <div class="grid cols-2">
+        <div>
+            <h3>Recent Quotes</h3>
+            <div class="table-wrap">
+            <table>
+                <thead>
                     <tr>
-                        <td><?= (int) $quote['id']; ?></td>
-                        <td><?= e((string) $quote['product_name']); ?> <small>(<?= e((string) $quote['policy_type']); ?>)</small></td>
-                        <td>PHP <?= number_format((float) $quote['coverage_amount'], 2); ?></td>
-                        <td>PHP <?= number_format((float) $quote['premium_amount'], 2); ?></td>
-                        <td><span class="badge <?= badgeClass((string) $quote['status']); ?>"><?= e(statusLabel((string) $quote['status'])); ?></span></td>
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th>Premium</th>
+                        <th>Status</th>
                     </tr>
-                <?php endforeach; ?>
-                <?php if (count($accountQuotes) === 0): ?>
-                    <tr><td colspan="5" class="empty-state">No quotes yet. Start by applying for one!</td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountQuotes as $quote): ?>
+                        <tr>
+                            <td><?= (int) $quote['id']; ?></td>
+                            <td><?= e((string) $quote['product_name']); ?></td>
+                            <td>PHP <?= number_format((float) $quote['premium_amount'], 2); ?></td>
+                            <td><span class="badge <?= badgeClass((string) $quote['status']); ?>"><?= e(statusLabel((string) $quote['status'])); ?></span></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <?php if (count($accountQuotes) === 0): ?>
+                        <tr><td colspan="4" class="empty-state">No quotes yet.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            </div>
         </div>
 
-        <h3>Active Policies</h3>
-        <div class="table-wrap" id="policies">
-        <table>
-            <thead>
-                <tr>
-                    <th>Policy Number</th>
-                    <th>Coverage Period</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($accountPolicies as $policy): ?>
+        <div>
+            <h3>Active Policies</h3>
+            <div class="table-wrap" id="policies">
+            <table>
+                <thead>
                     <tr>
-                        <td><strong><?= e((string) $policy['policy_number']); ?></strong></td>
-                        <td><?= e((string) $policy['start_date']); ?> to <?= e((string) $policy['end_date']); ?></td>
-                        <td><span class="badge <?= badgeClass((string) $policy['status']); ?>"><?= e(statusLabel((string) $policy['status'])); ?></span></td>
+                        <th>Policy #</th>
+                        <th>Period</th>
+                        <th>Status</th>
                     </tr>
-                <?php endforeach; ?>
-                <?php if (count($accountPolicies) === 0): ?>
-                    <tr><td colspan="3" class="empty-state">No active policies found.</td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-        </div>
-
-        <div class="grid cols-2" style="margin-top: 1rem;">
-            <div id="claims">
-                <h3>Claims</h3>
-                <div class="table-wrap">
-                <table>
-                    <thead>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountPolicies as $policy): ?>
                         <tr>
-                            <th>ID</th>
-                            <th>Amount</th>
-                            <th>Status</th>
+                            <td><strong><?= e((string) $policy['policy_number']); ?></strong></td>
+                            <td><?= e((string) $policy['start_date']); ?></td>
+                            <td><span class="badge <?= badgeClass((string) $policy['status']); ?>"><?= e(statusLabel((string) $policy['status'])); ?></span></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($accountClaims as $claim): ?>
-                            <tr>
-                                <td>#<?= (int) $claim['id']; ?></td>
-                                <td>PHP <?= number_format((float) $claim['claim_amount'], 2); ?></td>
-                                <td><span class="badge <?= badgeClass((string) $claim['claim_status']); ?>"><?= e(statusLabel((string) $claim['claim_status'])); ?></span></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <?php if (count($accountClaims) === 0): ?>
-                            <tr><td colspan="3" class="empty-state">No claims filed.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-                </div>
-            </div>
-            <div id="appointments">
-                <h3>Upcoming Appointments</h3>
-                <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Purpose</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($accountMeetings as $meeting): ?>
-                            <tr>
-                                <td><?= date('M d, H:i', strtotime($meeting['meeting_at'])); ?></td>
-                                <td><?= e((string) $meeting['purpose']); ?></td>
-                                <td><span class="badge <?= badgeClass((string) $meeting['status']); ?>"><?= e(statusLabel((string) $meeting['status'])); ?></span></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <?php if (count($accountMeetings) === 0): ?>
-                            <tr><td colspan="3" class="empty-state">No appointments.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-                </div>
+                    <?php endforeach; ?>
+                    <?php if (count($accountPolicies) === 0): ?>
+                        <tr><td colspan="3" class="empty-state">No active policies found.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
             </div>
         </div>
+    </div>
 
-        <div class="grid cols-2" style="margin-top: 1rem;">
-            <div id="documents">
-                <h3>ID Cards & Documents</h3>
-                <div class="table-wrap">
-                <table>
-                    <thead>
+    <div class="grid cols-2" style="margin-top: 1.5rem;">
+        <div id="claims">
+            <h3>Claims History</h3>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountClaims as $claim): ?>
                         <tr>
-                            <th>Document</th>
-                            <th>Policy</th>
-                            <th>Date</th>
+                            <td>#<?= (int) $claim['id']; ?></td>
+                            <td>PHP <?= number_format((float) $claim['claim_amount'], 2); ?></td>
+                            <td><span class="badge <?= badgeClass((string) $claim['claim_status']); ?>"><?= e(statusLabel((string) $claim['claim_status'])); ?></span></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($accountDocuments as $doc): ?>
-                            <tr>
-                                <td><a href="<?= e((string) $doc['file_path']); ?>" target="_blank"><?= e((string) $doc['document_type']); ?></a></td>
-                                <td><?= e((string) $doc['policy_number']); ?></td>
-                                <td><?= date('M d, Y', strtotime($doc['date_uploaded'])); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <?php if (count($accountDocuments) === 0): ?>
-                            <tr><td colspan="3" class="empty-state">No documents uploaded.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-                </div>
+                    <?php endforeach; ?>
+                    <?php if (count($accountClaims) === 0): ?>
+                        <tr><td colspan="3" class="empty-state">No claims filed.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
             </div>
-            <div id="certificates">
-                <h3>Certificates of Insurance</h3>
-                <div class="table-wrap">
-                <table>
-                    <thead>
+        </div>
+        <div id="appointments">
+            <h3>Upcoming Appointments</h3>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountMeetings as $meeting): ?>
                         <tr>
-                            <th>Certificate</th>
-                            <th>Action</th>
+                            <td><?= date('M d, H:i', strtotime($meeting['meeting_at'])); ?></td>
+                            <td><?= e((string) $meeting['purpose']); ?></td>
+                            <td><span class="badge <?= badgeClass((string) $meeting['status']); ?>"><?= e(statusLabel((string) $meeting['status'])); ?></span></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($accountPolicies as $policy): ?>
-                            <?php if ($policy['status'] === 'active'): ?>
-                                <tr>
-                                    <td>COI - <?= e((string) $policy['policy_number']); ?></td>
-                                    <td><button class="btn-action" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Download</button></td>
-                                </tr>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                        <?php if (count(array_filter($accountPolicies, fn($p) => $p['status'] === 'active')) === 0): ?>
-                            <tr><td colspan="2" class="empty-state">No active policies to generate certificates.</td></tr>
+                    <?php endforeach; ?>
+                    <?php if (count($accountMeetings) === 0): ?>
+                        <tr><td colspan="3" class="empty-state">No appointments.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top: 1.5rem;">
+        <div id="documents">
+            <h3>ID Cards & Documents</h3>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountDocuments as $doc): ?>
+                        <tr>
+                            <td><a href="<?= e((string) $doc['file_path']); ?>" target="_blank"><?= e((string) $doc['document_type']); ?></a></td>
+                            <td><?= date('M d, Y', strtotime($doc['date_uploaded'])); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <?php if (count($accountDocuments) === 0): ?>
+                        <tr><td colspan="2" class="empty-state">No documents found.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div id="certificates">
+            <h3>Certificates of Insurance</h3>
+            <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Certificate</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountPolicies as $policy): ?>
+                        <?php if ($policy['status'] === 'active'): ?>
+                            <tr>
+                                <td>COI - <?= e((string) $policy['policy_number']); ?></td>
+                                <td><button class="btn-action" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Download</button></td>
+                            </tr>
                         <?php endif; ?>
-                    </tbody>
-                </table>
-                </div>
+                    <?php endforeach; ?>
+                    <?php if (count(array_filter($accountPolicies, fn($p) => $p['status'] === 'active')) === 0): ?>
+                        <tr><td colspan="2" class="empty-state">No active policies.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
             </div>
         </div>
     </div>
