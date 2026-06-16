@@ -317,12 +317,37 @@ function renderHeader(string $title, bool $showBanner = true, string $containerC
         echo '<div class="dropdown-menu" hidden>';
         echo '<div class="dropdown-header">' . e($displayName) . '</div>';
         if (isCustomerLoggedIn()) {
-            echo '<a href="' . $relPath . 'customer/profile.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Accounts Center</span></a>';
+            echo '<div class="dropdown-section-label">Account & Security</div>';
+            echo '<a href="' . $relPath . 'customer/profile.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Manage Profile</span></a>';
+            echo '<a href="' . $relPath . 'customer/profile.php#security" class="dropdown-item">' . iconMarkup('admin_panel_settings') . '<span>Login & Security</span></a>';
+            echo '<a href="' . $relPath . 'customer/profile.php#privacy" class="dropdown-item">' . iconMarkup('policy') . '<span>Privacy Settings</span></a>';
+            
+            echo '<hr class="dropdown-divider">';
+            echo '<div class="dropdown-section-label">Policies & Coverage</div>';
+            echo '<a href="' . $relPath . 'customer/dashboard.php#policies" class="dropdown-item">' . iconMarkup('policy') . '<span>My Policies</span></a>';
+            echo '<a href="' . $relPath . 'customer/dashboard.php#documents" class="dropdown-item">' . iconMarkup('folder_open') . '<span>ID Cards & Documents</span></a>';
+            echo '<a href="' . $relPath . 'customer/dashboard.php#certificates" class="dropdown-item">' . iconMarkup('workspace_premium') . '<span>Certificates of Insurance</span></a>';
+
+            echo '<hr class="dropdown-divider">';
+            echo '<div class="dropdown-section-label">Claims Center</div>';
+            echo '<a href="' . $relPath . 'customer/dashboard.php#file-claim" class="dropdown-item">' . iconMarkup('gavel') . '<span>File a Claim</span></a>';
+            echo '<a href="' . $relPath . 'customer/dashboard.php#claims" class="dropdown-item">' . iconMarkup('assignment') . '<span>Claim History</span></a>';
+
+            echo '<hr class="dropdown-divider">';
+            echo '<div class="dropdown-section-label">Billing & Payments</div>';
+            echo '<a href="' . $relPath . 'customer/payments.php#methods" class="dropdown-item">' . iconMarkup('payments') . '<span>Payment Methods</span></a>';
+            echo '<a href="' . $relPath . 'customer/payments.php#history" class="dropdown-item">' . iconMarkup('account_balance') . '<span>Billing History</span></a>';
+            echo '<a href="' . $relPath . 'customer/payments.php#autopay" class="dropdown-item">' . iconMarkup('cycle') . '<span>Auto-Pay Settings</span></a>';
+
+            echo '<hr class="dropdown-divider">';
+            echo '<div class="dropdown-section-label">Support & Company Info</div>';
+            echo '<a href="' . $relPath . 'customer/support.php#agent" class="dropdown-item">' . iconMarkup('group') . '<span>Contact My Agent</span></a>';
+            echo '<a href="' . $relPath . 'customer/support.php#faq" class="dropdown-item">' . iconMarkup('notifications') . '<span>Help Center / FAQ</span></a>';
         } else {
             echo '<a href="' . $relPath . 'admin/profile.php" class="dropdown-item">' . iconMarkup('manage_accounts') . '<span>Edit Credentials</span></a>';
+            echo '<a href="' . $relPath . 'admin/profile.php#contact" class="dropdown-item">' . iconMarkup('notifications') . '<span>Contact Information</span></a>';
+            echo '<a href="' . $relPath . 'admin/profile.php#security" class="dropdown-item">' . iconMarkup('admin_panel_settings') . '<span>Account Security</span></a>';
         }
-        echo '<a href="' . $relPath . (isCustomerLoggedIn() ? 'customer' : 'admin') . '/profile.php#contact" class="dropdown-item">' . iconMarkup('notifications') . '<span>Contact Information</span></a>';
-        echo '<a href="' . $relPath . (isCustomerLoggedIn() ? 'customer' : 'admin') . '/profile.php#security" class="dropdown-item">' . iconMarkup('admin_panel_settings') . '<span>Account Security</span></a>';
         echo '<hr class="dropdown-divider">';
         if (isStaffLoggedIn()) {
             echo '<a href="' . $relPath . 'admin/auth/logout.php" class="dropdown-item text-danger">' . iconMarkup('logout') . '<span>Logout</span></a>';

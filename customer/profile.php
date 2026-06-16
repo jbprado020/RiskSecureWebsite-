@@ -141,6 +141,38 @@ renderHeader($title);
     </form>
 </section>
 
+<section class="card" id="privacy">
+    <h2><?= iconMarkup('policy'); ?> Privacy Settings</h2>
+    <div class="grid cols-2">
+        <div class="info-group">
+            <p><strong>Marketing Preferences</strong></p>
+            <p class="text-muted">Control how we communicate with you about new products and offers.</p>
+            <div style="margin-top: 1rem;">
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                    Email Notifications
+                </label>
+            </div>
+            <div style="margin-top: 0.5rem;">
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                    SMS Alerts
+                </label>
+            </div>
+        </div>
+        <div class="info-group">
+            <p><strong>Data Privacy</strong></p>
+            <p class="text-muted">Manage your data sharing preferences and request data exports.</p>
+            <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                <button type="button" class="btn-action">Download My Data</button>
+                <button type="button" class="btn-action text-danger">Request Deletion</button>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Custom Confirmation Modal -->
 <div id="confirmModal" class="custom-modal-overlay" style="display: none;">
     <div class="custom-modal">

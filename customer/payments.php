@@ -33,7 +33,7 @@ renderHeader('Payments & Billings');
     </div>
 </div>
 
-<section class="card">
+<section class="card" id="history">
     <div class="section-header">
         <h2><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><?= iconMarkup('payments'); ?> Your Payment History</span></h2>
     </div>
@@ -78,6 +78,30 @@ renderHeader('Payments & Billings');
                 <?php endif; ?>
             </tbody>
         </table>
+    </div>
+</section>
+
+<section class="card" id="methods" style="margin-top: 2rem;">
+    <h2><?= iconMarkup('payments'); ?> Payment Methods</h2>
+    <div class="grid cols-2">
+        <div class="info-group">
+            <p><strong>Linked Accounts</strong></p>
+            <p class="text-muted">Manage your credit cards and bank accounts.</p>
+            <div style="margin-top: 1rem;">
+                <button class="btn-action">Add New Method</button>
+            </div>
+        </div>
+        <div class="info-group" id="autopay">
+            <p><strong>Auto-Pay Settings</strong></p>
+            <p class="text-muted">Ensure your coverage never lapses with automatic payments.</p>
+            <div style="margin-top: 1rem;">
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                    Enable Auto-Pay
+                </label>
+            </div>
+        </div>
     </div>
 </section>
 

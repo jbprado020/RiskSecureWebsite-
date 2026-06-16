@@ -451,7 +451,7 @@ renderHeader('Customer Portal', false);
             <button type="button" class="btn-action" data-toggle="edit-form" data-target="form-apply">Get Started</button>
         </article>
 
-        <article class="card action-tile">
+        <article class="card action-tile" id="file-claim">
             <div class="action-icon"><?= iconMarkup('gavel'); ?></div>
             <h3>File a Claim</h3>
             <p>Report an incident and start your claim process.</p>
@@ -671,7 +671,7 @@ renderHeader('Customer Portal', false);
         </div>
 
         <h3>Active Policies</h3>
-        <div class="table-wrap">
+        <div class="table-wrap" id="policies">
         <table>
             <thead>
                 <tr>
@@ -696,7 +696,7 @@ renderHeader('Customer Portal', false);
         </div>
 
         <div class="grid cols-2" style="margin-top: 1rem;">
-            <div>
+            <div id="claims">
                 <h3>Claims</h3>
                 <div class="table-wrap">
                 <table>
@@ -722,7 +722,7 @@ renderHeader('Customer Portal', false);
                 </table>
                 </div>
             </div>
-            <div>
+            <div id="appointments">
                 <h3>Upcoming Appointments</h3>
                 <div class="table-wrap">
                 <table>
@@ -743,6 +743,61 @@ renderHeader('Customer Portal', false);
                         <?php endforeach; ?>
                         <?php if (count($accountMeetings) === 0): ?>
                             <tr><td colspan="3" class="empty-state">No appointments.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid cols-2" style="margin-top: 1rem;">
+            <div id="documents">
+                <h3>ID Cards & Documents</h3>
+                <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Policy</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($accountDocuments as $doc): ?>
+                            <tr>
+                                <td><a href="<?= e((string) $doc['file_path']); ?>" target="_blank"><?= e((string) $doc['document_type']); ?></a></td>
+                                <td><?= e((string) $doc['policy_number']); ?></td>
+                                <td><?= date('M d, Y', strtotime($doc['date_uploaded'])); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <?php if (count($accountDocuments) === 0): ?>
+                            <tr><td colspan="3" class="empty-state">No documents uploaded.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            <div id="certificates">
+                <h3>Certificates of Insurance</h3>
+                <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Certificate</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($accountPolicies as $policy): ?>
+                            <?php if ($policy['status'] === 'active'): ?>
+                                <tr>
+                                    <td>COI - <?= e((string) $policy['policy_number']); ?></td>
+                                    <td><button class="btn-action" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Download</button></td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        <?php if (count(array_filter($accountPolicies, fn($p) => $p['status'] === 'active')) === 0): ?>
+                            <tr><td colspan="2" class="empty-state">No active policies to generate certificates.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
