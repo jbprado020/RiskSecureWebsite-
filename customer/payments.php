@@ -48,6 +48,7 @@ renderHeader('Payments & Billings');
                     <th>Due Date</th>
                     <th>Paid Date</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,10 +60,21 @@ renderHeader('Payments & Billings');
                         <td><?= e((string) $payment['due_date']); ?></td>
                         <td><?= e((string) ($payment['paid_date'] ?? '-')); ?></td>
                         <td><span class="badge <?= badgeClass((string) $payment['status']); ?>"><?= e(statusLabel((string) $payment['status'])); ?></span></td>
+                        <td>
+                            <?php if ($payment['status'] === 'pending' || $payment['status'] === 'overdue'): ?>
+                                <form action="initiate_payment.php" method="POST" style="display:inline;">
+                                    <?= csrfField(); ?>
+                                    <input type="hidden" name="payment_id" value="<?= (int) $payment['id']; ?>">
+                                    <button type="submit" class="btn-action" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Pay Online</button>
+                                </form>
+                            <?php else: ?>
+                                <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if (count($accountPayments) === 0): ?>
-                    <tr><td colspan="6" class="empty-state">No payment records found.</td></tr>
+                    <tr><td colspan="7" class="empty-state">No payment records found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
